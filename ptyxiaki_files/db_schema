@@ -1,0 +1,142 @@
+Customer
+-
+CustomerID int PK
+Title varchar FK >- Title.TitleID 
+FirstName varchar 
+LastName varchar
+BirthDate Date
+Email varchar
+AddressID int FK >- Address.AddressID
+AdditionalInfo varchar
+
+Title
+-
+TitleID int PK
+Title varchar
+
+Address
+-
+AddressID int PK
+Address1 varchar
+Address2 varchar
+CityID int FK >- City.CityID
+PostalCode int
+
+City
+-
+CityID int PK
+Name varchar
+Country int FK >- Country.CountryID
+
+Country
+-
+CountryID int PK
+Name varchar
+
+PhoneType
+-
+PhoneTypeID int PK
+PhoneTypeName varchar
+
+CustomerPhone
+-
+CustomerID int PK FK >- Customer.CustomerID
+PhoneType int PK FK >- PhoneType.PhoneTypeID
+Number varchar
+
+Account
+-
+AccountID int PK FK >- Customer.CustomerID
+AccountEmail varchar Unique
+AccountHash varchar
+
+///////////////////////////////////////////
+
+Room
+ID PK
+Number Unique
+Floor
+RoomType FK to RoomType ID
+Availability 
+Description
+
+RoomAmenity
+RoomID FK to Room ID PK
+AmenityID FK to Amenity ID PK
+
+Amenity
+ID PK
+Name
+
+RoomType
+ID PK
+Name
+Price
+
+Reservation
+ID PK
+CustomerID FK to Customer ID
+RoomID FK To Room ID
+DateBooked
+StartDate
+EndDate
+ReservationType FK To ReservationType ID
+Adults
+CheckIn
+CheckOut
+Comments
+
+ReservationType
+ID
+Name
+
+////////////////////
+
+Payment
+ID PK
+ReservationId FK to Reservation ID
+CustomerId FK to Customer ID
+Amount
+PaymentMethodId FK to PaymentMethod ID
+PaymentTime
+Paid
+
+PaymentMethod
+ID
+Name
+
+
+/////////////////////////////////////////
+
+MealType
+ID PK
+BeginTime
+EndTime
+
+Meal_MealType
+TypeId FK PK
+MealId FK PK
+
+Meal
+Id PK
+Name
+Description
+MealType FK to Mealtype ID
+MealTime FK to MealTime ID
+Price
+Availability bool
+
+Order
+ID PK
+CustomerID FK to Customer ID
+RoomID FK to Room ID
+OrderDate
+TotalAmount
+Comment
+
+OrderItem
+ID PK
+OrderID FK to Order ID
+FoodID FK to Meal ID
+Quantity
+

@@ -53,7 +53,7 @@ if(isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['persons'])){
     $type->title = $rname;
     $type->description = $rdesc;
     $type->price = $rprice;
-    $type->img = base64_encode($rimage);
+    //$type->img = base64_encode($rimage);
     $typesArray[] = $type;
   }
 

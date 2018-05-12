@@ -31,15 +31,18 @@ $stmt->bind_result($roomI);
 $stmt->store_result();
 $stmt->fetch();*/
 
-$query = "INSERT INTO Reservation(CustomerID,RoomTypeID,ReservationTypeID,Adults,DateBooked,StartDate,EndDate) VALUES (?,?,3,?,now(),?,?)";
+$bookDate = date('Y-m-d');
+
+$query = "INSERT INTO Reservation(CustomerID,RoomTypeID,ReservationTypeID,Adults,DateBooked,StartDate,EndDate) VALUES (?,?,3,?,?,?,?)";
 $stmt = $dbCon->prepare($query);
-$stmt->bind_param('iiiss',$customerID,$roomTypeID,$persons,$arrival,$departure);
+$stmt->bind_param('iiisss',$customerID,$roomTypeID,$persons,$bookDate,$arrival,$departure);
 $success = $stmt->execute();
 
 $reservationId = $dbCon->insert_id;
 if($success){
   $jObj->success=1;
   $jObj->reservationID=$reservationId;
+  $jObj->bookedDate = $bookDate;
 }
 else{
   $jObj->success=0;

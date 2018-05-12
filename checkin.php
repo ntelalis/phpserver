@@ -1,7 +1,10 @@
 <?php
 
 require 'dbConfig.php';
+require 'vendor/autoload.php';
 
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 //Connection to Database
 $dbCon = new mysqli($dbip,$dbusername,$dbpass,$dbname);
 
@@ -47,13 +50,25 @@ if(isset($_POST['reservationID']) && !empty($_POST['reservationID'])){
   $stmt->close();
 
 
-  $query = "INSERT INTO Occupancy(RoomID,ReservationID,CheckIn) VALUES(?,?,now())";
+  $query = "INSERT INTO Occupancy(RoomID,ReservationID,RoomPassword,CheckIn) VALUES(?,?,?,now())";
   $stmt = $dbCon->prepare($query);
-  $stmt->bind_param('ii',$roomID,$reservationID);
+
+  try {
+      // Generate a version 4 (random) UUID object
+      $uuid4 = Uuid::uuid4();
+      $roomPassword = $uuid4->toString();
+      $roomPasswordHash = password_hash($roomPassword,PASSWORD_DEFAULT);
+
+  } catch (UnsatisfiedDependencyException $e) {
+      echo 'Caught exception: ' . $e->getMessage() . "\n";
+  }
+
+  $stmt->bind_param('iis',$roomID,$reservationID,$roomPasswordHash);
   $success = $stmt->execute();
   if($dbCon->affected_rows==1){
     $jObj->success=1;
     $jObj->room=$roomNumber;
+    $jObj->roomPassword=$roomPassword;
   }
   else {
     $jObj->success=0;

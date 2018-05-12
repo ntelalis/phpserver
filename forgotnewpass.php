@@ -52,18 +52,20 @@ if(isset($_POST['pass'],$_POST['email'],$_POST['code']) && !empty($_POST['pass']
       }
       else{
         //Nope
-        $jObj->success=2;
+        $jObj->success=0;
+        $jObj->errorMessage="Password not set successfully";
       }
     }
     else{
       //Fail: Verification Doesn't match
-      $jObj->success=4;
-
+      $jObj->success=0;
+$jObj->errorMessage="Verification doesn't match";
     }
   }
   else{
     //Fail: Time has passed
-    $jObj->success=5;
+    $jObj->success=0;
+    $jObj->errorMessage="Time has passed";
   }
 
   //Close Connection
@@ -72,7 +74,8 @@ if(isset($_POST['pass'],$_POST['email'],$_POST['code']) && !empty($_POST['pass']
 }
 else{
   //Variables not set
-  $jObj->success=6;
+  $jObj->success=0;
+  $jObj->errorMessage="Variables not set";
 }
 
 //Encode data in JSON Format

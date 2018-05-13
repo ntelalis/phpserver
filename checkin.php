@@ -11,7 +11,6 @@ $dbCon = new mysqli($dbip,$dbusername,$dbpass,$dbname);
 //Response Object
 $jObj = new stdClass();
 
-$_POST['reservationID']=113;
 //Parse POST Variables
 if(isset($_POST['reservationID']) && !empty($_POST['reservationID'])){
 

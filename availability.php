@@ -50,10 +50,6 @@ if(isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['persons'])){
   while($stmt->fetch()){
     $type = new stdClass();
     $type->roomTypeID = $rid;
-    $type->title = $rname;
-    $type->description = $rdesc;
-    $type->price = $rprice;
-    //$type->img = base64_encode($rimage);
     $typesArray[] = $type;
   }
 

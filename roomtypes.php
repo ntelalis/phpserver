@@ -1,9 +1,5 @@
 <?php
 
-ini_set('display_errors',1);
-error_reporting(E_ALL);
-mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
-
 //Database connection variables
 include 'dbConfig.php';
 include 'dbMessages.php';
@@ -18,15 +14,13 @@ $stmt->execute();
 $stmt->bind_result($id,$name,$capacity,$price,$image,$description,$modified);
 $stmt->store_result();
 
-$_POST['check']='[{"id":"1","modified":"2019-01-01 10:10:10"},{"id":"2","modified":"2018-01-01 10:10:10"},{"id":"3","modified":"2018-01-01 10:10:10"},{"id":"4","modified":"2018-01-01 10:10:10"}]';
-
 if(isset($_POST['check']) && !empty($_POST['check'])){
   $jsonToCheck = json_decode($_POST['check']);
   $values = array();
   foreach($jsonToCheck as $item) {
     $idClient = $item->id;
     $modifiedClient = $item->modified;
-    $values[${$idClient}]=$modifiedClient;
+    $values[$idClient]=$modifiedClient;
   }
 }
 
@@ -47,8 +41,9 @@ while($stmt->fetch()){
   $roomType->name = $name;
   $roomType->capacity = $capacity;
   $roomType->price = $price;
-  //$roomType->image = $imageBase64;
+  $roomType->image = $imageBase64;
   $roomType->description = $description;
+  $roomType->modified = $modified;
   $roomTypeArray[] = $roomType;
 }
 

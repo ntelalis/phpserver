@@ -1,8 +1,5 @@
 <?php
 
-$_POST['reservationID']= 16;
-$_POST['roomPassword']="2";
-
 //Parse POST Variables
 if(isset($_POST['reservationID'],$_POST['roomPassword'])){
 
@@ -31,7 +28,7 @@ if(isset($_POST['reservationID'],$_POST['roomPassword'])){
   if($stmt->num_rows == 1){
 
     if(password_verify($roomPassword,$roomPasswordHash)){
-      if(unlockDoor($roomID)){
+      if(doorUnlock($roomID)){
         $jObj->success=1;
       }
       else{

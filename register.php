@@ -7,6 +7,14 @@ $dbCon = new mysqli($dbip,$dbusername,$dbpass,$dbname);
 //Response Object
 $jObj = new stdClass();
 
+$_POST['email'] = "asdf@asdf.com";
+$_POST['pass'] = "ASDFASDFASDF";
+$_POST['firstName'] = "fdfd";
+$_POST['lastName'] = "aaa";
+$_POST['title'] = "Mr";
+$_POST['country'] = "Greece";
+$_POST['birthDate'] = "1970-01-01";
+
 $email = $_POST['email'];
 $pass = $_POST['pass'];
 $fname = $_POST['firstName'];

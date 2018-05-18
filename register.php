@@ -41,7 +41,7 @@ $stmt->fetch();
 
 $query = "INSERT INTO Customer(TitleID,FirstName,LastName,BirthDate,Email,CountryId) VALUES(?,?,?,?,?,?)";
 $stmt = $dbCon->prepare($query);
-$stmt->bind_param('isssi',$titleID,$fname,$lname,$birthDate,$email,$countryID);
+$stmt->bind_param('issssi',$titleID,$fname,$lname,$birthDate,$email,$countryID);
 $success = $stmt->execute();
 
 

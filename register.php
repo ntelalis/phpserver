@@ -28,10 +28,10 @@ $birthDate = $_POST['birthDate'];
 
 $query = "SELECT (SELECT Country.ID AS CountryID
     	    FROM Country
-          WHERE Country.Name = "?") AS CountryID,
+          WHERE Country.Name = ?) AS CountryID,
 	       (SELECT Title.ID AS TitleID
 		      FROM Title
-    	    WHERE Title.Title = "?") AS TitleID";
+    	    WHERE Title.Title = ?) AS TitleID";
 $stmt = $dbCon->prepare($query);
 $stmt->bind_param('ss',$country,$title);
 $stmt->execute();

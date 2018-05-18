@@ -12,18 +12,25 @@ $pass = $_POST['pass'];
 $fname = $_POST['firstName'];
 $lname = $_POST['lastName'];
 $title = $_POST['title'];
+$country = $_POST['country'];
+$birthDate = $_POST['birthDate'];
 
-$query = "SELECT ID FROM Title WHERE Title=?";
+$query = "SELECT (SELECT Country.ID AS CountryID
+    	    FROM Country
+          WHERE Country.Name = "?") AS CountryID,
+	       (SELECT Title.ID AS TitleID
+		      FROM Title
+    	    WHERE Title.Title = "?") AS TitleID";
 $stmt = $dbCon->prepare($query);
-$stmt->bind_param('s',$title);
+$stmt->bind_param('ss',$country,$title);
 $stmt->execute();
-$stmt->bind_result($titleID);
+$stmt->bind_result($countryID,$titleID);
 $stmt->store_result();
 $stmt->fetch();
 
-$query = "INSERT INTO Customer(TitleID,FirstName,LastName,Email,CountryId) VALUES(?,?,?,?,56)";
+$query = "INSERT INTO Customer(TitleID,FirstName,LastName,BirthDate,Email,CountryId) VALUES(?,?,?,?,?,?)";
 $stmt = $dbCon->prepare($query);
-$stmt->bind_param('isss',$titleID,$fname,$lname,$email);
+$stmt->bind_param('isssi',$titleID,$fname,$lname,$birthDate,$email,$countryID);
 $success = $stmt->execute();
 
 
@@ -36,6 +43,7 @@ $success = $stmt->execute();
 
 if($success){
   $jObj->success=1;
+  $jObj->customerID=$customerId;
 }
 else{
   $jObj->success=0;

@@ -2,7 +2,7 @@
 
 include 'dbConfig.php';
 
-$dbCon = new mysqli($dbip,$dbusername,$dbpass,$dbname);
+$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
@@ -15,7 +15,7 @@ $stmt->store_result();
 
 $countryList = array();
 while ($stmt->fetch()) {
-  $countryList[] = $countryName;
+    $countryList[] = $countryName;
 }
 
   $jObj->success=1;
@@ -29,5 +29,3 @@ $JsonResponse = json_encode($jObj);
 
 //Show Data
 echo $JsonResponse;
-
-?>

@@ -1,7 +1,6 @@
 <?php
 
-function doorUnlock($roomID){
-  return true;
+function doorUnlock($roomID)
+{
+    return true;
 }
-
- ?>

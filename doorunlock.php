@@ -1,57 +1,49 @@
 <?php
 
 //Parse POST Variables
-if(isset($_POST['reservationID'],$_POST['roomPassword'])){
+if (isset($_POST['reservationID'],$_POST['roomPassword'])) {
+    $reservationID = $_POST['reservationID'];
+    $roomPassword = $_POST['roomPassword'];
 
-  $reservationID = $_POST['reservationID'];
-  $roomPassword = $_POST['roomPassword'];
+    require 'dbConfig.php';
+    require 'Functions/doorUnlock.php';
 
-  require 'dbConfig.php';
-  require 'Functions/doorUnlock.php';
+    //Connection to Database
+    $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
-  //Connection to Database
-  $dbCon = new mysqli($dbip,$dbusername,$dbpass,$dbname);
+    //Response Object
+    $jObj = new stdClass();
 
-  //Response Object
-  $jObj = new stdClass();
-
-  $query = "SELECT RoomID,RoomPasswordHash FROM Occupancy WHERE ReservationID=?";
+    $query = "SELECT RoomID,RoomPasswordHash FROM Occupancy WHERE ReservationID=?";
 
 
-  $stmt = $dbCon->prepare($query);
-  $stmt->bind_param('i',$reservationID);
-  $stmt->execute();
-  $stmt->bind_result($roomID,$roomPasswordHash);
-  $stmt->store_result();
-  $stmt->fetch();
+    $stmt = $dbCon->prepare($query);
+    $stmt->bind_param('i', $reservationID);
+    $stmt->execute();
+    $stmt->bind_result($roomID, $roomPasswordHash);
+    $stmt->store_result();
+    $stmt->fetch();
 
-  if($stmt->num_rows == 1){
-
-    if(password_verify($roomPassword,$roomPasswordHash)){
-      if(doorUnlock($roomID)){
-        $jObj->success=1;
-      }
-      else{
+    if ($stmt->num_rows == 1) {
+        if (password_verify($roomPassword, $roomPasswordHash)) {
+            if (doorUnlock($roomID)) {
+                $jObj->success=1;
+            } else {
+                $jObj->success=0;
+                $jObj->errorMessage="There is a problem with unlocking the door. Please contant hotel administration";
+            }
+        } else {
+            $jObj->success=0;
+            $jObj->errorMessage="Wrong password";
+        }
+    } else {
         $jObj->success=0;
-        $jObj->errorMessage="There is a problem with unlocking the door. Please contant hotel administration";
-      }
-
+        $jObj->errorMessage="No room found";
     }
-    else{
-      $jObj->success=0;
-      $jObj->errorMessage="Wrong password";
-    }
-  }
-  else{
-    $jObj->success=0;
-    $jObj->errorMessage="No room found";
-  }
 
-  //Encode data in JSON Format
-  $JsonResponse = json_encode($jObj);
+    //Encode data in JSON Format
+    $JsonResponse = json_encode($jObj);
 
-  //Show Data
-  echo $JsonResponse;
+    //Show Data
+    echo $JsonResponse;
 }
-
-?>

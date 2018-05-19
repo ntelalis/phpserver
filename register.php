@@ -1,5 +1,7 @@
 <?php
 
+# a;
+
 include 'dbConfig.php';
 
 $dbCon = new mysqli($dbip,$dbusername,$dbpass,$dbname);

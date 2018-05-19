@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors',1);
-error_reporting(E_ALL);
-mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 
 include 'dbConfig.php';
 
@@ -9,14 +6,6 @@ $dbCon = new mysqli($dbip,$dbusername,$dbpass,$dbname);
 
 //Response Object
 $jObj = new stdClass();
-
-$_POST['email'] = "asdf@asdf.com";
-$_POST['pass'] = "ASDFASDFASDF";
-$_POST['firstName'] = "fdfd";
-$_POST['lastName'] = "aaa";
-$_POST['title'] = "Mr";
-$_POST['country'] = "Greece";
-$_POST['birthDate'] = "1970-01-01";
 
 $email = $_POST['email'];
 $pass = $_POST['pass'];

@@ -30,6 +30,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $stmt->bind_result($serviceName, $servicePrice);
     $stmt->store_result();
 
+
     $serviceArray = array();
     while ($stmt->fetch()) {
         $serviceModel = new stdClass();

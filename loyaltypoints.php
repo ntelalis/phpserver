@@ -17,8 +17,10 @@ if (isset($_POST['customerID'])) {
     $stmt->fetch();
 
     //Total Points
-    $query = "SELECT IFNULL((SELECT sum(a.Points*h.Quantity)
-  FROM LoyaltyPointsEarningHistory h JOIN LoyaltyPointsEarningAction a on h.GainingPointsID=a.ID WHERE h.CustomerID=? and h.DateEarned>=Now()-INTERVAL 1 YEAR),0) - IFNULL((SELECT sum(a.Points*h.Quantity) FROM LoyaltyPointsSpendingHistory h JOIN LoyaltyPointsSpendingAction a on h.SpendingPointsID=a.ID WHERE h.CustomerID=? and h.DateSpent>=Now()-INTERVAL 1 YEAR),0) as Points";
+  //  $query = "SELECT IFNULL((SELECT sum(a.Points*h.Quantity)
+  // FROM LoyaltyPointsEarningHistory h JOIN LoyaltyPointsEarningAction a on h.GainingPointsID=a.ID WHERE h.CustomerID=? and h.DateEarned>=Now()-INTERVAL 1 YEAR),0) - IFNULL((SELECT sum(a.Points*h.Quantity) FROM LoyaltyPointsSpendingHistory h JOIN LoyaltyPointsSpendingAction a on h.SpendingPointsID=a.ID WHERE h.CustomerID=? and h.DateSpent>=Now()-INTERVAL 1 YEAR),0) as Points";
+  $query = "SELECT IFNULL((SELECT sum(a1.Points*h.Quantity)
+  FROM LoyaltyPointsEarningHistory h JOIN LoyaltyPointsEarningAction a1 on h.GainingPointsID=a1.ID WHERE h.CustomerID=? and h.DateEarned>=Now()-INTERVAL 1 YEAR),0) - IFNULL((SELECT sum(a2.Points*h.Quantity) FROM LoyaltyPointsSpendingHistory h JOIN LoyaltyPointsSpendingActionRoomType a2 on h.SpendingPointsID=a2.ID WHERE h.CustomerID=? and h.DateSpent>=Now()-INTERVAL 1 YEAR),0) as Points;";
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('ii', $customerID, $customerID);
     $stmt->execute();

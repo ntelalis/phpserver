@@ -30,3 +30,33 @@ function addPointsByReservationID($dbCon, $reservationID, $pointsName, $quantity
         return false;
     }
 }
+
+function getFreeNightsPoints($dbCon,$roomTypeID,$persons){
+  $query = "SELECT Points FROM RoomTypeFreeNightsPoints rtfnp WHERE rtfnp.RoomTypeID=? AND rtfnp.Persons=?";
+  $stmt = $dbCon->prepare($query);
+  $stmt-> bind_param('ii',$roomTypeID,$persons);
+  if($stmt->execute()){
+    $stmt->bind_result($points);
+    $stmt->store_result();
+    $stmt->fetch();
+    return $points;
+  }
+  else{
+    return NULL;
+  }
+}
+
+function getCashNightsPoints($dbCon,$roomTypeID,$persons,$currencyID){
+  $query = "SELECT Points FROM RoomTypePointsAndCash rtpac WHERE rtpac.RoomTypeID=? AND rtpac.Persons=? AND rtpac.CurrencyID=?";
+  $stmt = $dbCon->prepare($query);
+  $stmt-> bind_param('iii',$roomTypeID,$persons,$currencyID);
+  if($stmt->execute()){
+    $stmt->bind_result($points);
+    $stmt->store_result();
+    $stmt->fetch();
+    return $points;
+  }
+  else{
+    return NULL;
+  }
+}

@@ -41,6 +41,10 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
             $jObj->errorMessage="Cannot set loyalty points";
         }
     }
+    else{
+      $jObj->success=0;
+      $jObj->errorMessage="There is some problem with checkout procedure";
+    }
     $stmt->close();
 }
 //Email variable is not supplied

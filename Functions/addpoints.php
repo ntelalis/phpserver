@@ -85,7 +85,8 @@ function getSpendingActionPointsByName($dbCon,$name){
 }
 
 function getFreeNightsPoints($dbCon,$roomTypeID,$persons){
-  $query = "SELECT Points FROM RoomTypeFreeNightsPoints rtfnp WHERE rtfnp.RoomTypeID=? AND rtfnp.Persons=?";
+
+  $query = "SELECT Points FROM LoyaltyPointsSpendingActionRoomType lpsart WHERE lpsart.SpendingActionID=(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Free Night') AND lpsart.RoomTypeID=? AND lpsart.Persons=?";
   $stmt = $dbCon->prepare($query);
   $stmt-> bind_param('ii',$roomTypeID,$persons);
   if($stmt->execute()){
@@ -99,7 +100,7 @@ function getFreeNightsPoints($dbCon,$roomTypeID,$persons){
   }
 }
 function getCashNightsPoints($dbCon,$roomTypeID,$persons,$currencyID){
-  $query = "SELECT Points FROM RoomTypePointsAndCash rtpac WHERE rtpac.RoomTypeID=? AND rtpac.Persons=? AND rtpac.CurrencyID=?";
+  $query = "SELECT Points FROM LoyaltyPointsSpendingActionRoomType lpsart WHERE lpsart.SpendingActionID= (SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash And Points') AND lpsart.RoomTypeID=? AND lpsart.Persons=? AND lpsart.CurrencyID=?";
   $stmt = $dbCon->prepare($query);
   $stmt-> bind_param('iii',$roomTypeID,$persons,$currencyID);
   if($stmt->execute()){

@@ -2,8 +2,8 @@
 
 /*ini_set('display_errors',1);
 error_reporting(E_ALL);
-mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);*/
-
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+*/
 include 'dbConfig.php';
 require 'Functions/externalpayment.php';
 require 'Functions/addpoints.php';
@@ -25,8 +25,8 @@ $_POST['ccNumber']='0';
 $_POST['ccName']='0';
 $_POST['ccYear']='0';
 $_POST['ccMonth']='0';
-$_POST['ccCVV']='0';
-*/
+$_POST['ccCVV']='0';*/
+
 
 if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['departure'],$_POST['persons'],$_POST['freeNights'],$_POST['cashNights'],$_POST['ccNumber'],$_POST['ccName'],$_POST['ccMonth'],$_POST['ccYear'],$_POST['ccCVV'])) {
   $customerID = $_POST['customerID'];
@@ -76,10 +76,10 @@ if($dateDiff>=$freeNights+$cashNights){
       //points ok
 
       //Get total price
-      $query = "SELECT (datediff(?,?)-?)*rtc.Price + ?*(rtpc.Cash-rtc.Price)
-      from RoomType rt, RoomTypeCash rtc, RoomTypePointsAndCash rtpc
-      where rt.ID=? and rt.ID=rtc.RoomTypeID And rtc.Persons=? and rtc.CurrencyID=?
-      AND rtpc.RoomTypeID=rtc.RoomTypeID AND rtpc.Persons=rtc.Persons and rtpc.CurrencyID=rtc.CurrencyID";
+      $query = "SELECT (datediff(?,?)-?)*lpsart1.Cash + ?*(lpsart2.Cash-lpsart1.Cash)
+      from RoomType rt, LoyaltyPointsSpendingActionRoomType lpsart1, LoyaltyPointsSpendingActionRoomType lpsart2
+      where rt.ID=? and rt.ID=lpsart1.RoomTypeID AND lpsart1.SpendingActionID=(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash') And lpsart1.Persons=? and lpsart1.CurrencyID=?
+      AND lpsart1.SpendingActionID=(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash And Points')  AND lpsart2.RoomTypeID=lpsart1.RoomTypeID AND lpsart2.Persons=lpsart1.Persons and lpsart2.CurrencyID=lpsart1.CurrencyID";
       //$query = "SELECT (datediff(?,?)-?)*rt.Price - ?*? from RoomType rt where rt.ID=?";
       $stmt = $dbCon->prepare($query);
       $stmt->bind_param('ssiiiii', $departure, $arrival,$freeNights,$cashNights,$roomTypeID,$persons,$currencyID);

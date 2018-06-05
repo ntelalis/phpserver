@@ -65,11 +65,45 @@ while($stmt->fetch()){
   $currencyArray[] = $currency;
 }
 
+//RoomTypePrice
+
+$query = "SELECT ID,SpendingActionID,RoomTypeID,Persons,CurrencyID,Cash,Points FROM LoyaltyPointsSpendingActionRoomType";
+$stmt = $mysqli->prepare($query);
+$stmt->execute();
+$stmt->bind_result($id, $spendingActionID, $roomTypeID, $persons, $currencyID, $cash, $points);
+$stmt->store_result();
+
+$roomTypePriceArray = array();
+while($stmt->fetch()){
+  $roomTypePrice = new stdClass();
+  $roomTypePrice->id = $id;
+  $roomTypePrice->spendingActionID = $spendingActionID;
+  $roomTypePrice->roomTypeID = $roomTypeID;
+  $roomTypePrice->persons = $persons;
+  $roomTypePrice->currencyID = $currencyID;
+  $roomTypePrice->cash = $cash;
+  $roomTypePrice->points = $points;
+  $roomTypePriceArray[] = $roomTypeCash;
+}
+
+//LoyaltyPointsSpendingAction
+
+$query = "SELECT ID,Name FROM LoyaltyPointsSpendingAction";
+$stmt = $mysqli->prepare($query);
+$stmt->execute();
+$stmt->bind_result($id, $name);
+$stmt->store_result();
+
+$spendingAction = array();
+while($stmt->fetch()){
+  $spendingAction[$name] = $id;
+}
 
 // RoomTypeCash
 
-$query = "SELECT RoomTypeID,Persons,CurrencyID,Price FROM RoomTypeCash";
+$query = "SELECT RoomTypeID,Persons,CurrencyID,Cash FROM LoyaltyPointsSpendingActionRoomType WHERE SpendingActionID=?";
 $stmt = $mysqli->prepare($query);
+$stmt->bind_param('i',$spendingAction['Cash']);
 $stmt->execute();
 $stmt->bind_result($roomTypeID, $persons, $currencyID, $price);
 $stmt->store_result();
@@ -86,8 +120,9 @@ while($stmt->fetch()){
 
 // RoomTypeFreeNightsPoints
 
-$query = "SELECT RoomTypeID,Persons,Points FROM RoomTypeFreeNightsPoints";
+$query = "SELECT RoomTypeID,Persons,Points FROM LoyaltyPointsSpendingActionRoomType WHERE SpendingActionID=?";
 $stmt = $mysqli->prepare($query);
+$stmt->bind_param('i',$spendingAction['Free Night']);
 $stmt->execute();
 $stmt->bind_result($roomTypeID, $persons, $points);
 $stmt->store_result();
@@ -103,8 +138,9 @@ while($stmt->fetch()){
 
 // RoomTypePointsAndCash
 
-$query = "SELECT RoomTypeID,Persons,CurrencyID,Cash,Points FROM RoomTypePointsAndCash";
+$query = "SELECT RoomTypeID,Persons,CurrencyID,Cash,Points FROM LoyaltyPointsSpendingActionRoomType WHERE SpendingActionID=?";
 $stmt = $mysqli->prepare($query);
+$stmt->bind_param('i',$spendingAction['Cash And Points']);
 $stmt->execute();
 $stmt->bind_result($roomTypeID, $persons,$currencyID,$cash, $points);
 $stmt->store_result();

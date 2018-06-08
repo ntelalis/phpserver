@@ -14,6 +14,7 @@ $stmt->execute();
 $stmt->bind_result($id, $name, $capacity, $price, $image, $description, $modified);
 $stmt->store_result();
 
+//Create hashtable from client's data '$array[id]=modifiedClientDat'
 if (isset($_POST['check']) && !empty($_POST['check'])) {
     $jsonToCheck = json_decode($_POST['check']);
     $values = array();

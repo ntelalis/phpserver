@@ -42,7 +42,7 @@ if (isset($_POST['email']) && !empty($_POST['email'])) {
       $stmt->execute();
       $success = $stmt->execute();
 
-        $mail = getEmailServer();
+      $mail = getEmailServer();
 
         //Mail Contents
         $mail->Subject = "Password Reset";
@@ -64,7 +64,7 @@ if (isset($_POST['email']) && !empty($_POST['email'])) {
     //Customer is not found
     else {
         $jObj->success = 0;
-        $jObj->errorMessage="Customer not found":
+        $jObj->errorMessage="Customer not found";
     }
 
     //Close Connections

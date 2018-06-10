@@ -35,6 +35,7 @@ if ($success) {
     $jObj->customerID=$customerId;
 } else {
     $jObj->success=0;
+    $jObj->errorMessage=$dbCon->error;
 }
 
 

@@ -27,20 +27,21 @@ if (isset($_POST['email']) && !empty($_POST['email'])) {
     $stmt->fetch();
     $numrows = $stmt->num_rows;
 
-    //Generate random string to email for verifaction
-    $code = random_str(6, '0123456789');
-
-    //Insert Verification code for the account in database
-
-    $query = "UPDATE Account SET Verify=?,VerifyTime=now() WHERE CustomerID=?";
-
-    $stmt = $dbCon->prepare($query);
-    $stmt->bind_param('si', $code, $customerID);
-    $stmt->execute();
-    $success = $stmt->execute();
-
     //If Customer is found
-    if ($numrows == 1 && $success) {
+    if ($numrows == 1) {
+
+      //Generate random string to email for verifaction
+      $code = random_str(6, '0123456789');
+
+      //Insert Verification code for the account in database
+
+      $query = "UPDATE Account SET Verify=?,VerifyTime=now() WHERE CustomerID=?";
+
+      $stmt = $dbCon->prepare($query);
+      $stmt->bind_param('si', $code, $customerID);
+      $stmt->execute();
+      $success = $stmt->execute();
+
         $mail = getEmailServer();
 
         //Mail Contents
@@ -53,6 +54,7 @@ if (isset($_POST['email']) && !empty($_POST['email'])) {
         //Unsuccess
         if (!$mail->Send()) {
             $jObj->success = 0;
+            $jObj->errorMessage="Could not send email. Please try again later";
         }
         //success
         else {
@@ -62,6 +64,7 @@ if (isset($_POST['email']) && !empty($_POST['email'])) {
     //Customer is not found
     else {
         $jObj->success = 0;
+        $jObj->errorMessage="Customer not found":
     }
 
     //Close Connections

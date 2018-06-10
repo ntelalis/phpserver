@@ -15,7 +15,7 @@ $query = "SELECT c.CustomerID,(Select Title from Title where Title.ID=c1.TitleID
                 WHERE Email = ?) c,Customer c1
           WHERE c.CustomerID = c1.ID";
 */
-$query = "SELECT c.CustomerID,(Select Title from Title where Title.ID=c1.TitleID) as Title, c1.FirstName, c1.LastName, c.Hash, (SELECT COUNT(Occupancy.ID)
+$query = "SELECT c.CustomerID,c1.TitleID,c1.FirstName, c1.LastName, c1.CountryID, c1.BirthDate, c.Hash, (SELECT COUNT(Occupancy.ID)
 																													                                                                      FROM Occupancy, Reservation
 																													                                                                      WHERE Occupancy.ReservationID=Reservation.ID
                                                                                                                                       AND Reservation.CustomerID=c.CustomerID
@@ -27,7 +27,7 @@ $query = "SELECT c.CustomerID,(Select Title from Title where Title.ID=c1.TitleID
 $stmt = $dbCon->prepare($query);
 $stmt->bind_param('s', $email);
 $stmt->execute();
-$stmt->bind_result($customer, $title, $firstName, $lastName, $hash, $isOldCustomer);
+$stmt->bind_result($customer, $titleID, $firstName, $lastName, $countryID, $birthDate, $hash, $isOldCustomer);
 $stmt->store_result();
 $stmt->fetch();
 
@@ -87,9 +87,11 @@ WHERE Reservation.CustomerID=23 AND Reservation.StartDate<=CURRENT_DATE AND Rese
 if ($numrows == 1 && $verify = password_verify($pass, $hash)) {
     $jObj->success = 1;
     $jObj->customerID = $customer;
-    $jObj->title = $title;
+    $jObj->titleID = $titleID;
     $jObj->firstName = $firstName;
     $jObj->lastName = $lastName;
+		$jObj->countryID = $countryID;
+		$jObj->birthDate = $birthDate;
     $jObj->isOldCustomer= $isOldCustomer;
     $jObj->isCheckedIn = $isCheckedIn;
     $jObj->isCheckedOut = $isCheckedOut;

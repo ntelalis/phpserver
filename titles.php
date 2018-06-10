@@ -8,17 +8,20 @@ include 'dbMessages.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 // Select available titles from Database
-$query = "SELECT Title FROM Title";
+$query = "SELECT ID,Title FROM Title";
 $stmt = $mysqli->prepare($query);
 $stmt->execute();
-$stmt->bind_result($title);
+$stmt->bind_result($id,$title);
 $stmt->store_result();
 
 
 //Create titles array from DB results
 $titleArray = array();
 while ($stmt->fetch()) {
-    $titleArray[] = $title;
+    $titleObj = new stdClass();
+    $titleObj->id = $id;
+    $titleObj->title = $title;
+    $titleArray[] = $titleObj;
 }
 
 

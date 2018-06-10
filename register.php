@@ -13,22 +13,9 @@ $email = $_POST['email'];
 $pass = $_POST['pass'];
 $fname = $_POST['firstName'];
 $lname = $_POST['lastName'];
-$title = $_POST['title'];
-$country = $_POST['country'];
+$titleID = $_POST['titleID'];
+$countryID = $_POST['countryID'];
 $birthDate = $_POST['birthDate'];
-
-$query = "SELECT (SELECT Country.ID AS CountryID
-    	    FROM Country
-          WHERE Country.Name = ?) AS CountryID,
-	       (SELECT Title.ID AS TitleID
-		      FROM Title
-    	    WHERE Title.Title = ?) AS TitleID";
-$stmt = $dbCon->prepare($query);
-$stmt->bind_param('ss', $country, $title);
-$stmt->execute();
-$stmt->bind_result($countryID, $titleID);
-$stmt->store_result();
-$stmt->fetch();
 
 $query = "INSERT INTO Customer(TitleID,FirstName,LastName,BirthDate,Email,CountryId) VALUES(?,?,?,?,?,?)";
 $stmt = $dbCon->prepare($query);

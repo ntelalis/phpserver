@@ -7,15 +7,18 @@ $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 //Response Object
 $jObj = new stdClass();
 
-$query = "SELECT Name FROM Country";
+$query = "SELECT ID,Name FROM Country";
 $stmt = $dbCon->prepare($query);
 $stmt->execute();
-$stmt->bind_result($countryName);
+$stmt->bind_result($countryID,$countryName);
 $stmt->store_result();
 
 $countryList = array();
 while ($stmt->fetch()) {
-    $countryList[] = $countryName;
+    $countryObj = new stdClass();
+    $countryObj->id = $countryID;
+    $countryObj->name = $countryName;
+    $countryList[] = $countryObj;
 }
 
   $jObj->success=1;

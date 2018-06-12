@@ -16,6 +16,7 @@ $lname = $_POST['lastName'];
 $titleID = $_POST['titleID'];
 $countryID = $_POST['countryID'];
 $birthDate = $_POST['birthDate'];
+$phone = $_POST['phone'];
 
 $query = "INSERT INTO Customer(TitleID,FirstName,LastName,BirthDate,Email,CountryId) VALUES(?,?,?,?,?,?)";
 $stmt = $dbCon->prepare($query);

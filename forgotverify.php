@@ -41,10 +41,12 @@ if (isset($_POST['verification'], $_POST['email']) && !empty($_POST['verificatio
 
       //Fail: Verification Doesn't match
             $jObj->success=0;
+            $jObj->errorMessage="Verification code doesn't match";
         }
     } else {
         //Fail: Time has passed
         $jObj->success=0;
+        $jObj->errorMessage="Verification code is no longer valid. Please repeat the procedure";
     }
 
 

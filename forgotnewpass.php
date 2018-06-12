@@ -56,7 +56,7 @@ if (isset($_POST['pass'],$_POST['email'],$_POST['code']) && !empty($_POST['pass'
         } else {
             //Fail: Verification Doesn't match
             $jObj->success=0;
-            $jObj->errorMessage="Verification doesn't match";
+            $jObj->errorMessage="Verification code doesn't match";
         }
     } else {
         //Fail: Time has passed

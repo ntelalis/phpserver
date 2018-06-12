@@ -62,8 +62,13 @@ function subPointsByReservationID($dbCon, $reservationID, $pointsName, $quantity
 }
 
 function getPointsByCustomerID($dbCon,$customerID){
-  $query = "SELECT IFNULL((SELECT sum(a1.Points*h.Quantity)
-  FROM LoyaltyPointsEarningHistory h JOIN LoyaltyPointsEarningAction a1 on h.GainingPointsID=a1.ID WHERE h.CustomerID=? and h.DateEarned>=Now()-INTERVAL 1 YEAR),0) - IFNULL((SELECT sum(a2.Points*h.Quantity) FROM LoyaltyPointsSpendingHistory h JOIN LoyaltyPointsSpendingActionRoomType a2 on h.SpendingPointsID=a2.ID WHERE h.CustomerID=? and h.DateSpent>=Now()-INTERVAL 1 YEAR),0) as Points";
+  $query = "SELECT (SELECT IFNULL(SUM(lpeh.Points),0)
+            FROM LoyaltyPointsEarningHistory lpeh
+            WHERE lpeh.CustomerID = ? AND lpeh.DateEarned>=NOW()-INTERVAL 1 YEAR)
+            -
+            (SELECT IFNULL(SUM(lpsh.Points),0)
+            FROM LoyaltyPointsSpendingHistory lpsh
+            WHERE lpsh.CustomerID = ? AND lpsh.DateSpent>=NOW()-INTERVAL 1 YEAR)";
   $stmt = $dbCon->prepare($query);
   $stmt->bind_param('ii', $customerID, $customerID);
   $stmt->execute();
@@ -86,7 +91,7 @@ function getSpendingActionPointsByName($dbCon,$name){
 
 function getFreeNightsPoints($dbCon,$roomTypeID,$persons){
 
-  $query = "SELECT Points FROM LoyaltyPointsSpendingActionRoomType lpsart WHERE lpsart.SpendingActionID=(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Free Night') AND lpsart.RoomTypeID=? AND lpsart.Persons=?";
+  $query = "SELECT Points FROM RoomTypePoints rtp WHERE rtp.RoomTypeID=? AND rtp.Persons=?";
   $stmt = $dbCon->prepare($query);
   $stmt-> bind_param('ii',$roomTypeID,$persons);
   if($stmt->execute()){
@@ -100,7 +105,7 @@ function getFreeNightsPoints($dbCon,$roomTypeID,$persons){
   }
 }
 function getCashNightsPoints($dbCon,$roomTypeID,$persons,$currencyID){
-  $query = "SELECT Points FROM LoyaltyPointsSpendingActionRoomType lpsart WHERE lpsart.SpendingActionID= (SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash And Points') AND lpsart.RoomTypeID=? AND lpsart.Persons=? AND lpsart.CurrencyID=?";
+  $query = "SELECT Points FROM RoomTypeCashPoints rtcp WHERE rtcp.RoomTypeID=? AND rtcp.Persons=? AND rtcp.CurrencyID=?";
   $stmt = $dbCon->prepare($query);
   $stmt-> bind_param('iii',$roomTypeID,$persons,$currencyID);
   if($stmt->execute()){

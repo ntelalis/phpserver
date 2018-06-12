@@ -76,10 +76,10 @@ if($dateDiff>=$freeNights+$cashNights){
       //points ok
 
       //Get total price
-      $query = "SELECT (datediff(?,?)-?)*lpsart1.Cash + ?*(lpsart2.Cash-lpsart1.Cash)
-      from RoomType rt, LoyaltyPointsSpendingActionRoomType lpsart1, LoyaltyPointsSpendingActionRoomType lpsart2
-      where rt.ID=? and rt.ID=lpsart1.RoomTypeID AND lpsart1.SpendingActionID=(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash') And lpsart1.Persons=? and lpsart1.CurrencyID=?
-      AND lpsart1.SpendingActionID=(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash And Points')  AND lpsart2.RoomTypeID=lpsart1.RoomTypeID AND lpsart2.Persons=lpsart1.Persons and lpsart2.CurrencyID=lpsart1.CurrencyID";
+      $query = "SELECT (datediff(?,?)-?)*rtc.Cash + ?*(rtcp.Cash-rtc.Cash)
+      FROM RoomTypeCash rtc, RoomTypeCashPoints rtcp
+      WHERE rtc.RoomTypeID=? AND rtc.Persons=? and rtc.CurrencyID=?
+      AND rtcp.RoomTypeID=rtc.RoomTypeID AND rtcp.Persons=rtc.Persons and rtcp.CurrencyID=rtc.CurrencyID";
       //$query = "SELECT (datediff(?,?)-?)*rt.Price - ?*? from RoomType rt where rt.ID=?";
       $stmt = $dbCon->prepare($query);
       $stmt->bind_param('ssiiiii', $departure, $arrival,$freeNights,$cashNights,$roomTypeID,$persons,$currencyID);
@@ -97,27 +97,21 @@ if($dateDiff>=$freeNights+$cashNights){
       if ($paymentExecuted) {
 
         if($freeNights>0){
-          $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Quantity,DateSpent)
-                    VALUES(?,(SELECT ID
-                               FROM LoyaltyPointsSpendingActionRoomType
-                               WHERE SpendingActionID=(SELECT ID
-                                                       FROM LoyaltyPointsSpendingAction
-                                                       WHERE Name='Free Night')
-                               AND RoomTypeID=? AND Persons=?),?,now())";
+          $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
+                    VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Free Night'),
+                          (SELECT Points FROM RoomTypePoints WHERE RoomTypeID=? AND Persons=?)*?,
+                          now())";
           $stmt = $dbCon->prepare($query);
-          $stmt->bind_param('iiii', $customerID, $roomTypeID, $persons, $freeNights);
+          $stmt->bind_param('ii', $customerID, $roomTypeID, $persons, $freeNights);
           $success = $stmt->execute();
         }
         if($cashNights>0){
-          $query = $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Quantity,DateSpent)
-                    VALUES(?,(SELECT ID
-                               FROM LoyaltyPointsSpendingActionRoomType
-                               WHERE SpendingActionID=(SELECT ID
-                                                       FROM LoyaltyPointsSpendingAction
-                                                       WHERE Name='Cash And Points')
-                               AND RoomTypeID=? AND Persons=? AND CurrencyID=?),?,now())";
+          $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
+                    VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash And Points'),
+                          (SELECT Points FROM RoomTypeCashPoints WHERE RoomTypeID=? AND Persons=? AND CurrencyID=?)*?,
+                          now())";
           $stmt = $dbCon->prepare($query);
-          $stmt->bind_param('iiiii', $customerID, $roomTypeID, $persons, $currencyID, $cashNights);
+          $stmt->bind_param('iiii', $customerID, $roomTypeID, $persons, $currencyID, $cashNights);
           $success = $stmt->execute();
         }
 

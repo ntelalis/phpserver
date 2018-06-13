@@ -1,7 +1,13 @@
 <?php
 
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+
 require 'dbConfig.php';
 require 'Functions/addpoints.php';
+
+$_POST['customerID']=23;
 
 //Connection to Database
 $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
@@ -14,16 +20,14 @@ if(isset($_POST['customerID'])){
   $customerID=$_POST['customerID'];
 
   $points = getPointsByCustomerID($dbCon,$customerID);
-
-  if($success){
+  if(isset($points)){
     $jObj->success=1;
     $jObj->points=$points;
   }
   else{
     $jObj->success=0;
-    $jObj->errorMessage="Problem with getting points";
+    $jObj->errorMessage="There is a problem getting customer points";
   }
-  $stmt->close();
   $dbCon->close();
 }
 else{

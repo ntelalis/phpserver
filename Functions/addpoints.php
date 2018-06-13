@@ -75,6 +75,7 @@ function getPointsByCustomerID($dbCon,$customerID){
   $stmt->bind_result($points);
   $stmt->store_result();
   $stmt->fetch();
+
   return $points;
 }
 

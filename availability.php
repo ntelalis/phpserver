@@ -11,18 +11,6 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['persons'])) {
     $departureDate=$_POST['departureDate'];
     $persons=$_POST['persons'];
 
-    /*
-      $query = "SELECT rt.Name, rt.Price, rt.Description, rt.Image"
-            . " FROM RoomType rt"
-            . " WHERE rt.Capacity>=? AND rt.ID IN (SELECT r.RoomTypeID"
-                                                      . " FROM Room r"
-                                                      . " WHERE r.ID NOT IN (SELECT DISTINCT res.RoomID"
-                                                                         . " FROM Reservation res"
-                                                                         . " WHERE res.StartDate<=? AND res.EndDate>=?)"
-                                                      . " GROUP BY r.RoomTypeID"
-                                                      . " HAVING COUNT(r.ID)>0)";
-    */
-
     $query = " SELECT ID,Name,Price,Description,Image
             FROM (
                 SELECT COUNT(RoomTypeID) AS total, RoomTypeID

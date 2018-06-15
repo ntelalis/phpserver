@@ -6,10 +6,18 @@ $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 $jObj = new stdClass();
 
-if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['persons'])) {
+if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST['children'])) {
     $arrivalDate=$_POST['arrivalDate'];
     $departureDate=$_POST['departureDate'];
-    $persons=$_POST['persons'];
+    $adults=$_POST['adults'];
+    $children=$_POST['children'];
+
+    if($children>0){
+      $childrenSupported=1;
+    }
+    else{
+      $childrenSupported=0;
+    }
 
     $query = " SELECT ID
             FROM (
@@ -22,12 +30,12 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['persons'])) {
                 WHERE NOT (StartDate > ? OR EndDate < ?)
                 GROUP BY RoomTypeID
                 ) AvailableRooms, RoomType
-            WHERE RoomTypeID=ID AND Capacity>=?
+            WHERE RoomTypeID=ID AND Adults>=? AND Capacity>=?+? AND ChildrenSupported IN (?,1)
             GROUP BY RoomTypeID
             HAVING sum(total)>0";
 
     $stmt = $dbCon->prepare($query);
-    $stmt->bind_param('ssi', $departureDate, $arrivalDate, $persons);
+    $stmt->bind_param('ssiiii', $departureDate, $arrivalDate, $adults, $adults, $children,$childrenSupported);
     $stmt->execute();
     $stmt->bind_result($rid);
     $stmt->store_result();

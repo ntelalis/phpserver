@@ -39,7 +39,7 @@ if (isset($_POST['order']) && $_POST['reservationID']) {
     $stmt->store_result();
     $stmt->fetch();
 
-    $query = "INSERT INTO Charge(ReservationID,ChargedServiceID,Price) SELECT ?,ID,? FROM ChargedService WHERE Tag='roomservice'";
+    $query = "INSERT INTO Charge(ReservationID,HotelServiceID,Price) SELECT ?,ID,? FROM HotelService WHERE Tag='roomservice'";
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('id', $reservationId, $totalPrice);
     $success = $stmt->execute();

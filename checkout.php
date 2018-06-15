@@ -23,7 +23,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $stmt->fetch();
 
     //Detailed Charges
-    $query = "SELECT Name, SUM(Price) FROM Charge,ChargedService WHERE Charge.ChargedServiceID=ChargedService.ID AND ReservationID=? GROUP BY Name";
+    $query = "SELECT Name, SUM(Price) FROM Charge,HotelService WHERE Charge.HotelServiceID=HotelService.ID AND ReservationID=? GROUP BY Name";
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('i', $reservationID);
     $stmt->execute();

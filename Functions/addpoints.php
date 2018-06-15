@@ -1,27 +1,11 @@
 <?php
 
-
-function addPointsByCustomerID($dbCon, $customerID, $pointsName, $quantity)
-{
-    $query = "INSERT INTO LoyaltyPointsEarningHistory(CustomerID,GainingPointsID,Quantity,DateEarned)
-            SELECT ?,ID,?,NOW()
-            FROM LoyaltyPointsEarningAction
-            WHERE NAME=?";
-    $stmt = $dbCon->prepare($query);
-    $stmt->bind_param('iis', $customerID, $quantity, $pointsName);
-    if ($stmt->execute()) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 function addPointsByReservationID($dbCon, $reservationID, $pointsName, $quantity)
 {
-    $query = "INSERT INTO LoyaltyPointsEarningHistory(CustomerID,GainingPointsID,Quantity,DateEarned)
-            SELECT r.CustomerID,lpea.ID,?,NOW()
-            FROM Reservation r,LoyaltyPointsEarningAction lpea
-            WHERE NAME=? AND r.ID=?";
+    $query = "INSERT INTO LoyaltyPointsEarningHistory(CustomerID,GainingPointsID,Points,DateEarned)
+            SELECT r.CustomerID,lpea.ID,rtp.GainingPoints*?,NOW()
+            FROM Reservation r,LoyaltyPointsEarningAction lpea, RoomTypePoints rtp
+            WHERE lpea.Name=? AND r.ID=? AND rtp.RoomTypeID=r.RoomTypeID AND rtp.Persons=r.Adults";
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('isi', $quantity, $pointsName, $reservationID);
     if ($stmt->execute()) {
@@ -92,7 +76,7 @@ function getSpendingActionPointsByName($dbCon,$name){
 
 function getFreeNightsPoints($dbCon,$roomTypeID,$persons){
 
-  $query = "SELECT Points FROM RoomTypePoints rtp WHERE rtp.RoomTypeID=? AND rtp.Persons=?";
+  $query = "SELECT SpendingPoints FROM RoomTypePoints rtp WHERE rtp.RoomTypeID=? AND rtp.Persons=?";
   $stmt = $dbCon->prepare($query);
   $stmt-> bind_param('ii',$roomTypeID,$persons);
   if($stmt->execute()){

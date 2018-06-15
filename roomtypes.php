@@ -8,10 +8,10 @@ $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
 // Select available titles from Database
-$query = "SELECT ID,Name,Capacity,Price,Image,Description,Modified FROM RoomType";
+$query = "SELECT ID,Name,Capacity,Adults,ChildrenSupported,Image,Description,Modified FROM RoomType";
 $stmt = $mysqli->prepare($query);
 $stmt->execute();
-$stmt->bind_result($id, $name, $capacity, $price, $image, $description, $modified);
+$stmt->bind_result($id, $name, $capacity, $adults, $childrenSupported, $image, $description, $modified);
 $stmt->store_result();
 
 //Create hashtable from client's data '$array[id]=modifiedClientDat'
@@ -38,10 +38,17 @@ while ($stmt->fetch()) {
     }
     $roomType = new stdClass();
     $roomType->id = $id;
-    $imageBase64 = base64_encode($image);
     $roomType->name = $name;
     $roomType->capacity = $capacity;
-    $roomType->price = $price;
+    $roomType->adults = $adults;
+    if($childrenSupported==1){
+      $roomType->childrenSupported = true;
+    }
+    else{
+      $roomType->childrenSupported = false;
+    }
+
+    $imageBase64 = base64_encode($image);
     $roomType->image = $imageBase64;
     $roomType->description = $description;
     $roomType->modified = $modified;
@@ -50,56 +57,60 @@ while ($stmt->fetch()) {
 
 // RoomTypeCash
 
-$query = "SELECT RoomTypeID,Persons,CurrencyID,Cash FROM RoomTypeCash";
+$query = "SELECT RoomTypeID,Adults,Children,CurrencyID,Cash FROM RoomTypeCash";
 $stmt = $mysqli->prepare($query);
 $stmt->execute();
-$stmt->bind_result($roomTypeID, $persons, $currencyID, $price);
+$stmt->bind_result($roomTypeID, $adults, $children, $currencyID, $cash);
 $stmt->store_result();
 
 $roomTypeCashArray = array();
 while($stmt->fetch()){
   $roomTypeCash = new stdClass();
   $roomTypeCash->roomTypeID = $roomTypeID;
-  $roomTypeCash->persons = $persons;
+  $roomTypeCash->adults = $adults;
+  $roomTypeCash->children = $children;
   $roomTypeCash->currencyID = $currencyID;
-  $roomTypeCash->price = $price;
+  $roomTypeCash->cash = $cash;
   $roomTypeCashArray[] = $roomTypeCash;
 }
 
-// RoomTypeFreeNightsPoints
+// RoomTypePoints
 
-$query = "SELECT RoomTypeID,Persons,Points FROM RoomTypePoints";
+$query = "SELECT RoomTypeID,Adults,Children,SpendingPoints,GainingPoints FROM RoomTypePoints";
 $stmt = $mysqli->prepare($query);
 $stmt->execute();
-$stmt->bind_result($roomTypeID, $persons, $points);
+$stmt->bind_result($roomTypeID, $adults, $children, $spendingPoints, $gainingPoints);
 $stmt->store_result();
 
-$roomTypeFreeNightsPointsArray = array();
+$roomTypePointsArray = array();
 while($stmt->fetch()){
-  $roomTypeFreeNightsPoints = new stdClass();
-  $roomTypeFreeNightsPoints->roomTypeID = $roomTypeID;
-  $roomTypeFreeNightsPoints->persons = $persons;
-  $roomTypeFreeNightsPoints->points = $points;
-  $roomTypeFreeNightsPointsArray[] = $roomTypeFreeNightsPoints;
+  $roomTypePoints = new stdClass();
+  $roomTypePoints->roomTypeID = $roomTypeID;
+  $roomTypePoints->adults = $adults;
+  $roomTypePoints->children = $children;
+  $roomTypePoints->spendingPoints = $spendingPoints;
+  $roomTypePoints->gainingPoints = $gainingPoints;
+  $roomTypePointsArray[] = $roomTypePoints;
 }
 
-// RoomTypePointsAndCash
+// RoomTypeCashPoints
 
-$query = "SELECT RoomTypeID,Persons,CurrencyID,Cash,Points FROM RoomTypeCashPoints";
+$query = "SELECT RoomTypeID,Adults,Children,CurrencyID,Cash,Points FROM RoomTypeCashPoints";
 $stmt = $mysqli->prepare($query);
 $stmt->execute();
-$stmt->bind_result($roomTypeID, $persons,$currencyID,$cash, $points);
+$stmt->bind_result($roomTypeID, $adults, $children, $currencyID, $cash, $points);
 $stmt->store_result();
 
-$roomTypePointsAndCashArray = array();
+$roomTypeCashPointsArray = array();
 while($stmt->fetch()){
-  $roomTypePointsAndCash = new stdClass();
-  $roomTypePointsAndCash->roomTypeID = $roomTypeID;
-  $roomTypePointsAndCash->persons = $persons;
-  $roomTypePointsAndCash->currencyID = $currencyID;
-  $roomTypePointsAndCash->cash = $cash;
-  $roomTypePointsAndCash->points = $points;
-  $roomTypePointsAndCashArray[] = $roomTypePointsAndCash;
+  $roomTypeCashPoints = new stdClass();
+  $roomTypeCashPoints->roomTypeID = $roomTypeID;
+  $roomTypeCashPoints->adults = $adults;
+  $roomTypeCashPoints->children = $children;
+  $roomTypeCashPoints->currencyID = $currencyID;
+  $roomTypeCashPoints->cash = $cash;
+  $roomTypeCashPoints->points = $points;
+  $roomTypeCashPointsArray[] = $roomTypeCashPoints;
 }
 
 //If there are not roomTypes return error
@@ -111,8 +122,8 @@ if ($numrows == 0) {
     $jObj->success = 1;
     $jObj->roomTypeArray = $roomTypeArray;
     $jObj->roomTypeCashArray = $roomTypeCashArray;
-    $jObj->roomTypeFreeNightsPointsArray = $roomTypeFreeNightsPointsArray;
-    $jObj->roomTypePointsAndCashArray = $roomTypePointsAndCashArray;
+    $jObj->roomTypePointsArray = $roomTypePointsArray;
+    $jObj->roomTypeCashPointsArray = $roomTypeCashPointsArray;
 }
 
 $JsonResponse = json_encode($jObj,JSON_UNESCAPED_UNICODE);

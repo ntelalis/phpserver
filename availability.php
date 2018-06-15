@@ -11,7 +11,7 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['persons'])) {
     $departureDate=$_POST['departureDate'];
     $persons=$_POST['persons'];
 
-    $query = " SELECT ID,Name,Price,Description,Image
+    $query = " SELECT ID
             FROM (
                 SELECT COUNT(RoomTypeID) AS total, RoomTypeID
                 FROM Room
@@ -29,7 +29,7 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['persons'])) {
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('ssi', $departureDate, $arrivalDate, $persons);
     $stmt->execute();
-    $stmt->bind_result($rid, $rname, $rprice, $rdesc, $rimage);
+    $stmt->bind_result($rid);
     $stmt->store_result();
 
     $numrows = $stmt->num_rows;

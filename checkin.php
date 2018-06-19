@@ -1,4 +1,4 @@
-room<?php
+<?php
 
 require 'dbConfig.php';
 require 'vendor/autoload.php';

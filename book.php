@@ -1,6 +1,6 @@
 <?php
-
-/*ini_set('display_errors',1);
+/*
+ini_set('display_errors',1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
@@ -18,22 +18,24 @@ $_POST['customerID']='23';
 $_POST['roomTypeID']='2';
 $_POST['arrival']='2018-01-02';
 $_POST['departure']='2018-01-03';
-$_POST['persons']='1';
+$_POST['adults']='1';
+$_POST['children']='0';
 $_POST['freeNights']='0';
 $_POST['cashNights']='0';
 $_POST['ccNumber']='0';
 $_POST['ccName']='0';
 $_POST['ccYear']='0';
 $_POST['ccMonth']='0';
-$_POST['ccCVV']='0';*/
+$_POST['ccCVV']='0';
+*/
 
-
-if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['departure'],$_POST['persons'],$_POST['freeNights'],$_POST['cashNights'],$_POST['ccNumber'],$_POST['ccName'],$_POST['ccMonth'],$_POST['ccYear'],$_POST['ccCVV'])) {
+if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['departure'],$_POST['adults'],$_POST['children'],$_POST['freeNights'],$_POST['cashNights'],$_POST['ccNumber'],$_POST['ccName'],$_POST['ccMonth'],$_POST['ccYear'],$_POST['ccCVV'])) {
   $customerID = $_POST['customerID'];
   $roomTypeID = $_POST['roomTypeID'];
   $arrival = $_POST['arrival'];
   $departure = $_POST['departure'];
-  $persons = $_POST['persons'];
+  $adults = $_POST['adults'];
+  $children = $_POST['children'];
   $freeNights = $_POST['freeNights'];
   $cashNights = $_POST['cashNights'];
   $ccNumber = $_POST['ccNumber'];
@@ -68,8 +70,8 @@ if($dateDiff>=$freeNights+$cashNights){
     //check if enough points
     $customerPoints = getPointsByCustomerID($dbCon,$customerID);
     $pointsNeeded = 0;
-    $pointsNeeded += getFreeNightsPoints($dbCon,$roomTypeID,$persons)*$freeNights;
-    $pointsNeeded += getCashNightsPoints($dbCon,$roomTypeID,$persons,$currencyID)*$cashNights;
+    $pointsNeeded += getFreeNightsPoints($dbCon,$roomTypeID,$adults,$children)*$freeNights;
+    $pointsNeeded += getCashNightsPoints($dbCon,$roomTypeID,$adults,$children,$currencyID)*$cashNights;
 
 
     if($customerPoints>=$pointsNeeded){
@@ -78,11 +80,11 @@ if($dateDiff>=$freeNights+$cashNights){
       //Get total price
       $query = "SELECT (datediff(?,?)-?)*rtc.Cash + ?*(rtcp.Cash-rtc.Cash)
       FROM RoomTypeCash rtc, RoomTypeCashPoints rtcp
-      WHERE rtc.RoomTypeID=? AND rtc.Persons=? and rtc.CurrencyID=?
-      AND rtcp.RoomTypeID=rtc.RoomTypeID AND rtcp.Persons=rtc.Persons and rtcp.CurrencyID=rtc.CurrencyID";
+      WHERE rtc.RoomTypeID=? AND rtc.Adults=? AND rtc.Children=? AND rtc.CurrencyID=?
+      AND rtcp.RoomTypeID=rtc.RoomTypeID AND rtcp.Adults=rtc.Adults AND rtcp.Children=rtc.Children AND rtcp.CurrencyID=rtc.CurrencyID";
       //$query = "SELECT (datediff(?,?)-?)*rt.Price - ?*? from RoomType rt where rt.ID=?";
       $stmt = $dbCon->prepare($query);
-      $stmt->bind_param('ssiiiii', $departure, $arrival,$freeNights,$cashNights,$roomTypeID,$persons,$currencyID);
+      $stmt->bind_param('ssiiiiii', $departure, $arrival,$freeNights,$cashNights,$roomTypeID,$adults,$children,$currencyID);
       $stmt->execute();
       $stmt->bind_result($totalPrice);
       $stmt->store_result();
@@ -99,26 +101,26 @@ if($dateDiff>=$freeNights+$cashNights){
         if($freeNights>0){
           $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
                     VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Free Night'),
-                          (SELECT Points FROM RoomTypePoints WHERE RoomTypeID=? AND Persons=?)*?,
+                          (SELECT SpendingPoints FROM RoomTypePoints WHERE RoomTypeID=? AND Adults=? AND Children=?)*?,
                           now())";
           $stmt = $dbCon->prepare($query);
-          $stmt->bind_param('ii', $customerID, $roomTypeID, $persons, $freeNights);
+          $stmt->bind_param('ii', $customerID, $roomTypeID, $adults, $children, $freeNights);
           $success = $stmt->execute();
         }
         if($cashNights>0){
           $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
                     VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash And Points'),
-                          (SELECT Points FROM RoomTypeCashPoints WHERE RoomTypeID=? AND Persons=? AND CurrencyID=?)*?,
+                          (SELECT Points FROM RoomTypeCashPoints WHERE RoomTypeID=? AND Adults=? AND Children=? AND CurrencyID=?)*?,
                           now())";
           $stmt = $dbCon->prepare($query);
-          $stmt->bind_param('iiii', $customerID, $roomTypeID, $persons, $currencyID, $cashNights);
+          $stmt->bind_param('iiii', $customerID, $roomTypeID, $adults, $children, $currencyID, $cashNights);
           $success = $stmt->execute();
         }
 
         $bookDate = date('Y-m-d');
-        $query = "INSERT INTO Reservation(CustomerID,RoomTypeID,ReservationTypeID,Adults,DateBooked,StartDate,EndDate) VALUES (?,?,3,?,?,?,?)";
+        $query = "INSERT INTO Reservation(CustomerID,RoomTypeID,ReservationTypeID,Adults,Children,DateBooked,StartDate,EndDate) VALUES (?,?,3,?,?,?,?,?)";
         $stmt = $dbCon->prepare($query);
-        $stmt->bind_param('iiisss', $customerID, $roomTypeID, $persons, $bookDate, $arrival, $departure);
+        $stmt->bind_param('iiiisss', $customerID, $roomTypeID, $adults, $children, $bookDate, $arrival, $departure);
         $success = $stmt->execute();
 
         $reservationId = $dbCon->insert_id;

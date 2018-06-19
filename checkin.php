@@ -1,4 +1,4 @@
-<?php
+room<?php
 
 require 'dbConfig.php';
 require 'vendor/autoload.php';
@@ -17,15 +17,15 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $reservationID = $_POST['reservationID'];
 
     //Check if email matches a record in database and return customerID
-    $query = "SELECT Pinakas.ID AS RoomID, Pinakas.Number AS RoomNumber, Pinakas.floor, Beacon.ID,Beacon.UUID, Beacon.Major, Beacon.Minor
+    $query = "SELECT room.ID, room.Number, room.floor, Beacon.ID, Beacon.UUID, Beacon.Major, Beacon.Minor
             FROM (SELECT Room.ID, Room.Number, Room.Floor, Room.BeaconID
                   FROM Reservation,Room
                   WHERE Reservation.ID=? AND Reservation.RoomTypeID=Room.RoomTypeID AND Room.ID NOT IN (SELECT Occupancy.RoomID
                                                                                                           FROM Occupancy
                                                                                                           WHERE Occupancy.CheckOut IS NULL)
                   ORDER by rand()
-                  LIMIT 1) Pinakas,Beacon
-            WHERE Pinakas.BeaconID=Beacon.ID";
+                  LIMIT 1) room,Beacon
+            WHERE room.BeaconID=Beacon.ID";
 
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('i', $reservationID);

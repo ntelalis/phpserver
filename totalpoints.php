@@ -1,13 +1,7 @@
 <?php
 
-ini_set('display_errors',1);
-error_reporting(E_ALL);
-mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
-
 require 'dbConfig.php';
 require 'Functions/addpoints.php';
-
-$_POST['customerID']=23;
 
 //Connection to Database
 $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);

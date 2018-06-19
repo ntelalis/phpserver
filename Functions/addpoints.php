@@ -5,7 +5,7 @@ function addPointsByReservationID($dbCon, $reservationID, $pointsName, $quantity
     $query = "INSERT INTO LoyaltyPointsEarningHistory(CustomerID,GainingPointsID,Points,DateEarned)
             SELECT r.CustomerID,lpea.ID,rtp.GainingPoints*?,NOW()
             FROM Reservation r,LoyaltyPointsEarningAction lpea, RoomTypePoints rtp
-            WHERE lpea.Name=? AND r.ID=? AND rtp.RoomTypeID=r.RoomTypeID AND rtp.Persons=r.Adults";
+            WHERE lpea.Name=? AND r.ID=? AND rtp.RoomTypeID=r.RoomTypeID AND rtp.Adults=r.Adults";
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('isi', $quantity, $pointsName, $reservationID);
     if ($stmt->execute()) {
@@ -74,11 +74,11 @@ function getSpendingActionPointsByName($dbCon,$name){
   return $points;
 }
 
-function getFreeNightsPoints($dbCon,$roomTypeID,$persons){
+function getFreeNightsPoints($dbCon,$roomTypeID,$persons,$children){
 
-  $query = "SELECT SpendingPoints FROM RoomTypePoints rtp WHERE rtp.RoomTypeID=? AND rtp.Persons=?";
+  $query = "SELECT SpendingPoints FROM RoomTypePoints rtp WHERE rtp.RoomTypeID=? AND rtp.Adults=? AND rtp.Children=?";
   $stmt = $dbCon->prepare($query);
-  $stmt-> bind_param('ii',$roomTypeID,$persons);
+  $stmt-> bind_param('iii',$roomTypeID,$persons,$children);
   if($stmt->execute()){
     $stmt->bind_result($points);
     $stmt->store_result();
@@ -89,10 +89,10 @@ function getFreeNightsPoints($dbCon,$roomTypeID,$persons){
     return NULL;
   }
 }
-function getCashNightsPoints($dbCon,$roomTypeID,$persons,$currencyID){
-  $query = "SELECT Points FROM RoomTypeCashPoints rtcp WHERE rtcp.RoomTypeID=? AND rtcp.Persons=? AND rtcp.CurrencyID=?";
+function getCashNightsPoints($dbCon,$roomTypeID,$persons,$children,$currencyID){
+  $query = "SELECT Points FROM RoomTypeCashPoints rtcp WHERE rtcp.RoomTypeID=? AND rtcp.Adults=? AND rtcp.Children=? AND rtcp.CurrencyID=?";
   $stmt = $dbCon->prepare($query);
-  $stmt-> bind_param('iii',$roomTypeID,$persons,$currencyID);
+  $stmt-> bind_param('iiii',$roomTypeID,$persons,$children,$currencyID);
   if($stmt->execute()){
     $stmt->bind_result($points);
     $stmt->store_result();

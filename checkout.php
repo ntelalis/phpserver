@@ -1,5 +1,10 @@
 <?php
 
+/*ini_set('display_errors',1);
+error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+*/
+
 require 'dbConfig.php';
 
 //Connection to Database
@@ -8,12 +13,14 @@ $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 //Response Object
 $jObj = new stdClass();
 
+//$_POST['reservationID']='5';
+
 //Parse POST Variables
 if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $reservationID = $_POST['reservationID'];
 
     // Total Charges
-    $query = "SELECT IFNULL(SUM(Price),0) FROM Charge WHERE ReservationID=?";
+    $query = "SELECT IFNULL(SUM(Charge.Price),0) FROM Charge WHERE ReservationID=?";
 
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('i', $reservationID);
@@ -23,7 +30,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $stmt->fetch();
 
     //Detailed Charges
-    $query = "SELECT Name, SUM(Price) FROM Charge,HotelService WHERE Charge.HotelServiceID=HotelService.ID AND ReservationID=? GROUP BY Name";
+    $query = "SELECT HotelService.Name, SUM(Charge.Price) FROM Charge,HotelService WHERE Charge.HotelServiceID=HotelService.ID AND Charge.ReservationID=? GROUP BY HotelService.Name";
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('i', $reservationID);
     $stmt->execute();

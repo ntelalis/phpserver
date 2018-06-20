@@ -1,5 +1,11 @@
 <?php
 
+/*
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+*/
+
 require 'dbConfig.php';
 require 'Functions/addpoints.php';
 //Connection to Database
@@ -7,6 +13,8 @@ $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
+
+//$_POST['reservationID']='5';
 
 //Parse POST Variables
 if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {

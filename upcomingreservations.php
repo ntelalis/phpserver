@@ -12,7 +12,7 @@ $jObj = new stdClass();
 if (isset($_POST['customerID']) && !empty($_POST['customerID'])) {
     $customerID = $_POST['customerID'];
 
-    $query = "SELECT r1.ID, CURRENT_DATE AS CurrentDate, r1.StartDate, r1.EndDate, r1.Adults, r3.Name, r.Number, o.CheckIn, o.CheckOut
+    $query = "SELECT r1.ID, CURRENT_DATE AS CurrentDate, r1.StartDate, r1.EndDate, r1.Adults, r1.Children, r3.Name, r.Number, o.CheckIn, o.CheckOut
   FROM Reservation r1 INNER JOIN RoomType r3 ON r1.RoomTypeID = r3.ID
   LEFT JOIN Occupancy o ON r1.ID = o.ReservationID
   LEFT JOIN Room r ON r.ID = o.RoomID
@@ -21,7 +21,7 @@ if (isset($_POST['customerID']) && !empty($_POST['customerID'])) {
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('i', $customerID);
     $stmt->execute();
-    $stmt->bind_result($reservationID, $currentDate, $arrivalDate, $departureDate, $adults, $roomType, $roomNumber, $checkIn, $checkOut);
+    $stmt->bind_result($reservationID, $currentDate, $arrivalDate, $departureDate, $adults, $children, $roomType, $roomNumber, $checkIn, $checkOut);
     $stmt->store_result();
 
     $array=array();
@@ -31,6 +31,7 @@ if (isset($_POST['customerID']) && !empty($_POST['customerID'])) {
         $reservationObj->arrivalDate=$arrivalDate;
         $reservationObj->departureDate=$departureDate;
         $reservationObj->adults=$adults;
+        $reservationObj->children = $children;
         $reservationObj->roomType=$roomType;
         $reservationObj->roomNumber=$roomNumber;
         $reservationObj->checkInDate=$checkIn;

@@ -1,108 +1,85 @@
 <?php
 
+/*ini_set('display_errors',1);
+error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+*/
 
+//Database connection variables
 include 'dbConfig.php';
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+//Create new database object
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
 
-$email = $_POST['email'];
-$pass = $_POST['pass'];
+//$_POST['email'] = 'kate@gmail.com';
+//$_POST['pass'] = 'asdF12!@';
+//$_POST['modified'] = '2018-06-19 23:25:06';
 
-/*
-$query = "SELECT c.CustomerID,(Select Title from Title where Title.ID=c1.TitleID) as Title, c1.FirstName, c1.LastName, c.Hash
-          FROM (SELECT a.CustomerID,a.Hash
-                FROM Account a
-                WHERE Email = ?) c,Customer c1
-          WHERE c.CustomerID = c1.ID";
-*/
-$query = "SELECT c.CustomerID,c1.TitleID,c1.FirstName, c1.LastName, c1.CountryID, c1.BirthDate, c.Hash, (SELECT COUNT(Occupancy.ID)
-																													                                                                      FROM Occupancy, Reservation
-																													                                                                      WHERE Occupancy.ReservationID=Reservation.ID
-                                                                                                                                      AND Reservation.CustomerID=c.CustomerID
-                                                                                                                                      AND Occupancy.CheckOut IS NOT NULL) AS isOldCustomer
-          FROM (SELECT a.CustomerID,a.Hash
-                FROM Account a
-                WHERE Email = ?) c,Customer c1
-          WHERE c.CustomerID = c1.ID";
-$stmt = $dbCon->prepare($query);
-$stmt->bind_param('s', $email);
-$stmt->execute();
-$stmt->bind_result($customer, $titleID, $firstName, $lastName, $countryID, $birthDate, $hash, $isOldCustomer);
-$stmt->store_result();
-$stmt->fetch();
+if(isset($_POST['email'],$_POST['pass'])){
 
-$numrows = $stmt->num_rows;
-//
-//eligible for checkout
-//set is_checkedOut: false, is_checkedIn: true
-$query = "SELECT Occupancy.CheckOut
-FROM Reservation, Occupancy
-WHERE Occupancy.ReservationID=Reservation.ID AND Reservation.CustomerID=?
-                                            AND Reservation.StartDate<=CURRENT_DATE
-                                            AND Reservation.EndDate>=CURRENT_DATE";
-$stmt = $dbCon->prepare($query);
-$stmt->bind_param('i', $customer);
-$stmt->execute();
-$stmt->bind_result($checkOut);
-$stmt->store_result();
-$stmt->fetch();
+	$email = $_POST['email'];
+	$pass = $_POST['pass'];
 
+	$query = "SELECT a.CustomerID,a.Hash,c.Modified FROM Account a, Customer c WHERE a.Email = ? AND c.ID=a.CustomerID";
+	$stmt = $mysqli->prepare($query);
+	$stmt->bind_param('s', $email);
+	$stmt->execute();
+	$stmt->bind_result($customerID,$hash,$modifiedDB);
+	$stmt->store_result();
+	$stmt->fetch();
 
-if ($stmt->num_rows==0) {
-    $isCheckedIn = false;
-    $isCheckedOut = false;
-} else {
-    $isCheckedIn = true;
-    if (is_null($checkOut)) {
-        $isCheckedOut=false;
-    } else {
-        $isCheckedOut=true;
-    }
+	if ($stmt->num_rows == 1 && password_verify($pass, $hash)) {
+
+		$jObj = new stdClass();
+
+		$jObj->success = 1;
+
+		if(isset($_POST['modified'])){
+			$modifiedClient = $_POST['modified'];
+			$timeInDB = strtotime($modifiedDB);
+			$timeInClient = strtotime($modifiedClient);
+		}
+
+		if (!isset($modifiedClient) || $timeInDB>$timeInClient) {
+			$query = "SELECT c.TitleID, c.FirstName, c.LastName, c.BirthDate, c.CountryID, c.Modified, (SELECT COUNT(o.ID)
+																																											FROM Occupancy o, Reservation r
+																																											WHERE r.CustomerID=c.ID AND o.ReservationID=r.ID
+																																										  AND o.CheckOut IS NOT NULL) as finishedStays
+			FROM Customer c
+			WHERE c.ID = ?";
+			$stmt = $mysqli->prepare($query);
+			$stmt->bind_param('i', $customerID);
+			$stmt->execute();
+			$stmt->bind_result($titleID, $firstName, $lastName, $birthDate, $countryID, $modified, $finishedStays);
+			$stmt->store_result();
+			$stmt->fetch();
+
+			$jObj->customerID = $customerID;
+			$jObj->titleID = $titleID;
+			$jObj->firstName = $firstName;
+			$jObj->lastName = $lastName;
+			$jObj->birthDate = $birthDate;
+			$jObj->countryID = $countryID;
+			$jObj->modified = $modified;
+			if($finishedStays>0){
+				$jObj->oldCustomer = true;
+			}
+			else {
+				$jObj->oldCustomer = false;
+			}
+		}
+	}
+	else{
+		$jObj->success = 0;
+		$jObj->errorMessage = "Login failed";
+	}
 }
-/*
-//set is_checkedOut:true, is_checkedIn:true
-"SELECT COUNT(Occupancy.ID)
-FROM Reservation, Occupancy
-WHERE Occupancy.ReservationID=Reservation.ID AND Reservation.CustomerID=23
-                                            AND Reservation.StartDate<=CURRENT_DATE
-                                            AND Reservation.EndDate>=CURRENT_DATE
-                                            AND Occupancy.CheckOut IS NOT NULL;"
-
-//
-//(eligible for checkin)
-//set is_checkedIn:false, is_checkedOut:false
-"SELECT COUNT(Reservation.ID)
-FROM Reservation
-WHERE Reservation.CustomerID=23 AND Reservation.StartDate<=CURRENT_DATE
-                                AND Reservation.EndDate>=CURRENT_DATE
-                                AND Reservation.ID NOT IN(SELECT Occupancy.ReservationID
-                                                                                                                    FROM Occupancy)"
-
-//vlepw an exw eggrafh g tin hmeromhnia p thelw
-//an den exw is_checkedIn:false, is_checkedOut:false
-"SELECT COUNT(Reservation.ID)
-FROM Reservation
-WHERE Reservation.CustomerID=23 AND Reservation.StartDate<=CURRENT_DATE AND Reservation.EndDate>=CURRENT_DATE;"*/
-
-if ($numrows == 1 && $verify = password_verify($pass, $hash)) {
-    $jObj->success = 1;
-    $jObj->customerID = $customer;
-    $jObj->titleID = $titleID;
-    $jObj->firstName = $firstName;
-    $jObj->lastName = $lastName;
-		$jObj->countryID = $countryID;
-		$jObj->birthDate = $birthDate;
-    $jObj->isOldCustomer= $isOldCustomer;
-    $jObj->isCheckedIn = $isCheckedIn;
-    $jObj->isCheckedOut = $isCheckedOut;
-} else {
-    $jObj->success = 0;
-    $jObj->errorMessage = "Login failed";
+else{
+	$jObj->success = 0;
+	$jObj->errorMessage = "Bad request";
 }
 
-$JsonResponse = json_encode($jObj);
+$JsonResponse = json_encode($jObj,JSON_UNESCAPED_UNICODE);
 
 echo $JsonResponse;
-
-$stmt->close();
-$dbCon->close();

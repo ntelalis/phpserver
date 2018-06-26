@@ -1,5 +1,11 @@
 <?php
 
+/*
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+*/
+
 require 'dbConfig.php';
 require 'vendor/autoload.php';
 
@@ -11,6 +17,8 @@ $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
+
+// $_POST['reservationID']='9';
 
 //Parse POST Variables
 if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
@@ -38,7 +46,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $stmt->close();
 
     $checkinDate=date("Y-m-d H:i:s");
-    $query = "INSERT INTO Occupancy(RoomID,ReservationID,RoomPasswordHash,CheckIn) VALUES(?,?,?,?)";
+    $query = "INSERT INTO Occupancy(RoomID,ReservationID,RoomPasswordHash,CheckIn,Modified) VALUES(?,?,?,?,?)";
     $stmt = $dbCon->prepare($query);
 
     try {
@@ -50,14 +58,17 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
         echo 'Caught exception: ' . $e->getMessage() . "\n";
     }
 
-    $stmt->bind_param('iiss', $roomID, $reservationID, $roomPasswordHash, $checkinDate);
+    $stmt->bind_param('iisss', $roomID, $reservationID, $roomPasswordHash, $checkinDate, $checkinDate);
     $success = $stmt->execute();
+
     if ($dbCon->affected_rows==1) {
         $jObj->success=1;
+        $jObj->reservationID = $reservationID;
         $jObj->room=$roomNumber;
         $jObj->date=$checkinDate;
         $jObj->floor=$roomFloor;
         $jObj->beaconID=$beaconID;
+        $jObj->modified=$checkinDate;
         $jObj->beaconUUID=$beaconUUID;
         $jObj->beaconMajor=$beaconMajor;
         $jObj->beaconMinor=$beaconMinor;

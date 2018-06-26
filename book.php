@@ -16,8 +16,8 @@ $jObj = new stdClass();
 /*
 $_POST['customerID']='23';
 $_POST['roomTypeID']='2';
-$_POST['arrival']='2018-01-02';
-$_POST['departure']='2018-01-03';
+$_POST['arrival']='2018-06-26';
+$_POST['departure']='2018-06-27';
 $_POST['adults']='1';
 $_POST['children']='0';
 $_POST['freeNights']='0';
@@ -118,9 +118,10 @@ if($dateDiff>=$freeNights+$cashNights){
         }
 
         $bookDate = date('Y-m-d');
-        $query = "INSERT INTO Reservation(CustomerID,RoomTypeID,ReservationTypeID,Adults,Children,DateBooked,StartDate,EndDate) VALUES (?,?,3,?,?,?,?,?)";
+        $modified = date("Y-m-d H:i:s");
+        $query = "INSERT INTO Reservation(CustomerID,RoomTypeID,ReservationTypeID,Adults,Children,DateBooked,StartDate,EndDate,Modified) VALUES (?,?,3,?,?,?,?,?,?)";
         $stmt = $dbCon->prepare($query);
-        $stmt->bind_param('iiiisss', $customerID, $roomTypeID, $adults, $children, $bookDate, $arrival, $departure);
+        $stmt->bind_param('iiiissss', $customerID, $roomTypeID, $adults, $children, $bookDate, $arrival, $departure, $modified);
         $success = $stmt->execute();
 
         $reservationId = $dbCon->insert_id;
@@ -128,6 +129,7 @@ if($dateDiff>=$freeNights+$cashNights){
           $jObj->success=1;
           $jObj->reservationID=$reservationId;
           $jObj->bookedDate = $bookDate;
+          $jObj->modified = $modified;
         } else {
           $jObj->success=0;
           $jObj->errorMessage="$dbCon->error";

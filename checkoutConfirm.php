@@ -44,6 +44,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
         if (addPointsByReservationID($dbCon, $reservationID, "night", $days)) {
             $jObj->success=1;
             $jObj->date=$checkoutDate;
+            $jObj->modified=$checkoutDate;
         } else {
             $jObj->success=0;
             $jObj->errorMessage="Cannot set loyalty points";

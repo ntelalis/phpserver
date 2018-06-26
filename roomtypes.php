@@ -1,5 +1,11 @@
 <?php
 
+/*
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+*/
+
 //Database connection variables
 include 'dbConfig.php';
 
@@ -13,6 +19,8 @@ $stmt = $mysqli->prepare($query);
 $stmt->execute();
 $stmt->bind_result($id, $name, $capacity, $adults, $childrenSupported, $image, $description, $modified);
 $stmt->store_result();
+
+//$_POST['check'] = '[{"id":5,"modified":"2018-01-18 01:00:58"}]';
 
 //Create hashtable from client's data '$array[id]=modifiedClientDat'
 if (isset($_POST['check']) && !empty($_POST['check'])) {
@@ -32,6 +40,7 @@ while ($stmt->fetch()) {
     if (isset($values[$id])) {
         $timeInDB = strtotime($modified);
         $timeInClient = strtotime($values[$id]);
+        unset($values[$id]);
         if (!($timeInDB>$timeInClient)) {
             continue;
         }
@@ -53,6 +62,12 @@ while ($stmt->fetch()) {
     $roomType->description = $description;
     $roomType->modified = $modified;
     $roomTypeArray[] = $roomType;
+}
+foreach($values as $key => $value){
+  $roomType = new stdClass();
+  $roomType->id = $key;
+  $roomType->modified = null;
+  $roomTypeArray[]=$roomType;
 }
 
 // RoomTypeCash

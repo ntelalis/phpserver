@@ -25,20 +25,18 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $reservationID = $_POST['reservationID'];
 
     //Check if email matches a record in database and return customerID
-    $query = "SELECT room.ID, room.Number, room.floor, Beacon.ID, Beacon.UUID, Beacon.Major, Beacon.Minor
-            FROM (SELECT Room.ID, Room.Number, Room.Floor, Room.BeaconID
-                  FROM Reservation,Room
-                  WHERE Reservation.ID=? AND Reservation.RoomTypeID=Room.RoomTypeID AND Room.ID NOT IN (SELECT Occupancy.RoomID
-                                                                                                          FROM Occupancy
-                                                                                                          WHERE Occupancy.CheckOut IS NULL)
-                  ORDER by rand()
-                  LIMIT 1) room,Beacon
-            WHERE room.BeaconID=Beacon.ID";
+    $query = "SELECT Room.ID, Room.Number, Room.Floor, Room.BeaconRegionID
+              FROM Reservation,Room
+              WHERE Reservation.ID=? AND Room.RoomTypeID=Reservation.RoomTypeID AND Room.ID NOT IN (SELECT Occupancy.RoomID
+                                                                                                    FROM Occupancy
+                                                                                                    WHERE Occupancy.CheckOut IS NULL)
+              ORDER by rand()
+              LIMIT 1";
 
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('i', $reservationID);
     $stmt->execute();
-    $stmt->bind_result($roomID, $roomNumber, $roomFloor, $beaconID, $beaconUUID, $beaconMajor, $beaconMinor);
+    $stmt->bind_result($roomID, $roomNumber, $roomFloor, $beaconRegionID);
     $stmt->store_result();
     $stmt->fetch();
 
@@ -64,15 +62,12 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     if ($dbCon->affected_rows==1) {
         $jObj->success=1;
         $jObj->reservationID = $reservationID;
-        $jObj->room=$roomNumber;
-        $jObj->date=$checkinDate;
-        $jObj->floor=$roomFloor;
-        $jObj->beaconID=$beaconID;
-        $jObj->modified=$checkinDate;
-        $jObj->beaconUUID=$beaconUUID;
-        $jObj->beaconMajor=$beaconMajor;
-        $jObj->beaconMinor=$beaconMinor;
+        $jObj->roomNumber=$roomNumber;
+        $jObj->checkInDate=$checkinDate;
+        $jObj->roomFloor=$roomFloor;
+        $jObj->beaconRegionID=$beaconRegionID;
         $jObj->roomPassword=$roomPassword;
+        $jObj->modified=$checkinDate;
     } else {
         $jObj->success=0;
         $jObj->errorMessage= $dbCon->error;

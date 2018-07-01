@@ -14,7 +14,7 @@ if (isset($_POST['reservationID'],$_POST['roomPassword'])) {
     //Response Object
     $jObj = new stdClass();
 
-    $query = "SELECT RoomID,RoomPasswordHash FROM Occupancy WHERE ReservationID=?";
+    $query = "SELECT RoomID,RoomPasswordHash FROM Occupancy WHERE ReservationID=? AND Occupancy.CheckOut IS NULL";
 
 
     $stmt = $dbCon->prepare($query);

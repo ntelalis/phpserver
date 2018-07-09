@@ -15,7 +15,8 @@ $mysqli->set_charset("utf8");
 
   $query = "SELECT v.ID, v.UniqueID, v.UUID, v.Major, v.Minor, v.Modified
             FROM BeaconRegionView v
-            WHERE v.exclusive=0";
+            WHERE v.exclusive=0
+            ORDER BY ID";
   $stmt = $mysqli->prepare($query);
   $stmt->execute();
   $stmt->bind_result($id, $uniqueID, $uuid, $major, $minor, $modified);

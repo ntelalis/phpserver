@@ -15,13 +15,18 @@ $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
 
+<<<<<<< HEAD
+  $query = "SELECT v.ID, v.UniqueID, v.UUID, v.Major, v.Minor, v.Modified, v.Exclusive
+            FROM BeaconRegionView v";
+=======
   $query = "SELECT v.ID, v.UniqueID, v.UUID, v.Major, v.Minor, v.Modified
             FROM BeaconRegionView v
             WHERE v.exclusive=0
             ORDER BY ID";
+>>>>>>> c2620aac305ec098cd8eba5798e19b9137af2e1e
   $stmt = $mysqli->prepare($query);
   $stmt->execute();
-  $stmt->bind_result($id, $uniqueID, $uuid, $major, $minor, $modified);
+  $stmt->bind_result($id, $uniqueID, $uuid, $major, $minor, $modified, $exclusive);
   $stmt->store_result();
 
   if (isset($_POST['regionsCheck']) && !empty($_POST['regionsCheck'])) {
@@ -37,6 +42,10 @@ $mysqli->set_charset("utf8");
 
   $beaconRegionsArray = array();
   while($stmt->fetch()){
+
+    if($exclusive==1 && !isset($values[$id])){
+      continue;
+    }
 
     if (isset($values[$id])) {
         $timeInDB = strtotime($modified);

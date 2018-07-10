@@ -34,36 +34,35 @@ $mysqli->set_charset("utf8");
 
 
   $beaconRegionsArray = array();
-  while($stmt->fetch()){
+  while ($stmt->fetch()) {
+      if ($exclusive==1 && !isset($values[$id])) {
+          continue;
+      }
 
-    if($exclusive==1 && !isset($values[$id])){
-      continue;
-    }
+      if (isset($values[$id])) {
+          $timeInDB = strtotime($modified);
+          $timeInClient = strtotime($values[$id]);
+          unset($values[$id]);
+          if (!($timeInDB>$timeInClient)) {
+              continue;
+          }
+      }
 
-    if (isset($values[$id])) {
-        $timeInDB = strtotime($modified);
-        $timeInClient = strtotime($values[$id]);
-        unset($values[$id]);
-        if (!($timeInDB>$timeInClient)) {
-            continue;
-        }
-    }
-
-    $beaconRegions = new stdClass();
-    $beaconRegions->id = $id;
-    $beaconRegions->uniqueID = $uniqueID;
-    $beaconRegions->uuid = $uuid;
-    $beaconRegions->major = $major;
-    $beaconRegions->minor = $minor;
-    $beaconRegions->modified = $modified;
-    $beaconRegionsArray[] = $beaconRegions;
+      $beaconRegions = new stdClass();
+      $beaconRegions->id = $id;
+      $beaconRegions->uniqueID = $uniqueID;
+      $beaconRegions->uuid = $uuid;
+      $beaconRegions->major = $major;
+      $beaconRegions->minor = $minor;
+      $beaconRegions->modified = $modified;
+      $beaconRegionsArray[] = $beaconRegions;
   }
 
-  foreach($values as $key => $value){
-    $beaconRegions = new stdClass();
-    $beaconRegions->id = $key;
-    $beaconRegions->modified = null;
-    $beaconRegionsArray[] = $beaconRegions;
+  foreach ($values as $key => $value) {
+      $beaconRegions = new stdClass();
+      $beaconRegions->id = $key;
+      $beaconRegions->modified = null;
+      $beaconRegionsArray[] = $beaconRegions;
   }
 
 
@@ -75,5 +74,5 @@ $mysqli->set_charset("utf8");
   $jObj->beaconRegionsArray = $beaconRegionsArray;
 
 
-$JsonResponse = json_encode($jObj,JSON_UNESCAPED_UNICODE);
+$JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

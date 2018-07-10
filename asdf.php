@@ -12,24 +12,21 @@ if (isset($_POST['check']) && !empty($_POST['check'])) {
 
 // $id and $modified from DB variables
 while ($stmt->fetch()) {
+    if (isset($values[$id])) {
+        $timeInDB = strtotime($modified);
+        $timeInClient = strtotime($values[$id]);
+        unset($values[$id]);
+        if (!($timeInDB>$timeInClient)) {
+            continue;
+        }
+    }
 
-  if (isset($values[$id])) {
-      $timeInDB = strtotime($modified);
-      $timeInClient = strtotime($values[$id]);
-      unset($values[$id]);
-      if (!($timeInDB>$timeInClient)) {
-          continue;
-      }
-  }
-
-  //go on
+    //go on
 }
 
-foreach($values as $key => $value){
-  $roomType = new stdClass();
-  $roomType->id = $key;
-  $roomType->modified = null;
-  $roomTypeArray[]=$roomType;
+foreach ($values as $key => $value) {
+    $roomType = new stdClass();
+    $roomType->id = $key;
+    $roomType->modified = null;
+    $roomTypeArray[]=$roomType;
 }
-
-?>

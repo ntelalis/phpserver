@@ -49,10 +49,9 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
             $jObj->success=0;
             $jObj->errorMessage="Cannot set loyalty points";
         }
-    }
-    else{
-      $jObj->success=0;
-      $jObj->errorMessage="There is some problem with checkout procedure";
+    } else {
+        $jObj->success=0;
+        $jObj->errorMessage="There is some problem with checkout procedure";
     }
     $stmt->close();
 }

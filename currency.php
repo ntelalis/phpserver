@@ -16,13 +16,13 @@ $stmt->store_result();
 $numrows = $stmt->num_rows;
 
 $currencyArray = array();
-while($stmt->fetch()){
-  $currency = new stdClass();
-  $currency->id = $id;
-  $currency->name = $name;
-  $currency->code = $code;
-  $currency->symbol = $symbol;
-  $currencyArray[] = $currency;
+while ($stmt->fetch()) {
+    $currency = new stdClass();
+    $currency->id = $id;
+    $currency->name = $name;
+    $currency->code = $code;
+    $currency->symbol = $symbol;
+    $currencyArray[] = $currency;
 }
 
 
@@ -40,5 +40,5 @@ if ($numrows == 0) {
     $jObj->currencyArray = $currencyArray;
 }
 
-$JsonResponse = json_encode($jObj,JSON_UNESCAPED_UNICODE);
+$JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

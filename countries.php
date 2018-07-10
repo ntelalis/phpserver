@@ -10,7 +10,7 @@ $jObj = new stdClass();
 $query = "SELECT ID,Name FROM Country";
 $stmt = $dbCon->prepare($query);
 $stmt->execute();
-$stmt->bind_result($countryID,$countryName);
+$stmt->bind_result($countryID, $countryName);
 $stmt->store_result();
 
 $countryList = array();

@@ -5,6 +5,8 @@ error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
 
+//$_POST['regionsCheck'] = '[{"id":13,"modified":"2018-01-18 01:00:58"},{"id":16,"modified":"2019-01-18 01:00:58"},{"id":17,"modified":"2017-01-18 01:00:58"},{"id":18,"modified":"2019-01-18 01:00:58"}]';
+
 //Database connection variables
 include 'dbConfig.php';
 

@@ -90,7 +90,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
         $jObj->roomNumber=$roomNumber;
         $jObj->checkInDate=$checkinDate;
         $jObj->roomFloor=$roomFloor;
-        $jObj->beaconRegionsArray=$beaconRegionsArray;
+        $jObj->roomBeaconRegionArray=$roomBeaconRegionArray;
         $jObj->roomPassword=$roomPassword;
         $jObj->modified=$checkinDate;
     } else {

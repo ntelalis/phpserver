@@ -56,6 +56,7 @@ $mysqli->set_charset("utf8");
       $beaconRegions->uuid = $uuid;
       $beaconRegions->major = $major;
       $beaconRegions->minor = $minor;
+      $beaconRegions->exclusive = $exclusive == 1;
       $beaconRegions->background = $background == 1;
       $beaconRegions->regionType = $regionType;
       $beaconRegions->minor = $minor;

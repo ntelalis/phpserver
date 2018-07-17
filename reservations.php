@@ -18,7 +18,7 @@ if (isset($_POST['customerID'])) {
 
   $customerID = $_POST['customerID'];
 
-  $query = "SELECT res.ID, res.RoomTypeID, res.Adults, res.Children, res.DateBooked, res.StartDate, res.EndDate, o.CheckIn, o.CheckOut, r.BeaconRegionID, r.Number, r.Floor, GREATEST(res.Modified,IFNULL(o.Modified,0)) AS Modified
+  $query = "SELECT res.ID, res.RoomTypeID, res.Adults, res.Children, res.DateBooked, res.StartDate, res.EndDate, o.CheckIn, o.CheckOut, r.Number, r.Floor, GREATEST(res.Modified,IFNULL(o.Modified,0)) AS Modified
             FROM Reservation res LEFT JOIN Occupancy o ON res.ID = o.ReservationID
                                  LEFT JOIN Room r ON r.ID = o.RoomID
             WHERE res.CustomerID = ? AND res.EndDate >= CURRENT_DATE";
@@ -61,7 +61,6 @@ if (isset($_POST['customerID'])) {
     $upcomingReservation->endDate = $endDate;
     $upcomingReservation->checkIn = $checkIn;
     $upcomingReservation->checkOut = $checkOut;
-    $upcomingReservation->roomBeaconRegionID = $roomBeaconRegionID;
     $upcomingReservation->roomNumber = $roomNumber;
     $upcomingReservation->roomFloor = $roomFloor;
     $upcomingReservation->modified = $modified;

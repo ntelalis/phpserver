@@ -15,13 +15,13 @@ $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
 
-  $query = "SELECT v.ID, v.UniqueID, v.UUID, v.Major, v.Minor, v.Modified, v.Exclusive
+  $query = "SELECT v.ID, v.UniqueID, v.UUID, v.Major, v.Minor, v.Exclusive, v.Background, v.RegionType, v.Modified
             FROM BeaconRegionView v
             ORDER BY ID";
 
   $stmt = $mysqli->prepare($query);
   $stmt->execute();
-  $stmt->bind_result($id, $uniqueID, $uuid, $major, $minor, $modified, $exclusive);
+  $stmt->bind_result($id, $uniqueID, $uuid, $major, $minor, $exclusive, $background, $regionType, $modified);
   $stmt->store_result();
 
   if (isset($_POST['regionsCheck']) && !empty($_POST['regionsCheck'])) {
@@ -55,6 +55,9 @@ $mysqli->set_charset("utf8");
       $beaconRegions->uniqueID = $uniqueID;
       $beaconRegions->uuid = $uuid;
       $beaconRegions->major = $major;
+      $beaconRegions->minor = $minor;
+      $beaconRegions->background = $background == 1;
+      $beaconRegions->regionType = $regionType;
       $beaconRegions->minor = $minor;
       $beaconRegions->modified = $modified;
       $beaconRegionsArray[] = $beaconRegions;

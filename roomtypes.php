@@ -50,13 +50,7 @@ while ($stmt->fetch()) {
     $roomType->name = $name;
     $roomType->capacity = $capacity;
     $roomType->adults = $adults;
-    if($childrenSupported==1){
-      $roomType->childrenSupported = true;
-    }
-    else{
-      $roomType->childrenSupported = false;
-    }
-
+    $roomType->childrenSupported = $childrenSupported == 1;
     $imageBase64 = base64_encode($image);
     $roomType->image = $imageBase64;
     $roomType->description = $description;

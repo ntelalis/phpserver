@@ -18,14 +18,14 @@ $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 //Response Object
 $jObj = new stdClass();
 
-// $_POST['reservationID']='9';
+ $_POST['reservationID']='4';
 
 //Parse POST Variables
 if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $reservationID = $_POST['reservationID'];
 
     //Check if email matches a record in database and return customerID
-    $query = "SELECT Room.ID, Room.Number, Room.Floor, Room.BeaconRegionID
+    $query = "SELECT Room.ID, Room.Number, Room.Floor
               FROM Reservation,Room
               WHERE Reservation.ID=? AND Room.RoomTypeID=Reservation.RoomTypeID AND Room.ID NOT IN (SELECT Occupancy.RoomID
                                                                                                     FROM Occupancy
@@ -36,9 +36,34 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('i', $reservationID);
     $stmt->execute();
-    $stmt->bind_result($roomID, $roomNumber, $roomFloor, $beaconRegionID);
+    $stmt->bind_result($roomID, $roomNumber, $roomFloor);
     $stmt->store_result();
     $stmt->fetch();
+
+    $query = "SELECT v.ID, v.UniqueID,v.UUID,v.Major,v.Minor,v.Modified
+              FROM BeaconRegionView v
+              WHERE v.ID IN(SELECT br.BeaconRegionID
+                            FROM BeaconMonitoredRegionRoom br
+                            WHERE br.RoomID = ?)";
+    $stmt = $dbCon->prepare($query);
+    $stmt->bind_param('i', $roomID);
+    $stmt->execute();
+    $stmt->bind_result($brID, $brUniqueID, $brUUID, $brMajor, $brMinor, $brModified);
+    $stmt->store_result();
+
+    $roomBeaconRegionArray = array();
+
+    while ($stmt->fetch()) {
+      $beaconRegion = new stdClass();
+      $beaconRegion->id = $brID;
+      $beaconRegion->uniqueID = $brUniqueID;
+      $beaconRegion->uuid = $brUUID;
+      $beaconRegion->major = $brMajor;
+      $beaconRegion->minor = $brMinor;
+      $beaconRegion->modified = $brModified;
+      $roomBeaconRegionArray[] = $beaconRegion;
+    }
+
 
     //Close Connections
     $stmt->close();
@@ -65,7 +90,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
         $jObj->roomNumber=$roomNumber;
         $jObj->checkInDate=$checkinDate;
         $jObj->roomFloor=$roomFloor;
-        $jObj->beaconRegionID=$beaconRegionID;
+        $jObj->beaconRegionsArray=$beaconRegionsArray;
         $jObj->roomPassword=$roomPassword;
         $jObj->modified=$checkinDate;
     } else {

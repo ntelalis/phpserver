@@ -12,7 +12,7 @@ include 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
-// $_POST['customerID'] = '23';
+ //$_POST['customerID'] = '23';
 
 if (isset($_POST['customerID'])) {
 
@@ -25,7 +25,7 @@ if (isset($_POST['customerID'])) {
   $stmt = $mysqli->prepare($query);
   $stmt->bind_param('i',$customerID);
   $stmt->execute();
-  $stmt->bind_result($id, $roomTypeID, $adults, $children, $bookDate, $startDate, $endDate, $checkIn, $checkOut, $roomBeaconRegionID, $roomNumber, $roomFloor, $modified);
+  $stmt->bind_result($id, $roomTypeID, $adults, $children, $bookDate, $startDate, $endDate, $checkIn, $checkOut, $roomNumber, $roomFloor, $modified);
   $stmt->store_result();
 
   if (isset($_POST['check']) && !empty($_POST['check'])) {

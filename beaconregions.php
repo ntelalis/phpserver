@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
 
-//$_POST['regionsCheck'] = '[{"id":15,"modified":"2015-01-18 01:00:58"}]';
+//$_POST['check'] = '[{"id":15,"modified":"2015-01-18 01:00:58"}]';
 
 //Database connection variables
 include 'dbConfig.php';
@@ -24,8 +24,8 @@ $mysqli->set_charset("utf8");
   $stmt->bind_result($id, $uniqueID, $uuid, $major, $minor, $exclusive, $background, $regionType, $modified);
   $stmt->store_result();
 
-  if (isset($_POST['regionsCheck']) && !empty($_POST['regionsCheck'])) {
-      $jsonToCheck = json_decode($_POST['regionsCheck']);
+  if (isset($_POST['check']) && !empty($_POST['check'])) {
+      $jsonToCheck = json_decode($_POST['check']);
       $values = array();
       foreach ($jsonToCheck as $item) {
           $idClient = $item->id;

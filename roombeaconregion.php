@@ -1,4 +1,4 @@
-<?php
+beaconRegion<?php
 
 /*ini_set('display_errors',1);
 error_reporting(E_ALL);
@@ -12,7 +12,7 @@ include 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
- $_POST['reservationID'] = '4';
+ //$_POST['reservationID'] = '4';
 
 if (isset($_POST['reservationID'])) {
 
@@ -38,7 +38,7 @@ if (isset($_POST['reservationID'])) {
   }
 
 
-  $roomBeaconRegionArray = array();
+  $beaconRegionArray = array();
   while($stmt->fetch()){
 
     if (isset($values[$id])) {
@@ -50,24 +50,24 @@ if (isset($_POST['reservationID'])) {
         }
     }
 
-    $roomBeaconRegion = new stdClass();
-    $roomBeaconRegion->id = $id;
-    $roomBeaconRegion->uniqueID = $uniqueID;
-    $roomBeaconRegion->uuid = $uuid;
-    $roomBeaconRegion->major = $major;
-    $roomBeaconRegion->minor = $minor;
-    $roomBeaconRegion->exclusive = $exclusive;
-    $roomBeaconRegion->background = $background;
-    $roomBeaconRegion->regionType = $regionType;
-    $roomBeaconRegion->modified = $modified;
-    $roomBeaconRegionArray[] = $roomBeaconRegion;
+    $beaconRegion = new stdClass();
+    $beaconRegion->id = $id;
+    $beaconRegion->uniqueID = $uniqueID;
+    $beaconRegion->uuid = $uuid;
+    $beaconRegion->major = $major;
+    $beaconRegion->minor = $minor;
+    $beaconRegion->exclusive = $exclusive == 1;
+    $beaconRegion->background = $background == 1;
+    $beaconRegion->regionType = $regionType;
+    $beaconRegion->modified = $modified;
+    $beaconRegionArray[] = $beaconRegion;
   }
 
   foreach($values as $key => $value){
-    $roomBeaconRegion = new stdClass();
-    $roomBeaconRegion->id = $key;
-    $roomBeaconRegion->modified = null;
-    $roomBeaconRegionArray[]=$roomBeaconRegion;
+    $beaconRegion = new stdClass();
+    $beaconRegion->id = $key;
+    $beaconRegion->modified = null;
+    $beaconRegionArray[]=$beaconRegion;
   }
 
 
@@ -76,7 +76,7 @@ if (isset($_POST['reservationID'])) {
 
   $jObj = new stdClass();
   $jObj->success = 1;
-  $jObj->roomBeaconRegionArray = $roomBeaconRegionArray;
+  $jObj->beaconRegionArray = $beaconRegionArray;
 
 }
 else{

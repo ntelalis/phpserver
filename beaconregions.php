@@ -35,7 +35,7 @@ $mysqli->set_charset("utf8");
   }
 
 
-  $beaconRegionsArray = array();
+  $beaconRegionArray = array();
   while ($stmt->fetch()) {
       if ($exclusive==1 && !isset($values[$id])) {
           continue;
@@ -50,25 +50,25 @@ $mysqli->set_charset("utf8");
           }
       }
 
-      $beaconRegions = new stdClass();
-      $beaconRegions->id = $id;
-      $beaconRegions->uniqueID = $uniqueID;
-      $beaconRegions->uuid = $uuid;
-      $beaconRegions->major = $major;
-      $beaconRegions->minor = $minor;
-      $beaconRegions->exclusive = $exclusive == 1;
-      $beaconRegions->background = $background == 1;
-      $beaconRegions->regionType = $regionType;
-      $beaconRegions->minor = $minor;
-      $beaconRegions->modified = $modified;
-      $beaconRegionsArray[] = $beaconRegions;
+      $beaconRegion = new stdClass();
+      $beaconRegion->id = $id;
+      $beaconRegion->uniqueID = $uniqueID;
+      $beaconRegion->uuid = $uuid;
+      $beaconRegion->major = $major;
+      $beaconRegion->minor = $minor;
+      $beaconRegion->exclusive = $exclusive == 1;
+      $beaconRegion->background = $background == 1;
+      $beaconRegion->regionType = $regionType;
+      $beaconRegion->minor = $minor;
+      $beaconRegion->modified = $modified;
+      $beaconRegionArray[] = $beaconRegion;
   }
 
   foreach ($values as $key => $value) {
-      $beaconRegions = new stdClass();
-      $beaconRegions->id = $key;
-      $beaconRegions->modified = null;
-      $beaconRegionsArray[] = $beaconRegions;
+      $beaconRegion = new stdClass();
+      $beaconRegion->id = $key;
+      $beaconRegion->modified = null;
+      $beaconRegionArray[] = $beaconRegion;
   }
 
 
@@ -77,7 +77,7 @@ $mysqli->set_charset("utf8");
 
   $jObj = new stdClass();
   $jObj->success = 1;
-  $jObj->beaconRegionsArray = $beaconRegionsArray;
+  $jObj->beaconRegionArray = $beaconRegionArray;
 
 
 $JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);

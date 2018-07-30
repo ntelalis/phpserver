@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 23, 2018 at 05:50 PM
+-- Generation Time: Jul 30, 2018 at 05:01 PM
 -- Server version: 5.7.22-0ubuntu0.17.10.1
 -- PHP Version: 7.1.17-0ubuntu0.17.10.1
 
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `hotel`
 --
-CREATE DATABASE IF NOT EXISTS `hotel` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `hotel`;
 
 -- --------------------------------------------------------
 
@@ -30,7 +28,6 @@ USE `hotel`;
 -- Table structure for table `Account`
 --
 
-DROP TABLE IF EXISTS `Account`;
 CREATE TABLE `Account` (
   `CustomerID` int(11) NOT NULL,
   `Email` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -53,7 +50,6 @@ INSERT INTO `Account` (`CustomerID`, `Email`, `Hash`, `Verify`, `VerifyTime`) VA
 -- Table structure for table `Address`
 --
 
-DROP TABLE IF EXISTS `Address`;
 CREATE TABLE `Address` (
   `CustomerID` int(11) NOT NULL,
   `Address1` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -68,7 +64,6 @@ CREATE TABLE `Address` (
 -- Table structure for table `Amenity`
 --
 
-DROP TABLE IF EXISTS `Amenity`;
 CREATE TABLE `Amenity` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL
@@ -80,7 +75,6 @@ CREATE TABLE `Amenity` (
 -- Table structure for table `Beacon`
 --
 
-DROP TABLE IF EXISTS `Beacon`;
 CREATE TABLE `Beacon` (
   `ID` int(11) NOT NULL,
   `BeaconMajorID` int(11) NOT NULL,
@@ -111,10 +105,32 @@ INSERT INTO `Beacon` (`ID`, `BeaconMajorID`, `Minor`, `Name`, `Modified`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `BeaconFeature`
+--
+
+CREATE TABLE `BeaconFeature` (
+  `ID` int(11) NOT NULL,
+  `Feature` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+  `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `BeaconFeature`
+--
+
+INSERT INTO `BeaconFeature` (`ID`, `Feature`, `Modified`) VALUES
+(1, 'doorUnlock', '2018-07-25 08:25:13'),
+(2, 'welcome', '2018-07-25 08:25:32'),
+(3, 'room', '2018-07-26 17:14:07'),
+(4, 'farewell', '2018-07-25 08:38:50'),
+(5, 'offer', '2018-07-25 08:39:43');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `BeaconMajor`
 --
 
-DROP TABLE IF EXISTS `BeaconMajor`;
 CREATE TABLE `BeaconMajor` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -139,7 +155,6 @@ INSERT INTO `BeaconMajor` (`ID`, `Name`, `Major`, `UUID`, `Description`, `Modifi
 -- Table structure for table `BeaconMonitoredRegion`
 --
 
-DROP TABLE IF EXISTS `BeaconMonitoredRegion`;
 CREATE TABLE `BeaconMonitoredRegion` (
   `ID` int(11) NOT NULL,
   `BeaconRegionUniqueID` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -176,37 +191,9 @@ INSERT INTO `BeaconMonitoredRegion` (`ID`, `BeaconRegionUniqueID`, `BeaconUUIDID
 -- --------------------------------------------------------
 
 --
--- Table structure for table `BeaconMonitoredRegionOffer`
---
-
-DROP TABLE IF EXISTS `BeaconMonitoredRegionOffer`;
-CREATE TABLE `BeaconMonitoredRegionOffer` (
-  `ID` int(11) NOT NULL,
-  `BeaconMonitoredRegionID` int(11) NOT NULL,
-  `HotelServicesOfferID` int(11) NOT NULL,
-  `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `BeaconMonitoredRegionOffer`
---
-
-INSERT INTO `BeaconMonitoredRegionOffer` (`ID`, `BeaconMonitoredRegionID`, `HotelServicesOfferID`, `Modified`) VALUES
-(1, 13, 2, '2018-07-06 14:23:17'),
-(2, 14, 2, '2018-07-06 14:23:17'),
-(3, 15, 2, '2018-07-06 14:23:17'),
-(4, 16, 3, '2018-07-06 14:23:17'),
-(5, 17, 3, '2018-07-06 14:23:17'),
-(6, 18, 3, '2018-07-06 14:23:17'),
-(7, 14, 3, '2018-07-06 14:23:17');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `BeaconMonitoredRegionRoom`
 --
 
-DROP TABLE IF EXISTS `BeaconMonitoredRegionRoom`;
 CREATE TABLE `BeaconMonitoredRegionRoom` (
   `ID` int(11) NOT NULL,
   `RoomID` int(11) NOT NULL,
@@ -234,24 +221,35 @@ INSERT INTO `BeaconMonitoredRegionRoom` (`ID`, `RoomID`, `BeaconRegionID`, `Modi
 -- --------------------------------------------------------
 
 --
--- Table structure for table `BeaconRegionType`
+-- Table structure for table `BeaconRegionFeature`
 --
 
-DROP TABLE IF EXISTS `BeaconRegionType`;
-CREATE TABLE `BeaconRegionType` (
+CREATE TABLE `BeaconRegionFeature` (
   `ID` int(11) NOT NULL,
-  `Type` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+  `RegionID` int(11) NOT NULL,
+  `FeatureID` int(11) NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `BeaconRegionType`
+-- Dumping data for table `BeaconRegionFeature`
 --
 
-INSERT INTO `BeaconRegionType` (`ID`, `Type`, `Modified`) VALUES
-(1, 'RoomDoor', '2018-07-16 13:01:38'),
-(2, 'General', '2018-07-16 12:59:56'),
-(3, 'Room', '2018-07-16 12:59:56');
+INSERT INTO `BeaconRegionFeature` (`ID`, `RegionID`, `FeatureID`, `Modified`) VALUES
+(1, 14, 1, '2018-07-26 17:55:46'),
+(2, 15, 1, '2018-07-26 17:55:46'),
+(3, 16, 5, '2018-07-26 17:55:46'),
+(4, 17, 5, '2018-07-26 17:55:46'),
+(5, 18, 2, '2018-07-26 17:55:46'),
+(6, 18, 3, '2018-07-26 17:55:46'),
+(7, 19, 1, '2018-07-26 17:55:46'),
+(8, 20, 1, '2018-07-26 17:55:46'),
+(9, 21, 1, '2018-07-26 17:55:46'),
+(10, 22, 1, '2018-07-26 17:55:46'),
+(11, 23, 1, '2018-07-26 17:55:46'),
+(12, 24, 1, '2018-07-26 17:55:46'),
+(13, 25, 1, '2018-07-26 17:55:46'),
+(14, 26, 1, '2018-07-26 17:55:46');
 
 -- --------------------------------------------------------
 
@@ -259,17 +257,7 @@ INSERT INTO `BeaconRegionType` (`ID`, `Type`, `Modified`) VALUES
 -- Stand-in structure for view `BeaconRegionView`
 -- (See below for the actual view)
 --
-DROP VIEW IF EXISTS `BeaconRegionView`;
 CREATE TABLE `BeaconRegionView` (
-`ID` int(11)
-,`UniqueID` varchar(500)
-,`UUID` varchar(500)
-,`Major` int(11)
-,`Minor` int(11)
-,`Exclusive` tinyint(4)
-,`Background` tinyint(4)
-,`RegionType` varchar(500)
-,`Modified` timestamp
 );
 
 -- --------------------------------------------------------
@@ -278,7 +266,6 @@ CREATE TABLE `BeaconRegionView` (
 -- Table structure for table `BeaconUUID`
 --
 
-DROP TABLE IF EXISTS `BeaconUUID`;
 CREATE TABLE `BeaconUUID` (
   `ID` int(11) NOT NULL,
   `UUID` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -298,7 +285,6 @@ INSERT INTO `BeaconUUID` (`ID`, `UUID`, `Modified`) VALUES
 -- Table structure for table `Charge`
 --
 
-DROP TABLE IF EXISTS `Charge`;
 CREATE TABLE `Charge` (
   `ID` int(11) NOT NULL,
   `ReservationID` int(11) NOT NULL,
@@ -314,7 +300,6 @@ CREATE TABLE `Charge` (
 -- Table structure for table `Country`
 --
 
-DROP TABLE IF EXISTS `Country`;
 CREATE TABLE `Country` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL
@@ -533,7 +518,6 @@ INSERT INTO `Country` (`ID`, `Name`) VALUES
 -- Table structure for table `Currency`
 --
 
-DROP TABLE IF EXISTS `Currency`;
 CREATE TABLE `Currency` (
   `ID` int(11) NOT NULL,
   `Name` varchar(11) COLLATE utf8_unicode_ci NOT NULL,
@@ -555,7 +539,6 @@ INSERT INTO `Currency` (`ID`, `Name`, `Code`, `Symbol`) VALUES
 -- Table structure for table `Customer`
 --
 
-DROP TABLE IF EXISTS `Customer`;
 CREATE TABLE `Customer` (
   `ID` int(11) NOT NULL,
   `TitleID` int(11) NOT NULL,
@@ -581,7 +564,6 @@ INSERT INTO `Customer` (`ID`, `TitleID`, `FirstName`, `LastName`, `BirthDate`, `
 -- Table structure for table `CustomerPhone`
 --
 
-DROP TABLE IF EXISTS `CustomerPhone`;
 CREATE TABLE `CustomerPhone` (
   `CustomerID` int(11) NOT NULL,
   `PhoneTypeID` int(11) NOT NULL,
@@ -594,7 +576,6 @@ CREATE TABLE `CustomerPhone` (
 -- Table structure for table `EventPoints`
 --
 
-DROP TABLE IF EXISTS `EventPoints`;
 CREATE TABLE `EventPoints` (
   `ID` int(11) NOT NULL,
   `EventTypeID` int(11) DEFAULT NULL,
@@ -632,7 +613,6 @@ INSERT INTO `EventPoints` (`ID`, `EventTypeID`, `sizeID`, `GainingPoints`) VALUE
 -- Table structure for table `EventSize`
 --
 
-DROP TABLE IF EXISTS `EventSize`;
 CREATE TABLE `EventSize` (
   `ID` int(11) NOT NULL,
   `maxPersons` int(11) DEFAULT NULL
@@ -653,7 +633,6 @@ INSERT INTO `EventSize` (`ID`, `maxPersons`) VALUES
 -- Table structure for table `EventType`
 --
 
-DROP TABLE IF EXISTS `EventType`;
 CREATE TABLE `EventType` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL
@@ -674,7 +653,6 @@ INSERT INTO `EventType` (`ID`, `Name`) VALUES
 -- Table structure for table `Food`
 --
 
-DROP TABLE IF EXISTS `Food`;
 CREATE TABLE `Food` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -777,7 +755,6 @@ INSERT INTO `Food` (`ID`, `Name`, `Description`, `Price`, `maxOrderQuantity`, `A
 -- Table structure for table `FoodCategory`
 --
 
-DROP TABLE IF EXISTS `FoodCategory`;
 CREATE TABLE `FoodCategory` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL
@@ -813,7 +790,6 @@ INSERT INTO `FoodCategory` (`ID`, `Name`) VALUES
 -- Table structure for table `FoodTime`
 --
 
-DROP TABLE IF EXISTS `FoodTime`;
 CREATE TABLE `FoodTime` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -836,7 +812,6 @@ INSERT INTO `FoodTime` (`ID`, `Name`, `BeginTime`, `EndTime`) VALUES
 -- Table structure for table `Food_Category_Time`
 --
 
-DROP TABLE IF EXISTS `Food_Category_Time`;
 CREATE TABLE `Food_Category_Time` (
   `FoodID` int(11) NOT NULL,
   `FoodTimeID` int(11) NOT NULL,
@@ -934,26 +909,9 @@ INSERT INTO `Food_Category_Time` (`FoodID`, `FoodTimeID`, `FoodCategoryID`) VALU
 -- --------------------------------------------------------
 
 --
--- Table structure for table `HotelGeneralOffer`
---
-
-DROP TABLE IF EXISTS `HotelGeneralOffer`;
-CREATE TABLE `HotelGeneralOffer` (
-  `ID` int(11) NOT NULL,
-  `Price` int(11) DEFAULT NULL,
-  `Discount` int(11) DEFAULT NULL,
-  `Description` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
-  `StartDate` date DEFAULT NULL,
-  `EndDate` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `HotelService`
 --
 
-DROP TABLE IF EXISTS `HotelService`;
 CREATE TABLE `HotelService` (
   `ID` int(11) NOT NULL,
   `PartnerID` int(11) DEFAULT NULL,
@@ -983,7 +941,6 @@ INSERT INTO `HotelService` (`ID`, `PartnerID`, `CategoryID`, `Name`, `Tag`) VALU
 -- Table structure for table `HotelServicesCategory`
 --
 
-DROP TABLE IF EXISTS `HotelServicesCategory`;
 CREATE TABLE `HotelServicesCategory` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL
@@ -1002,53 +959,9 @@ INSERT INTO `HotelServicesCategory` (`ID`, `Name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `HotelServicesCustomerCoupon`
---
-
-DROP TABLE IF EXISTS `HotelServicesCustomerCoupon`;
-CREATE TABLE `HotelServicesCustomerCoupon` (
-  `ID` int(11) NOT NULL,
-  `CustomerID` int(11) DEFAULT NULL,
-  `HotelServicesOfferID` int(11) DEFAULT NULL,
-  `CouponCode` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `OfferSent_Time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `Claimed` tinyint(1) DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `HotelServicesOffer`
---
-
-DROP TABLE IF EXISTS `HotelServicesOffer`;
-CREATE TABLE `HotelServicesOffer` (
-  `ID` int(11) NOT NULL,
-  `HotelServiceID` int(11) NOT NULL,
-  `Price` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `Discount` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `Description` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
-  `TierID` int(11) DEFAULT NULL,
-  `Special` tinyint(1) NOT NULL,
-  `StartDate` date DEFAULT NULL,
-  `EndDate` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `HotelServicesOffer`
---
-
-INSERT INTO `HotelServicesOffer` (`ID`, `HotelServiceID`, `Price`, `Discount`, `Description`, `TierID`, `Special`, `StartDate`, `EndDate`) VALUES
-(2, 15, NULL, NULL, 'Get a 15% discount at GENTLEMAN\'S AFTERNOON TEA', NULL, 0, NULL, NULL),
-(3, 15, NULL, NULL, 'Enjoy LOBSTER & CHAMPAGNE with only 60euro for 2 people', NULL, 0, NULL, NULL);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `LoyaltyBenefits`
 --
 
-DROP TABLE IF EXISTS `LoyaltyBenefits`;
 CREATE TABLE `LoyaltyBenefits` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -1075,7 +988,6 @@ INSERT INTO `LoyaltyBenefits` (`ID`, `Name`, `Description`) VALUES
 -- Table structure for table `LoyaltyPointsEarningAction`
 --
 
-DROP TABLE IF EXISTS `LoyaltyPointsEarningAction`;
 CREATE TABLE `LoyaltyPointsEarningAction` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -1096,7 +1008,6 @@ INSERT INTO `LoyaltyPointsEarningAction` (`ID`, `Name`, `Description`) VALUES
 -- Table structure for table `LoyaltyPointsEarningHistory`
 --
 
-DROP TABLE IF EXISTS `LoyaltyPointsEarningHistory`;
 CREATE TABLE `LoyaltyPointsEarningHistory` (
   `ID` int(11) NOT NULL,
   `CustomerID` int(11) NOT NULL,
@@ -1130,7 +1041,6 @@ INSERT INTO `LoyaltyPointsEarningHistory` (`ID`, `CustomerID`, `GainingPointsID`
 -- Table structure for table `LoyaltyPointsSpendingAction`
 --
 
-DROP TABLE IF EXISTS `LoyaltyPointsSpendingAction`;
 CREATE TABLE `LoyaltyPointsSpendingAction` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL
@@ -1150,7 +1060,6 @@ INSERT INTO `LoyaltyPointsSpendingAction` (`ID`, `Name`) VALUES
 -- Table structure for table `LoyaltyPointsSpendingHistory`
 --
 
-DROP TABLE IF EXISTS `LoyaltyPointsSpendingHistory`;
 CREATE TABLE `LoyaltyPointsSpendingHistory` (
   `ID` int(11) NOT NULL,
   `CustomerID` int(11) NOT NULL,
@@ -1165,7 +1074,6 @@ CREATE TABLE `LoyaltyPointsSpendingHistory` (
 -- Table structure for table `LoyaltyTier`
 --
 
-DROP TABLE IF EXISTS `LoyaltyTier`;
 CREATE TABLE `LoyaltyTier` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -1187,7 +1095,6 @@ INSERT INTO `LoyaltyTier` (`ID`, `Name`, `MinimumPoints`) VALUES
 -- Table structure for table `LoyaltyTierBenefits`
 --
 
-DROP TABLE IF EXISTS `LoyaltyTierBenefits`;
 CREATE TABLE `LoyaltyTierBenefits` (
   `BenefitID` int(11) NOT NULL,
   `TierID` int(11) NOT NULL,
@@ -1220,7 +1127,6 @@ INSERT INTO `LoyaltyTierBenefits` (`BenefitID`, `TierID`, `Value`) VALUES
 -- Table structure for table `NewBeaconRegion`
 --
 
-DROP TABLE IF EXISTS `NewBeaconRegion`;
 CREATE TABLE `NewBeaconRegion` (
   `ID` int(11) NOT NULL,
   `UniqueID` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -1234,7 +1140,6 @@ CREATE TABLE `NewBeaconRegion` (
 -- Table structure for table `Occupancy`
 --
 
-DROP TABLE IF EXISTS `Occupancy`;
 CREATE TABLE `Occupancy` (
   `ID` int(11) NOT NULL,
   `RoomID` int(11) NOT NULL,
@@ -1245,12 +1150,101 @@ CREATE TABLE `Occupancy` (
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `Occupancy`
+-- Table structure for table `OfferBeaconRegion`
 --
 
-INSERT INTO `Occupancy` (`ID`, `RoomID`, `ReservationID`, `RoomPasswordHash`, `CheckIn`, `CheckOut`, `Modified`) VALUES
-(31, 1, 8, '$2y$10$MdQH6.pdA2AUHBcty3fziOG1ANNUIGvNS9TXDO6B887bZ.rFClkIu', '2018-07-20 11:38:05', NULL, '2018-07-20 08:38:05');
+CREATE TABLE `OfferBeaconRegion` (
+  `ID` int(11) NOT NULL,
+  `BeaconMonitoredRegionID` int(11) NOT NULL,
+  `HotelServicesOfferID` int(11) NOT NULL,
+  `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `OfferBeaconRegion`
+--
+
+INSERT INTO `OfferBeaconRegion` (`ID`, `BeaconMonitoredRegionID`, `HotelServicesOfferID`, `Modified`) VALUES
+(1, 13, 2, '2018-07-06 14:23:17'),
+(2, 14, 2, '2018-07-06 14:23:17'),
+(3, 15, 2, '2018-07-06 14:23:17'),
+(4, 16, 3, '2018-07-06 14:23:17'),
+(5, 17, 3, '2018-07-06 14:23:17'),
+(6, 18, 3, '2018-07-06 14:23:17'),
+(7, 14, 3, '2018-07-06 14:23:17');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `OfferCoupon`
+--
+
+CREATE TABLE `OfferCoupon` (
+  `ID` int(11) NOT NULL,
+  `CustomerID` int(11) DEFAULT NULL,
+  `ExclusiveOfferID` int(11) DEFAULT NULL,
+  `Code` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Claimed` tinyint(1) DEFAULT '0',
+  `Created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `OfferExclusive`
+--
+
+CREATE TABLE `OfferExclusive` (
+  `ID` int(11) NOT NULL,
+  `ServiceID` int(11) NOT NULL,
+  `Price` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Discount` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Description` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+  `Special` tinyint(1) NOT NULL,
+  `StartDate` date DEFAULT NULL,
+  `EndDate` date DEFAULT NULL,
+  `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `OfferExclusive`
+--
+
+INSERT INTO `OfferExclusive` (`ID`, `ServiceID`, `Price`, `Discount`, `Description`, `Special`, `StartDate`, `EndDate`, `Modified`) VALUES
+(2, 15, NULL, NULL, 'Get a 15% discount at GENTLEMAN\'S AFTERNOON TEA', 0, NULL, NULL, '2018-07-25 09:28:51'),
+(3, 15, NULL, NULL, 'Enjoy LOBSTER & CHAMPAGNE with only 60euro for 2 people', 0, NULL, NULL, '2018-07-25 09:28:51');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `OfferExclusiveTier`
+--
+
+CREATE TABLE `OfferExclusiveTier` (
+  `ID` int(11) NOT NULL,
+  `ExclusiveOfferID` int(11) NOT NULL,
+  `TierID` int(11) NOT NULL,
+  `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `OfferGeneral`
+--
+
+CREATE TABLE `OfferGeneral` (
+  `ID` int(11) NOT NULL,
+  `Price` int(11) DEFAULT NULL,
+  `Discount` int(11) DEFAULT NULL,
+  `Description` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+  `StartDate` date DEFAULT NULL,
+  `EndDate` date DEFAULT NULL,
+  `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1258,7 +1252,6 @@ INSERT INTO `Occupancy` (`ID`, `RoomID`, `ReservationID`, `RoomPasswordHash`, `C
 -- Table structure for table `Partner`
 --
 
-DROP TABLE IF EXISTS `Partner`;
 CREATE TABLE `Partner` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1278,7 +1271,6 @@ INSERT INTO `Partner` (`ID`, `Name`, `Description`) VALUES
 -- Table structure for table `Payment`
 --
 
-DROP TABLE IF EXISTS `Payment`;
 CREATE TABLE `Payment` (
   `ID` int(11) NOT NULL,
   `ReservationID` int(11) NOT NULL,
@@ -1293,7 +1285,6 @@ CREATE TABLE `Payment` (
 -- Table structure for table `PaymentMethod`
 --
 
-DROP TABLE IF EXISTS `PaymentMethod`;
 CREATE TABLE `PaymentMethod` (
   `ID` int(11) NOT NULL,
   `Method` varchar(500) COLLATE utf8_unicode_ci NOT NULL
@@ -1313,7 +1304,6 @@ INSERT INTO `PaymentMethod` (`ID`, `Method`) VALUES
 -- Table structure for table `PhoneType`
 --
 
-DROP TABLE IF EXISTS `PhoneType`;
 CREATE TABLE `PhoneType` (
   `ID` int(11) NOT NULL,
   `Type` varchar(500) COLLATE utf8_unicode_ci NOT NULL
@@ -1334,7 +1324,6 @@ INSERT INTO `PhoneType` (`ID`, `Type`) VALUES
 -- Table structure for table `Rating`
 --
 
-DROP TABLE IF EXISTS `Rating`;
 CREATE TABLE `Rating` (
   `ReservationID` int(11) NOT NULL,
   `Rating` float NOT NULL,
@@ -1347,7 +1336,6 @@ CREATE TABLE `Rating` (
 -- Table structure for table `Reservation`
 --
 
-DROP TABLE IF EXISTS `Reservation`;
 CREATE TABLE `Reservation` (
   `ID` int(11) NOT NULL,
   `CustomerID` int(11) NOT NULL,
@@ -1366,7 +1354,7 @@ CREATE TABLE `Reservation` (
 --
 
 INSERT INTO `Reservation` (`ID`, `CustomerID`, `RoomTypeID`, `ReservationTypeID`, `Adults`, `Children`, `DateBooked`, `StartDate`, `EndDate`, `Modified`) VALUES
-(8, 23, 1, 3, 1, 0, '2018-07-20', '2018-07-20', '2018-07-21', '2018-07-20 08:37:51');
+(11, 23, 4, 3, 1, 0, '2018-07-24', '2018-07-24', '2018-07-25', '2018-07-24 12:22:22');
 
 -- --------------------------------------------------------
 
@@ -1374,7 +1362,6 @@ INSERT INTO `Reservation` (`ID`, `CustomerID`, `RoomTypeID`, `ReservationTypeID`
 -- Table structure for table `ReservationType`
 --
 
-DROP TABLE IF EXISTS `ReservationType`;
 CREATE TABLE `ReservationType` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL
@@ -1395,7 +1382,6 @@ INSERT INTO `ReservationType` (`ID`, `Name`) VALUES
 -- Table structure for table `Room`
 --
 
-DROP TABLE IF EXISTS `Room`;
 CREATE TABLE `Room` (
   `ID` int(11) NOT NULL,
   `Number` int(11) NOT NULL,
@@ -1426,7 +1412,6 @@ INSERT INTO `Room` (`ID`, `Number`, `Floor`, `RoomTypeID`, `Availability`) VALUE
 -- Table structure for table `RoomServiceOrder`
 --
 
-DROP TABLE IF EXISTS `RoomServiceOrder`;
 CREATE TABLE `RoomServiceOrder` (
   `ID` int(11) NOT NULL,
   `ReservationID` int(11) NOT NULL,
@@ -1440,7 +1425,6 @@ CREATE TABLE `RoomServiceOrder` (
 -- Table structure for table `RoomServiceOrderItem`
 --
 
-DROP TABLE IF EXISTS `RoomServiceOrderItem`;
 CREATE TABLE `RoomServiceOrderItem` (
   `OrderID` int(11) NOT NULL,
   `FoodID` int(11) NOT NULL,
@@ -1453,7 +1437,6 @@ CREATE TABLE `RoomServiceOrderItem` (
 -- Table structure for table `RoomType`
 --
 
-DROP TABLE IF EXISTS `RoomType`;
 CREATE TABLE `RoomType` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
@@ -1484,7 +1467,6 @@ INSERT INTO `RoomType` (`ID`, `Name`, `Capacity`, `Adults`, `ChildrenSupported`,
 -- Table structure for table `RoomTypeAmenity`
 --
 
-DROP TABLE IF EXISTS `RoomTypeAmenity`;
 CREATE TABLE `RoomTypeAmenity` (
   `AmenityID` int(11) NOT NULL,
   `RoomTypeID` int(11) NOT NULL
@@ -1496,7 +1478,6 @@ CREATE TABLE `RoomTypeAmenity` (
 -- Table structure for table `RoomTypeCash`
 --
 
-DROP TABLE IF EXISTS `RoomTypeCash`;
 CREATE TABLE `RoomTypeCash` (
   `ID` int(11) NOT NULL,
   `RoomTypeID` int(11) NOT NULL,
@@ -1530,7 +1511,6 @@ INSERT INTO `RoomTypeCash` (`ID`, `RoomTypeID`, `Adults`, `Children`, `CurrencyI
 -- Table structure for table `RoomTypeCashPoints`
 --
 
-DROP TABLE IF EXISTS `RoomTypeCashPoints`;
 CREATE TABLE `RoomTypeCashPoints` (
   `ID` int(11) NOT NULL,
   `RoomTypeID` int(11) NOT NULL,
@@ -1565,7 +1545,6 @@ INSERT INTO `RoomTypeCashPoints` (`ID`, `RoomTypeID`, `Adults`, `Children`, `Cur
 -- Table structure for table `RoomTypePoints`
 --
 
-DROP TABLE IF EXISTS `RoomTypePoints`;
 CREATE TABLE `RoomTypePoints` (
   `ID` int(11) NOT NULL,
   `RoomTypeID` int(11) NOT NULL,
@@ -1599,7 +1578,6 @@ INSERT INTO `RoomTypePoints` (`ID`, `RoomTypeID`, `Adults`, `Children`, `Spendin
 -- Table structure for table `Title`
 --
 
-DROP TABLE IF EXISTS `Title`;
 CREATE TABLE `Title` (
   `ID` int(11) NOT NULL,
   `Title` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL
@@ -1657,6 +1635,13 @@ ALTER TABLE `Beacon`
   ADD UNIQUE KEY `Name` (`Name`);
 
 --
+-- Indexes for table `BeaconFeature`
+--
+ALTER TABLE `BeaconFeature`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `Type` (`Feature`);
+
+--
 -- Indexes for table `BeaconMajor`
 --
 ALTER TABLE `BeaconMajor`
@@ -1676,14 +1661,6 @@ ALTER TABLE `BeaconMonitoredRegion`
   ADD KEY `BeaconMonitoredRegion_BeaconRegionType` (`RegionTypeID`);
 
 --
--- Indexes for table `BeaconMonitoredRegionOffer`
---
-ALTER TABLE `BeaconMonitoredRegionOffer`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `BeaconMonitoredRegionID` (`BeaconMonitoredRegionID`,`HotelServicesOfferID`),
-  ADD KEY `BeaconMonitoredRegionOffer_HotelServicesOffer` (`HotelServicesOfferID`);
-
---
 -- Indexes for table `BeaconMonitoredRegionRoom`
 --
 ALTER TABLE `BeaconMonitoredRegionRoom`
@@ -1692,11 +1669,12 @@ ALTER TABLE `BeaconMonitoredRegionRoom`
   ADD UNIQUE KEY `BeaconRegionID` (`BeaconRegionID`);
 
 --
--- Indexes for table `BeaconRegionType`
+-- Indexes for table `BeaconRegionFeature`
 --
-ALTER TABLE `BeaconRegionType`
+ALTER TABLE `BeaconRegionFeature`
   ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `Type` (`Type`);
+  ADD UNIQUE KEY `UNIQUE` (`RegionID`,`FeatureID`),
+  ADD KEY `BeaconRegionFeatures_BeaconRegionType` (`FeatureID`);
 
 --
 -- Indexes for table `BeaconUUID`
@@ -1789,12 +1767,6 @@ ALTER TABLE `Food_Category_Time`
   ADD KEY `FoodTime_Food_Category_Time` (`FoodTimeID`);
 
 --
--- Indexes for table `HotelGeneralOffer`
---
-ALTER TABLE `HotelGeneralOffer`
-  ADD PRIMARY KEY (`ID`);
-
---
 -- Indexes for table `HotelService`
 --
 ALTER TABLE `HotelService`
@@ -1807,21 +1779,6 @@ ALTER TABLE `HotelService`
 --
 ALTER TABLE `HotelServicesCategory`
   ADD PRIMARY KEY (`ID`);
-
---
--- Indexes for table `HotelServicesCustomerCoupon`
---
-ALTER TABLE `HotelServicesCustomerCoupon`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `HotelServicesCustomerCoupon_HotelServicesOffer` (`HotelServicesOfferID`),
-  ADD KEY `HotelServicesCustomerCoupon_Customer` (`CustomerID`);
-
---
--- Indexes for table `HotelServicesOffer`
---
-ALTER TABLE `HotelServicesOffer`
-  ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `HotelServiceID` (`HotelServiceID`,`TierID`);
 
 --
 -- Indexes for table `LoyaltyBenefits`
@@ -1883,6 +1840,43 @@ ALTER TABLE `Occupancy`
   ADD PRIMARY KEY (`ID`),
   ADD UNIQUE KEY `ReservationID` (`ReservationID`),
   ADD KEY `Room_Occupancy` (`RoomID`);
+
+--
+-- Indexes for table `OfferBeaconRegion`
+--
+ALTER TABLE `OfferBeaconRegion`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `BeaconMonitoredRegionID` (`BeaconMonitoredRegionID`,`HotelServicesOfferID`),
+  ADD KEY `BeaconMonitoredRegionOffer_HotelServicesOffer` (`HotelServicesOfferID`);
+
+--
+-- Indexes for table `OfferCoupon`
+--
+ALTER TABLE `OfferCoupon`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `HotelServicesCustomerCoupon_HotelServicesOffer` (`ExclusiveOfferID`),
+  ADD KEY `HotelServicesCustomerCoupon_Customer` (`CustomerID`);
+
+--
+-- Indexes for table `OfferExclusive`
+--
+ALTER TABLE `OfferExclusive`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `ServiceID` (`ServiceID`,`Price`,`Discount`);
+
+--
+-- Indexes for table `OfferExclusiveTier`
+--
+ALTER TABLE `OfferExclusiveTier`
+  ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `UNIQUE` (`ExclusiveOfferID`,`TierID`),
+  ADD KEY `OfferExclusiveTier_LoyaltyTier` (`TierID`);
+
+--
+-- Indexes for table `OfferGeneral`
+--
+ALTER TABLE `OfferGeneral`
+  ADD PRIMARY KEY (`ID`);
 
 --
 -- Indexes for table `Partner`
@@ -2017,6 +2011,12 @@ ALTER TABLE `Beacon`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
+-- AUTO_INCREMENT for table `BeaconFeature`
+--
+ALTER TABLE `BeaconFeature`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `BeaconMajor`
 --
 ALTER TABLE `BeaconMajor`
@@ -2029,22 +2029,16 @@ ALTER TABLE `BeaconMonitoredRegion`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
--- AUTO_INCREMENT for table `BeaconMonitoredRegionOffer`
---
-ALTER TABLE `BeaconMonitoredRegionOffer`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
 -- AUTO_INCREMENT for table `BeaconMonitoredRegionRoom`
 --
 ALTER TABLE `BeaconMonitoredRegionRoom`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT for table `BeaconRegionType`
+-- AUTO_INCREMENT for table `BeaconRegionFeature`
 --
-ALTER TABLE `BeaconRegionType`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `BeaconRegionFeature`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `BeaconUUID`
@@ -2113,12 +2107,6 @@ ALTER TABLE `FoodTime`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `HotelGeneralOffer`
---
-ALTER TABLE `HotelGeneralOffer`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `HotelService`
 --
 ALTER TABLE `HotelService`
@@ -2129,18 +2117,6 @@ ALTER TABLE `HotelService`
 --
 ALTER TABLE `HotelServicesCategory`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `HotelServicesCustomerCoupon`
---
-ALTER TABLE `HotelServicesCustomerCoupon`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `HotelServicesOffer`
---
-ALTER TABLE `HotelServicesOffer`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `LoyaltyBenefits`
@@ -2188,7 +2164,37 @@ ALTER TABLE `NewBeaconRegion`
 -- AUTO_INCREMENT for table `Occupancy`
 --
 ALTER TABLE `Occupancy`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `OfferBeaconRegion`
+--
+ALTER TABLE `OfferBeaconRegion`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `OfferCoupon`
+--
+ALTER TABLE `OfferCoupon`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `OfferExclusive`
+--
+ALTER TABLE `OfferExclusive`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `OfferExclusiveTier`
+--
+ALTER TABLE `OfferExclusiveTier`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `OfferGeneral`
+--
+ALTER TABLE `OfferGeneral`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `Partner`
@@ -2218,7 +2224,7 @@ ALTER TABLE `PhoneType`
 -- AUTO_INCREMENT for table `Reservation`
 --
 ALTER TABLE `Reservation`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `ReservationType`
@@ -2302,15 +2308,8 @@ ALTER TABLE `BeaconMajor`
 ALTER TABLE `BeaconMonitoredRegion`
   ADD CONSTRAINT `BeaconMonitoredRegion_Beacon` FOREIGN KEY (`BeaconID`) REFERENCES `Beacon` (`ID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `BeaconMonitoredRegion_BeaconMajor` FOREIGN KEY (`BeaconMajorID`) REFERENCES `BeaconMajor` (`ID`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `BeaconMonitoredRegion_BeaconRegionType` FOREIGN KEY (`RegionTypeID`) REFERENCES `BeaconRegionType` (`ID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `BeaconMonitoredRegion_BeaconRegionType` FOREIGN KEY (`RegionTypeID`) REFERENCES `BeaconFeature` (`ID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `BeaconMonitoredRegion_BeaconUUID` FOREIGN KEY (`BeaconUUIDID`) REFERENCES `BeaconUUID` (`ID`) ON UPDATE CASCADE;
-
---
--- Constraints for table `BeaconMonitoredRegionOffer`
---
-ALTER TABLE `BeaconMonitoredRegionOffer`
-  ADD CONSTRAINT `BeaconMonitoredRegionOffer_BeaconMonitoredRegion` FOREIGN KEY (`BeaconMonitoredRegionID`) REFERENCES `BeaconMonitoredRegion` (`ID`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `BeaconMonitoredRegionOffer_HotelServicesOffer` FOREIGN KEY (`HotelServicesOfferID`) REFERENCES `HotelServicesOffer` (`ID`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `BeaconMonitoredRegionRoom`
@@ -2318,6 +2317,13 @@ ALTER TABLE `BeaconMonitoredRegionOffer`
 ALTER TABLE `BeaconMonitoredRegionRoom`
   ADD CONSTRAINT `BeaconMonitoredRegionRoom_BeaconMonitoredRegion` FOREIGN KEY (`BeaconRegionID`) REFERENCES `BeaconMonitoredRegion` (`ID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `BeaconMonitoredRegionRoom_Room` FOREIGN KEY (`RoomID`) REFERENCES `Room` (`ID`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `BeaconRegionFeature`
+--
+ALTER TABLE `BeaconRegionFeature`
+  ADD CONSTRAINT `BeaconRegionFeatures_BeaconRegion` FOREIGN KEY (`RegionID`) REFERENCES `BeaconMonitoredRegion` (`ID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `BeaconRegionFeatures_BeaconRegionType` FOREIGN KEY (`FeatureID`) REFERENCES `BeaconFeature` (`ID`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `Charge`
@@ -2363,19 +2369,6 @@ ALTER TABLE `HotelService`
   ADD CONSTRAINT `HotelService_Partner` FOREIGN KEY (`PartnerID`) REFERENCES `Partner` (`ID`) ON DELETE NO ACTION;
 
 --
--- Constraints for table `HotelServicesCustomerCoupon`
---
-ALTER TABLE `HotelServicesCustomerCoupon`
-  ADD CONSTRAINT `HotelServicesCustomerCoupon_Customer` FOREIGN KEY (`CustomerID`) REFERENCES `Customer` (`ID`),
-  ADD CONSTRAINT `HotelServicesCustomerCoupon_HotelServicesOffer` FOREIGN KEY (`HotelServicesOfferID`) REFERENCES `HotelServicesOffer` (`ID`);
-
---
--- Constraints for table `HotelServicesOffer`
---
-ALTER TABLE `HotelServicesOffer`
-  ADD CONSTRAINT `HotelServicesOffer_HotelService` FOREIGN KEY (`HotelServiceID`) REFERENCES `HotelService` (`ID`) ON UPDATE CASCADE;
-
---
 -- Constraints for table `LoyaltyPointsEarningHistory`
 --
 ALTER TABLE `LoyaltyPointsEarningHistory`
@@ -2402,6 +2395,33 @@ ALTER TABLE `LoyaltyTierBenefits`
 ALTER TABLE `Occupancy`
   ADD CONSTRAINT `Reservation_Occupancy` FOREIGN KEY (`ReservationID`) REFERENCES `Reservation` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `Room_Occupancy` FOREIGN KEY (`RoomID`) REFERENCES `Room` (`ID`);
+
+--
+-- Constraints for table `OfferBeaconRegion`
+--
+ALTER TABLE `OfferBeaconRegion`
+  ADD CONSTRAINT `BeaconMonitoredRegionOffer_BeaconMonitoredRegion` FOREIGN KEY (`BeaconMonitoredRegionID`) REFERENCES `BeaconMonitoredRegion` (`ID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `BeaconMonitoredRegionOffer_HotelServicesOffer` FOREIGN KEY (`HotelServicesOfferID`) REFERENCES `OfferExclusive` (`ID`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `OfferCoupon`
+--
+ALTER TABLE `OfferCoupon`
+  ADD CONSTRAINT `HotelServicesCustomerCoupon_Customer` FOREIGN KEY (`CustomerID`) REFERENCES `Customer` (`ID`),
+  ADD CONSTRAINT `HotelServicesCustomerCoupon_HotelServicesOffer` FOREIGN KEY (`ExclusiveOfferID`) REFERENCES `OfferExclusive` (`ID`);
+
+--
+-- Constraints for table `OfferExclusive`
+--
+ALTER TABLE `OfferExclusive`
+  ADD CONSTRAINT `HotelServicesOffer_HotelService` FOREIGN KEY (`ServiceID`) REFERENCES `HotelService` (`ID`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `OfferExclusiveTier`
+--
+ALTER TABLE `OfferExclusiveTier`
+  ADD CONSTRAINT `OfferExclusiveTier_LoyaltyTier` FOREIGN KEY (`TierID`) REFERENCES `LoyaltyTier` (`ID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `OfferExclusiveTier_OfferExclusive` FOREIGN KEY (`ExclusiveOfferID`) REFERENCES `OfferExclusive` (`ID`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `Payment`

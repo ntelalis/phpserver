@@ -1,6 +1,7 @@
 <?php
 
-/*ini_set('display_errors',1);
+/*
+ini_set('display_errors',1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
@@ -15,13 +16,13 @@ $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
 
-  $query = "SELECT v.ID, v.UniqueID, v.UUID, v.Major, v.Minor, v.Exclusive, v.Background, v.RegionType, v.Modified
+  $query = "SELECT v.ID, v.UniqueID, v.UUID, v.Major, v.Minor, v.Exclusive, v.Background, v.Modified
             FROM BeaconRegionView v
             ORDER BY ID";
 
   $stmt = $mysqli->prepare($query);
   $stmt->execute();
-  $stmt->bind_result($id, $uniqueID, $uuid, $major, $minor, $exclusive, $background, $regionType, $modified);
+  $stmt->bind_result($id, $uniqueID, $uuid, $major, $minor, $exclusive, $background, $modified);
   $stmt->store_result();
 
   if (isset($_POST['check']) && !empty($_POST['check'])) {
@@ -58,7 +59,6 @@ $mysqli->set_charset("utf8");
       $beaconRegion->minor = $minor;
       $beaconRegion->exclusive = $exclusive == 1;
       $beaconRegion->background = $background == 1;
-      $beaconRegion->regionType = $regionType;
       $beaconRegion->minor = $minor;
       $beaconRegion->modified = $modified;
       $beaconRegionArray[] = $beaconRegion;

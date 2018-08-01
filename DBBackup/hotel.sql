@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 30, 2018 at 05:01 PM
+-- Generation Time: Aug 01, 2018 at 11:23 AM
 -- Server version: 5.7.22-0ubuntu0.17.10.1
 -- PHP Version: 7.1.17-0ubuntu0.17.10.1
 
@@ -100,7 +100,8 @@ INSERT INTO `Beacon` (`ID`, `BeaconMajorID`, `Minor`, `Name`, `Modified`) VALUES
 (18, 1, 8, 'room208', '2018-07-10 09:32:39'),
 (19, 1, 9, 'room302', '2018-07-10 09:32:39'),
 (20, 1, 10, 'room504', '2018-07-10 09:32:39'),
-(21, 1, 88, 'room101v2', '2018-07-10 17:42:33');
+(21, 1, 88, 'room101v2', '2018-07-10 17:42:33'),
+(22, 4, 29540, 'ibeacontest', '2018-07-31 09:45:44');
 
 -- --------------------------------------------------------
 
@@ -147,7 +148,8 @@ CREATE TABLE `BeaconMajor` (
 INSERT INTO `BeaconMajor` (`ID`, `Name`, `Major`, `UUID`, `Description`, `Modified`) VALUES
 (1, 'room', 1, 1, 'Beacons for unlocking room doors.', '2018-07-06 15:06:45'),
 (2, 'restaurant', 2, 1, 'Beacons at the restaurant/ bar area', '2018-07-06 14:33:29'),
-(3, 'entrance', 3, 1, 'meow', '2018-07-06 14:33:33');
+(3, 'entrance', 3, 1, 'meow', '2018-07-06 14:33:33'),
+(4, 'ibeacontest', 5120, 2, 'testing', '2018-07-31 09:45:19');
 
 -- --------------------------------------------------------
 
@@ -163,7 +165,6 @@ CREATE TABLE `BeaconMonitoredRegion` (
   `BeaconID` int(11) DEFAULT NULL,
   `Exclusive` tinyint(1) NOT NULL,
   `Background` tinyint(1) NOT NULL,
-  `RegionTypeID` int(11) NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -171,22 +172,23 @@ CREATE TABLE `BeaconMonitoredRegion` (
 -- Dumping data for table `BeaconMonitoredRegion`
 --
 
-INSERT INTO `BeaconMonitoredRegion` (`ID`, `BeaconRegionUniqueID`, `BeaconUUIDID`, `BeaconMajorID`, `BeaconID`, `Exclusive`, `Background`, `RegionTypeID`, `Modified`) VALUES
-(13, 'hotel', 1, NULL, NULL, 0, 1, 2, '2018-07-16 18:37:34'),
-(14, 'room101', NULL, NULL, 1, 1, 0, 1, '2018-07-16 18:36:21'),
-(15, 'room105', NULL, NULL, 2, 1, 0, 1, '2018-07-16 18:36:23'),
-(16, 'restaurant', NULL, 2, NULL, 0, 1, 2, '2018-07-16 18:37:39'),
-(17, 'restaurantBar', NULL, NULL, 3, 0, 1, 2, '2018-07-16 18:37:43'),
-(18, 'entrance', NULL, 3, NULL, 0, 1, 2, '2018-07-16 18:37:45'),
-(19, 'room102', NULL, NULL, 13, 1, 0, 1, '2018-07-16 18:36:27'),
-(20, 'room103', NULL, NULL, 14, 1, 0, 1, '2018-07-16 18:36:29'),
-(21, 'room104', NULL, NULL, 15, 1, 0, 1, '2018-07-16 18:36:31'),
-(22, 'room201', NULL, NULL, 16, 1, 0, 1, '2018-07-16 18:36:32'),
-(23, 'room202', NULL, NULL, 17, 1, 0, 1, '2018-07-16 18:36:33'),
-(24, 'room208', NULL, NULL, 18, 1, 0, 1, '2018-07-16 18:36:34'),
-(25, 'room302', NULL, NULL, 19, 1, 0, 1, '2018-07-16 18:36:35'),
-(26, 'room504', NULL, NULL, 20, 1, 0, 1, '2018-07-16 18:36:37'),
-(27, 'room101v2', NULL, NULL, 21, 1, 0, 3, '2018-07-16 18:36:38');
+INSERT INTO `BeaconMonitoredRegion` (`ID`, `BeaconRegionUniqueID`, `BeaconUUIDID`, `BeaconMajorID`, `BeaconID`, `Exclusive`, `Background`, `Modified`) VALUES
+(13, 'hotel', 1, NULL, NULL, 0, 1, '2018-07-16 18:37:34'),
+(14, 'room101', NULL, NULL, 1, 1, 0, '2018-07-16 18:36:21'),
+(15, 'room105', NULL, NULL, 2, 1, 0, '2018-07-16 18:36:23'),
+(16, 'restaurant', NULL, 2, NULL, 0, 1, '2018-07-16 18:37:39'),
+(17, 'restaurantBar', NULL, NULL, 3, 0, 1, '2018-07-16 18:37:43'),
+(18, 'entrance', NULL, 3, NULL, 0, 1, '2018-07-16 18:37:45'),
+(19, 'room102', NULL, NULL, 13, 1, 0, '2018-07-16 18:36:27'),
+(20, 'room103', NULL, NULL, 14, 1, 0, '2018-07-16 18:36:29'),
+(21, 'room104', NULL, NULL, 15, 1, 0, '2018-07-16 18:36:31'),
+(22, 'room201', NULL, NULL, 16, 1, 0, '2018-07-16 18:36:32'),
+(23, 'room202', NULL, NULL, 17, 1, 0, '2018-07-16 18:36:33'),
+(24, 'room208', NULL, NULL, 18, 1, 0, '2018-07-16 18:36:34'),
+(25, 'room302', NULL, NULL, 19, 1, 0, '2018-07-16 18:36:35'),
+(26, 'room504', NULL, NULL, 20, 1, 0, '2018-07-16 18:36:37'),
+(27, 'room101v2', NULL, NULL, 21, 1, 0, '2018-07-16 18:36:38'),
+(28, 'ibeacontest', NULL, NULL, 22, 0, 1, '2018-07-31 09:46:29');
 
 -- --------------------------------------------------------
 
@@ -249,7 +251,8 @@ INSERT INTO `BeaconRegionFeature` (`ID`, `RegionID`, `FeatureID`, `Modified`) VA
 (11, 23, 1, '2018-07-26 17:55:46'),
 (12, 24, 1, '2018-07-26 17:55:46'),
 (13, 25, 1, '2018-07-26 17:55:46'),
-(14, 26, 1, '2018-07-26 17:55:46');
+(14, 26, 1, '2018-07-26 17:55:46'),
+(15, 28, 2, '2018-07-31 09:47:03');
 
 -- --------------------------------------------------------
 
@@ -258,6 +261,14 @@ INSERT INTO `BeaconRegionFeature` (`ID`, `RegionID`, `FeatureID`, `Modified`) VA
 -- (See below for the actual view)
 --
 CREATE TABLE `BeaconRegionView` (
+`ID` int(11)
+,`UniqueID` varchar(500)
+,`UUID` varchar(500)
+,`Major` int(11)
+,`Minor` int(11)
+,`Exclusive` tinyint(4)
+,`Background` tinyint(4)
+,`Modified` timestamp
 );
 
 -- --------------------------------------------------------
@@ -277,7 +288,8 @@ CREATE TABLE `BeaconUUID` (
 --
 
 INSERT INTO `BeaconUUID` (`ID`, `UUID`, `Modified`) VALUES
-(1, '3d8f1dc0-1b23-42f5-9fc1-849f161b2c0d', '2018-07-15 09:26:44');
+(1, '3d8f1dc0-1b23-42f5-9fc1-849f161b2c0d', '2018-07-15 09:26:44'),
+(2, 'fe913213-b311-4a42-8c16-47faeac938db', '2018-07-31 09:44:19');
 
 -- --------------------------------------------------------
 
@@ -1601,7 +1613,7 @@ INSERT INTO `Title` (`ID`, `Title`) VALUES
 --
 DROP TABLE IF EXISTS `BeaconRegionView`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `BeaconRegionView`  AS  select `bmr`.`ID` AS `ID`,`bmr`.`BeaconRegionUniqueID` AS `UniqueID`,`uuid`.`UUID` AS `UUID`,NULL AS `Major`,NULL AS `Minor`,`bmr`.`Exclusive` AS `Exclusive`,`bmr`.`Background` AS `Background`,`brt`.`Type` AS `RegionType`,greatest(`bmr`.`Modified`,`uuid`.`Modified`,`brt`.`Modified`) AS `Modified` from ((`BeaconMonitoredRegion` `bmr` join `BeaconUUID` `uuid`) join `BeaconRegionType` `brt`) where ((`bmr`.`BeaconUUIDID` = `uuid`.`ID`) and (`brt`.`ID` = `bmr`.`RegionTypeID`)) union select `bmr`.`ID` AS `ID`,`bmr`.`BeaconRegionUniqueID` AS `UniqueID`,`uuid`.`UUID` AS `UUID`,`bm`.`Major` AS `Major`,NULL AS `Minor`,`bmr`.`Exclusive` AS `Exclusive`,`bmr`.`Background` AS `Background`,`brt`.`Type` AS `RegionType`,greatest(`bmr`.`Modified`,`uuid`.`Modified`,`bm`.`Modified`,`brt`.`Modified`) AS `Modified` from (((`BeaconMonitoredRegion` `bmr` join `BeaconMajor` `bm`) join `BeaconUUID` `uuid`) join `BeaconRegionType` `brt`) where ((`bmr`.`BeaconMajorID` = `bm`.`ID`) and (`bm`.`UUID` = `uuid`.`ID`) and (`brt`.`ID` = `bmr`.`RegionTypeID`)) union select `bmr`.`ID` AS `ID`,`bmr`.`BeaconRegionUniqueID` AS `UniqueID`,`uuid`.`UUID` AS `UUID`,`bm`.`Major` AS `Major`,`b`.`Minor` AS `Minor`,`bmr`.`Exclusive` AS `Exclusive`,`bmr`.`Background` AS `Background`,`brt`.`Type` AS `RegionType`,greatest(`bmr`.`Modified`,`uuid`.`Modified`,`bm`.`Modified`,`b`.`Modified`,`brt`.`Modified`) AS `Modified` from ((((`BeaconMonitoredRegion` `bmr` join `BeaconMajor` `bm`) join `Beacon` `b`) join `BeaconUUID` `uuid`) join `BeaconRegionType` `brt`) where ((`bmr`.`BeaconID` = `b`.`ID`) and (`b`.`BeaconMajorID` = `bm`.`ID`) and (`bm`.`UUID` = `uuid`.`ID`) and (`brt`.`ID` = `bmr`.`RegionTypeID`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `BeaconRegionView`  AS  select `bmr`.`ID` AS `ID`,`bmr`.`BeaconRegionUniqueID` AS `UniqueID`,`uuid`.`UUID` AS `UUID`,NULL AS `Major`,NULL AS `Minor`,`bmr`.`Exclusive` AS `Exclusive`,`bmr`.`Background` AS `Background`,greatest(`bmr`.`Modified`,`uuid`.`Modified`) AS `Modified` from (`BeaconMonitoredRegion` `bmr` join `BeaconUUID` `uuid`) where (`bmr`.`BeaconUUIDID` = `uuid`.`ID`) union select `bmr`.`ID` AS `ID`,`bmr`.`BeaconRegionUniqueID` AS `UniqueID`,`uuid`.`UUID` AS `UUID`,`bm`.`Major` AS `Major`,NULL AS `Minor`,`bmr`.`Exclusive` AS `Exclusive`,`bmr`.`Background` AS `Background`,greatest(`bmr`.`Modified`,`uuid`.`Modified`,`bm`.`Modified`) AS `Modified` from ((`BeaconMonitoredRegion` `bmr` join `BeaconMajor` `bm`) join `BeaconUUID` `uuid`) where ((`bmr`.`BeaconMajorID` = `bm`.`ID`) and (`bm`.`UUID` = `uuid`.`ID`)) union select `bmr`.`ID` AS `ID`,`bmr`.`BeaconRegionUniqueID` AS `UniqueID`,`uuid`.`UUID` AS `UUID`,`bm`.`Major` AS `Major`,`b`.`Minor` AS `Minor`,`bmr`.`Exclusive` AS `Exclusive`,`bmr`.`Background` AS `Background`,greatest(`bmr`.`Modified`,`uuid`.`Modified`,`bm`.`Modified`,`b`.`Modified`) AS `Modified` from (((`BeaconMonitoredRegion` `bmr` join `BeaconMajor` `bm`) join `Beacon` `b`) join `BeaconUUID` `uuid`) where ((`bmr`.`BeaconID` = `b`.`ID`) and (`b`.`BeaconMajorID` = `bm`.`ID`) and (`bm`.`UUID` = `uuid`.`ID`)) ;
 
 --
 -- Indexes for dumped tables
@@ -1657,8 +1669,7 @@ ALTER TABLE `BeaconMonitoredRegion`
   ADD UNIQUE KEY `BeaconRegionUniqueID` (`BeaconRegionUniqueID`),
   ADD UNIQUE KEY `BeaconUUIDID` (`BeaconUUIDID`),
   ADD UNIQUE KEY `BeaconID` (`BeaconID`),
-  ADD UNIQUE KEY `BeaconMajorID` (`BeaconMajorID`) USING BTREE,
-  ADD KEY `BeaconMonitoredRegion_BeaconRegionType` (`RegionTypeID`);
+  ADD UNIQUE KEY `BeaconMajorID` (`BeaconMajorID`) USING BTREE;
 
 --
 -- Indexes for table `BeaconMonitoredRegionRoom`
@@ -2008,7 +2019,7 @@ ALTER TABLE `Amenity`
 -- AUTO_INCREMENT for table `Beacon`
 --
 ALTER TABLE `Beacon`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `BeaconFeature`
@@ -2020,13 +2031,13 @@ ALTER TABLE `BeaconFeature`
 -- AUTO_INCREMENT for table `BeaconMajor`
 --
 ALTER TABLE `BeaconMajor`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `BeaconMonitoredRegion`
 --
 ALTER TABLE `BeaconMonitoredRegion`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `BeaconMonitoredRegionRoom`
@@ -2038,13 +2049,13 @@ ALTER TABLE `BeaconMonitoredRegionRoom`
 -- AUTO_INCREMENT for table `BeaconRegionFeature`
 --
 ALTER TABLE `BeaconRegionFeature`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `BeaconUUID`
 --
 ALTER TABLE `BeaconUUID`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `Charge`
@@ -2308,7 +2319,6 @@ ALTER TABLE `BeaconMajor`
 ALTER TABLE `BeaconMonitoredRegion`
   ADD CONSTRAINT `BeaconMonitoredRegion_Beacon` FOREIGN KEY (`BeaconID`) REFERENCES `Beacon` (`ID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `BeaconMonitoredRegion_BeaconMajor` FOREIGN KEY (`BeaconMajorID`) REFERENCES `BeaconMajor` (`ID`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `BeaconMonitoredRegion_BeaconRegionType` FOREIGN KEY (`RegionTypeID`) REFERENCES `BeaconFeature` (`ID`) ON UPDATE CASCADE,
   ADD CONSTRAINT `BeaconMonitoredRegion_BeaconUUID` FOREIGN KEY (`BeaconUUIDID`) REFERENCES `BeaconUUID` (`ID`) ON UPDATE CASCADE;
 
 --

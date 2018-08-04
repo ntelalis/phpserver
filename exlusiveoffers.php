@@ -64,7 +64,7 @@ if (isset($_POST['customerID'])) {
       $exclusiveOffer->price = $price;
       $exclusiveOffer->discount = $discount;
       $exclusiveOffer->description = $description;
-      $exclusiveOffer->special = $special;
+      $exclusiveOffer->special = $special == 1;
       $exclusiveOffer->startDate = $startDate;
       $exclusiveOffer->endDate = $endDate;
       $exclusiveOffer->modified = $modified;

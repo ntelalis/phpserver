@@ -12,6 +12,8 @@ include 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
+//$_POST['check'] = '[{"id":1,"modified":"2115-01-18 01:00:58"}]';
+
 $query = "SELECT ID, Price, Discount, Description, StartDate, EndDate, Modified
           FROM OfferGeneral";
 $stmt = $mysqli->prepare($query);

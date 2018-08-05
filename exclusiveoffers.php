@@ -19,25 +19,28 @@ if (isset($_POST['customerID'])) {
 
   $customerID = $_POST['customerID'];
 
-  $query = "SELECT o.ID, o.ServiceID, o.Price, o.Discount, o.Description, o.Special, o.StartDate, o.EndDate, o.Modified
-           FROM OfferExclusive o
-           WHERE o.ID IN(SELECT t.ExclusiveOfferID
-    		                 FROM OfferExclusiveTier t
-    		                 WHERE t.TierID = getTierIDByCustomerID(?))
-           UNION
-           SELECT MinFreq.ID, MinFreq.ServiceID, MinFreq.Price, MinFreq.Discount, MinFreq.Description, MinFreq.Special, MinFreq.StartDate, MinFreq.EndDate, MinFreq.Modified
-           FROM(SELECT oe.*, hs.CategoryID, hscf.MinimumUsages
-                FROM OfferExclusiveFrequency oef, OfferExclusive oe, HotelService hs, HotelServiceCategoryFrequency hscf
-                WHERE oef.ExclusiveOfferID = oe.ID AND oe.ServiceID = hs.ID AND hs.CategoryID = hscf.CategoryID AND oef.FrequencyID = hscf.FrequencyID) MinFreq,
-	             (SELECT hs.CategoryID, COUNT(hs.CategoryID) AS CustomerCount
-                FROM Charge ch, Reservation r, HotelService hs
-	              WHERE ch.ReservationID = r.ID AND ch.HotelServiceID = hs.ID AND r.CustomerID = ?
-                GROUP BY hs.CategoryID) CusFreq
-           WHERE MinFreq.CategoryID = CusFreq.CategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount";
+  $query = "SELECT oe.ID, oe.ServiceID, oe.Price, oe.Discount, oe.Description, oe.Special, oe.StartDate,oe.EndDate, oc.Code, oc.Claimed, oc.Created, GREATEST(oe.Modified, IFNULL(oc.Modified, 0)) AS Modified
+            FROM (SELECT oe.ID, oe.ServiceID, oe.Price, oe.Discount, oe.Description, oe.Special, oe.StartDate, oe.EndDate, oe.Modified
+                 FROM OfferExclusive oe
+                 WHERE oe.ID IN(SELECT t.ExclusiveOfferID
+          		                 FROM OfferExclusiveTier t
+          		                 WHERE t.TierID = getTierIDByCustomerID(?))
+                 UNION
+                 SELECT MinFreq.ID, MinFreq.ServiceID, MinFreq.Price, MinFreq.Discount, MinFreq.Description, MinFreq.Special, MinFreq.StartDate, MinFreq.EndDate, MinFreq.Modified
+                 FROM(SELECT oe.*, hs.CategoryID, hscf.MinimumUsages
+                      FROM OfferExclusiveFrequency oef, OfferExclusive oe, HotelService hs, HotelServiceCategoryFrequency hscf
+                      WHERE oef.ExclusiveOfferID = oe.ID AND oe.ServiceID = hs.ID AND hs.CategoryID = hscf.CategoryID AND oef.FrequencyID = hscf.FrequencyID) MinFreq,
+      	             (SELECT hs.CategoryID, COUNT(hs.CategoryID) AS CustomerCount
+                      FROM Charge ch, Reservation r, HotelService hs
+      	              WHERE ch.ReservationID = r.ID AND ch.HotelServiceID = hs.ID AND r.CustomerID = ?
+                      GROUP BY hs.CategoryID) CusFreq
+                 WHERE MinFreq.CategoryID = CusFreq.CategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) oe
+            LEFT JOIN OfferCoupon oc ON oe.ID = oc.ExclusiveOfferID AND oc.CustomerID = ?";
+
   $stmt = $mysqli->prepare($query);
-  $stmt->bind_param('ii',$customerID,$customerID);
+  $stmt->bind_param('iii',$customerID, $customerID, $customerID);
   $stmt->execute();
-  $stmt->bind_result($id, $serviceID, $price, $discount, $description, $special, $startDate, $endDate, $modified);
+  $stmt->bind_result($id, $serviceID, $price, $discount, $description, $special, $startDate, $endDate, $code, $claimed, $created $modified);
   $stmt->store_result();
 
   if (isset($_POST['check']) && !empty($_POST['check'])) {
@@ -70,6 +73,9 @@ if (isset($_POST['customerID'])) {
       $exclusiveOffer->special = $special == 1;
       $exclusiveOffer->startDate = $startDate;
       $exclusiveOffer->endDate = $endDate;
+      $exclusiveOffer->code = $code;
+      $exclusiveOffer->claimed = $claimed == 1;
+      $exclusiveOffer->created = $created;
       $exclusiveOffer->modified = $modified;
       $exclusiveOfferArray[] = $exclusiveOffer;
   }

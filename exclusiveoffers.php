@@ -1,4 +1,5 @@
 <?php
+
 /*
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -40,7 +41,7 @@ if (isset($_POST['customerID'])) {
   $stmt = $mysqli->prepare($query);
   $stmt->bind_param('iii',$customerID, $customerID, $customerID);
   $stmt->execute();
-  $stmt->bind_result($id, $serviceID, $price, $discount, $description, $special, $startDate, $endDate, $code, $claimed, $created $modified);
+  $stmt->bind_result($id, $serviceID, $price, $discount, $description, $special, $startDate, $endDate, $code, $codeClaimed, $codeCreated, $modified);
   $stmt->store_result();
 
   if (isset($_POST['check']) && !empty($_POST['check'])) {
@@ -74,8 +75,8 @@ if (isset($_POST['customerID'])) {
       $exclusiveOffer->startDate = $startDate;
       $exclusiveOffer->endDate = $endDate;
       $exclusiveOffer->code = $code;
-      $exclusiveOffer->claimed = $claimed == 1;
-      $exclusiveOffer->created = $created;
+      $exclusiveOffer->codeClaimed = $codeClaimed == 1;
+      $exclusiveOffer->codeCreated = $codeCreated;
       $exclusiveOffer->modified = $modified;
       $exclusiveOfferArray[] = $exclusiveOffer;
   }

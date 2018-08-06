@@ -50,7 +50,8 @@ if (isset($_POST['customerID'],$_POST['offerID'])) {
 
 	if ($stmt->num_rows == 1){
     $generateNewCode = true;
-    while($generateNewCode){
+    $timesGenerated = 0;
+    while($generateNewCode && $timesGenerated<10 ){
       $couponCode = random_str(2,'ABCDEFGHIJKLMNOPQRSTUVWXYZ').random_str(6,'0123456789');
       $codeCreated = date('Y-m-d');
 
@@ -69,8 +70,9 @@ if (isset($_POST['customerID'],$_POST['offerID'])) {
       $stmt->execute();
       $stmt->store_result();
       if($stmt->num_rows==1){
-        $generateNewCode = false
+        $generateNewCode = false;
       }
+      $timesGenerated++;
     }
     $stmt->close();
     $mysqli->close();

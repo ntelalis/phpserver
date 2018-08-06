@@ -69,7 +69,7 @@ if (isset($_POST['customerID'],$_POST['offerID'])) {
       $stmt->bind_param('iisss',$customerID, $offerID, $couponCode, $codeCreated, $couponCode);
       $stmt->execute();
       $stmt->store_result();
-      if($stmt->num_rows==1){
+      if($stmt->affected_rows==1){
         $generateNewCode = false;
       }
       $timesGenerated++;

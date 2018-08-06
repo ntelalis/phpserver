@@ -20,7 +20,7 @@ if (isset($_POST['customerID'])) {
 
   $customerID = $_POST['customerID'];
 
-  $query = "SELECT oe.ID, oe.ServiceID, oe.Price, oe.Discount, oe.Description, oe.Special, oe.StartDate,oe.EndDate, oc.Code, oc.Claimed, oc.Created, GREATEST(oe.Modified, IFNULL(oc.Modified, 0)) AS Modified
+  $query = "SELECT oe.ID, oe.ServiceID, oe.Price, oe.Discount, oe.Description, oe.Special, oe.StartDate,oe.EndDate, oc.Code, oc.Used, oc.Created, GREATEST(oe.Modified, IFNULL(oc.Modified, 0)) AS Modified
             FROM (SELECT oe.ID, oe.ServiceID, oe.Price, oe.Discount, oe.Description, oe.Special, oe.StartDate, oe.EndDate, oe.Modified
                  FROM OfferExclusive oe
                  WHERE oe.ID IN(SELECT t.ExclusiveOfferID
@@ -75,7 +75,7 @@ if (isset($_POST['customerID'])) {
       $exclusiveOffer->startDate = $startDate;
       $exclusiveOffer->endDate = $endDate;
       $exclusiveOffer->code = $code;
-      $exclusiveOffer->codeClaimed = $codeClaimed == 1;
+      $exclusiveOffer->codeUsed = $codeUsed == 1;
       $exclusiveOffer->codeCreated = $codeCreated;
       $exclusiveOffer->modified = $modified;
       $exclusiveOfferArray[] = $exclusiveOffer;

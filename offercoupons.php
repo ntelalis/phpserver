@@ -79,7 +79,7 @@ if (isset($_POST['customerID'],$_POST['offerID'])) {
     $jObj = new stdClass();
 
     $jObj->success = 1;
-
+    $jObj->offerID = $offerID;
     $jObj->code = $couponCode;
     $jObj->codeCreated = $codeCreated;
     $jObj->codeUsed = false;

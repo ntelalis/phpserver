@@ -44,8 +44,12 @@ while ($stmt->fetch()) {
 
     $generalOffer = new stdClass();
     $generalOffer->id = $id;
-    $generalOffer->price = $price;
-    $generalOffer->discount = $discount;
+    if($price!=null){
+        $generalOffer->priceDiscount = $price."€";
+    }
+    else{
+        $generalOffer->priceDiscount = ($discount*100)."%";
+    }
     $generalOffer->description = $description;
     $generalOffer->startDate = $startDate;
     $generalOffer->endDate = $endDate;

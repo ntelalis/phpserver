@@ -40,14 +40,14 @@ FROM (SELECT ee.ID
               OfferCoupon oc ON oc.ExclusiveOfferID=ee.ID
             WHERE ee.ID NOT IN (SELECT oe.ID
 FROM OfferCoupon oc, OfferExclusive oe
-WHERE oc.ExclusiveOfferID=oe.ID AND ((oc.Created<CURRENT_DATE-INTERVAL 7 DAY AND oc.used=0 )OR(oc.Used=1))
+WHERE oc.ExclusiveOfferID=oe.ID AND oc.CustomerID=? AND ((oc.Created<CURRENT_DATE-INTERVAL 7 DAY AND oc.used=0 )OR(oc.Used=1))
 GROUP BY oe.ID,oe.MaximumUsage
 HAVING COUNT(oe.ID)>=oe.MaximumUsage)
 GROUP BY ee.ID) oo LEFT JOIN  OfferCoupon oc ON (oc.ExclusiveOfferID=oo.ID AND oc.CustomerID=? AND oc.Used=0 AND oc.Created>CURRENT_DATE-INTERVAL 7 DAY), Offer o, OfferExclusive oe
 WHERE o.ID=oe.OfferID AND oo.ID=oe.ID AND IFNULL(oe.EndDate,CURRENT_DATE)>=CURRENT_DATE";
 
   $stmt = $mysqli->prepare($query);
-  $stmt->bind_param('iii',$customerID, $customerID, $customerID);
+  $stmt->bind_param('iiii',$customerID, $customerID, $customerID, $customerID);
   $stmt->execute();
   $stmt->bind_result($id, $serviceID, $price, $discount, $description, $details, $special, $startDate, $endDate, $code, $codeUsed, $codeCreated, $modified);
   $stmt->store_result();

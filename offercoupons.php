@@ -24,26 +24,37 @@ if (isset($_POST['customerID'],$_POST['offerID'])) {
   $customerID = $_POST['customerID'];
   $offerID = $_POST['offerID'];
 
-  $query = "SELECT oe.ID
-            FROM (SELECT oe.ID, oe.ServiceID, oe.Price, oe.Discount, oe.Description, oe.Special, oe.StartDate, oe.EndDate, oe.Modified
-                 FROM OfferExclusive oe
-                 WHERE oe.ID IN(SELECT t.ExclusiveOfferID
-          		                 FROM OfferExclusiveTier t
-          		                 WHERE t.TierID = getTierIDByCustomerID(?))
-                 UNION
-                 SELECT MinFreq.ID, MinFreq.ServiceID, MinFreq.Price, MinFreq.Discount, MinFreq.Description, MinFreq.Special, MinFreq.StartDate, MinFreq.EndDate, MinFreq.Modified
-                 FROM(SELECT oe.*, hs.CategoryID, hscf.MinimumUsages
-                      FROM OfferExclusiveFrequency oef, OfferExclusive oe, HotelService hs, HotelServiceCategoryFrequency hscf
-                      WHERE oef.ExclusiveOfferID = oe.ID AND oe.ServiceID = hs.ID AND hs.CategoryID = hscf.CategoryID AND oef.FrequencyID = hscf.FrequencyID) MinFreq,
-      	             (SELECT hs.CategoryID, COUNT(hs.CategoryID) AS CustomerCount
-                      FROM Charge ch, Reservation r, HotelService hs
-      	              WHERE ch.ReservationID = r.ID AND ch.HotelServiceID = hs.ID AND r.CustomerID = ?
-                      GROUP BY hs.CategoryID) CusFreq
-                 WHERE MinFreq.CategoryID = CusFreq.CategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) oe
-            WHERE oe.ID=?";
+  $query = "SELECT ee.ID
+    FROM (SELECT oe.ID, oe.MaximumUsage
+          FROM OfferExclusive oe
+          WHERE oe.ID IN(SELECT t.ExclusiveOfferID
+                            FROM OfferExclusiveTier t
+                            WHERE t.TierID = getTierIDByCustomerID(?))
+          UNION
+          SELECT MinFreq.ID, MinFreq.MaximumUsage
+          FROM(SELECT oe.ID, oe.MaximumUsage, hs.CategoryID, hscf.MinimumUsages
+               FROM Offer o, OfferExclusive oe, OfferExclusiveFrequency oef, HotelService hs, HotelServiceCategoryFrequency hscf
+               WHERE oef.ExclusiveOfferID = oe.ID AND o.ID = oe.OfferID AND o.ServiceID = hs.ID AND
+               hs.CategoryID = hscf.CategoryID AND oef.FrequencyID = hscf.FrequencyID) MinFreq,
+          (SELECT hs.CategoryID, COUNT(hs.CategoryID) AS CustomerCount
+           FROM Charge ch, Reservation r, HotelService hs
+           WHERE ch.ReservationID = r.ID AND ch.HotelServiceID = hs.ID AND r.CustomerID = ?
+           GROUP BY hs.CategoryID) CusFreq
+          WHERE MinFreq.CategoryID = CusFreq.CategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee LEFT JOIN
+            OfferCoupon oc ON oc.ExclusiveOfferID=ee.ID
+          WHERE ee.ID NOT IN (SELECT oe.ID
+FROM OfferCoupon oc, OfferExclusive oe
+WHERE oc.ExclusiveOfferID=oe.ID AND oc.CustomerID=?
+GROUP BY oe.ID,oe.MaximumUsage
+HAVING COUNT(oe.ID)>=oe.MaximumUsage
+UNION
+SELECT oe.ID
+FROM OfferCoupon oc, OfferExclusive oe
+WHERE oc.ExclusiveOfferID=oe.ID AND oc.CustomerID=? AND Used=0 AND oc.Created>=CURRENT_DATE-INTERVAL 7 DAY) AND ee.ID=?
+GROUP BY ee.ID";
 
   $stmt = $mysqli->prepare($query);
-  $stmt->bind_param('iii',$customerID, $customerID, $offerID);
+  $stmt->bind_param('iiiii',$customerID, $customerID, $customerID, $customerID, $offerID);
   $stmt->execute();
   $stmt->bind_result($id);
   $stmt->store_result();
@@ -56,17 +67,17 @@ if (isset($_POST['customerID'],$_POST['offerID'])) {
       $codeCreated = date('Y-m-d');
 
       $query="INSERT INTO OfferCoupon(CustomerID,ExclusiveOfferID,Code,Created)
-              SELECT ?,?,?,?
-              FROM OfferCoupon oc
-              WHERE ? NOT IN (SELECT oc.Code
+              SELECT ?,oe.ID,?,?
+              FROM OfferExclusive oe LEFT JOIN OfferCoupon oc ON oe.ID=oc.ExclusiveOfferID
+              WHERE oe.ID=? AND ? NOT IN (SELECT oc.Code
                               FROM OfferCoupon oc, OfferExclusive oe
-                              WHERE oc.Used = 0 AND oc.ExclusiveOfferID = oe.ID AND
+                              WHERE (oc.Used = 0) AND oc.ExclusiveOfferID = oe.ID AND
                                   IFNULL(oe.EndDate, CURRENT_DATE) >= CURRENT_DATE AND
-                                  oc.Created >= CURRENT_DATE - INTERVAL 7 DAY)
+                                  oc.Created > CURRENT_DATE - INTERVAL 7 DAY)
               LIMIT 1;";
 
       $stmt = $mysqli->prepare($query);
-      $stmt->bind_param('iisss',$customerID, $offerID, $couponCode, $codeCreated, $couponCode);
+      $stmt->bind_param('issis',$customerID, $couponCode, $codeCreated, $offerID, $couponCode);
       $stmt->execute();
       $stmt->store_result();
       if($stmt->affected_rows==1){

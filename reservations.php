@@ -12,7 +12,7 @@ include 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
- $_POST['customerID'] = '23';
+// $_POST['customerID'] = '23';
 
 if (isset($_POST['customerID'])) {
 
@@ -46,7 +46,7 @@ if (isset($_POST['customerID'])) {
         $timeInDB = strtotime($modified);
         $timeInClient = strtotime($values[$id]);
         unset($values[$id]);
-        if (!($timeInDB>$timeInClient)) {
+        if ($timeInDB==$timeInClient) {
             continue;
         }
     }

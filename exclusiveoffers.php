@@ -12,7 +12,7 @@ include 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
-// $_POST['customerID'] = 23;
+$_POST['customerID'] = 23;
 //$_POST['check'] = '[{"id":2,"modified":"2020-01-18 01:00:58"}]';
 
 if (isset($_POST['customerID'])) {
@@ -68,7 +68,7 @@ WHERE o.ID=oe.OfferID AND oo.ID=oe.ID AND IFNULL(oe.EndDate,CURRENT_DATE)>=CURRE
           $timeInDB = strtotime($modified);
           $timeInClient = strtotime($values[$id]);
           unset($values[$id]);
-          if (!($timeInDB>$timeInClient)) {
+          if ($timeInDB==$timeInClient) {
               continue;
           }
       }

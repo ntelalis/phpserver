@@ -12,7 +12,7 @@ include 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
-$_POST['customerID'] = 23;
+//$_POST['customerID'] = 23;
 //$_POST['check'] = '[{"id":2,"modified":"2020-01-18 01:00:58"}]';
 
 if (isset($_POST['customerID'])) {

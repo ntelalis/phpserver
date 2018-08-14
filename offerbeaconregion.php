@@ -59,7 +59,7 @@ if (isset($_POST['offerIDJsonArray'])) {
         $offerBeaconRegionFeature = new stdClass();
         $offerBeaconRegionFeature->id = $id;
         $offerBeaconRegionFeature->regionID = $regionID;
-        $offerBeaconRegionFeature->feature = $feature;
+        $offerBeaconRegionFeature->offerID = $offerID;
         $offerBeaconRegionFeature->modified = $modified;
         $offerBeaconRegionFeatureArray[] = $offerBeaconRegionFeature;
     }
@@ -78,8 +78,8 @@ if (isset($_POST['offerIDJsonArray'])) {
     $jObj->offerBeaconRegionFeatureArray = $offerBeaconRegionFeatureArray;
 } else {
     $jObj->success = 0;
-    //$jObj->errorMessage = "Bad request";
-    $jObj->errorMessage = $_POST['offerIDJsonArray'];
+    $jObj->errorMessage = "Bad request";
+    //$jObj->errorMessage = $_POST['offerIDJsonArray'];
 }
 
     $JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);

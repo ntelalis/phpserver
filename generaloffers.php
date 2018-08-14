@@ -14,11 +14,12 @@ $mysqli->set_charset("utf8");
 
 //$_POST['check'] = '[{"id":1,"modified":"2115-01-18 01:00:58"}]';
 
-$query = "SELECT ID, Price, Discount, Description, StartDate, EndDate, Modified
-          FROM OfferGeneral";
+$query = "SELECT og.ID, o.Price, o.Discount, o.Description, o.Details, og.StartDate, og.EndDate, GREATEST(o.Modified,og.Modified) AS Modified
+          FROM OfferGeneral og, Offer o
+          WHERE og.OfferID=o.ID";
 $stmt = $mysqli->prepare($query);
 $stmt->execute();
-$stmt->bind_result($id, $price, $discount, $description, $startDate, $endDate, $modified);
+$stmt->bind_result($id, $price, $discount, $description, $details, $startDate, $endDate, $modified);
 $stmt->store_result();
 
 if (isset($_POST['check']) && !empty($_POST['check'])) {
@@ -37,7 +38,7 @@ while ($stmt->fetch()) {
         $timeInDB = strtotime($modified);
         $timeInClient = strtotime($values[$id]);
         unset($values[$id]);
-        if (!($timeInDB>$timeInClient)) {
+        if ($timeInDB==$timeInClient) {
             continue;
         }
     }
@@ -51,6 +52,7 @@ while ($stmt->fetch()) {
         $generalOffer->priceDiscount = ($discount*100)."%";
     }
     $generalOffer->description = $description;
+    $generalOffer->details = $details;
     $generalOffer->startDate = $startDate;
     $generalOffer->endDate = $endDate;
     $generalOffer->modified = $modified;

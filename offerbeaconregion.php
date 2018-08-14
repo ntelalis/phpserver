@@ -51,7 +51,7 @@ if (isset($_POST['offerIDJsonArray'])) {
             $timeInDB = strtotime($modified);
             $timeInClient = strtotime($values[$id]);
             unset($values[$id]);
-            if (!($timeInDB>$timeInClient)) {
+            if ($timeInDB==$timeInClient) {
                 continue;
             }
         }

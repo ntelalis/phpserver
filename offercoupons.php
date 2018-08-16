@@ -93,7 +93,7 @@ GROUP BY ee.ID";
     $jObj->offerID = $offerID;
     $jObj->code = $couponCode;
     $jObj->codeCreated = $codeCreated;
-    $jObj->codeUsed = 0==1;
+    $jObj->codeUsed = false;
   }
   else{
     $jObj->success = 0;

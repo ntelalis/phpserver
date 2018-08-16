@@ -47,7 +47,7 @@ if (isset($_POST['offerIDJsonArray'])) {
       }
 
 
-      $offerBeaconRegionFeatureArray = array();
+      $offerBeaconRegionArray = array();
       while ($stmt->fetch()) {
           if (isset($values[$id])) {
               $timeInDB = strtotime($modified);
@@ -58,26 +58,26 @@ if (isset($_POST['offerIDJsonArray'])) {
               }
           }
 
-          $offerBeaconRegionFeature = new stdClass();
-          $offerBeaconRegionFeature->id = $id;
-          $offerBeaconRegionFeature->regionID = $regionID;
-          $offerBeaconRegionFeature->offerID = $offerID;
-          $offerBeaconRegionFeature->modified = $modified;
-          $offerBeaconRegionFeatureArray[] = $offerBeaconRegionFeature;
+          $offerBeaconRegion = new stdClass();
+          $offerBeaconRegion->id = $id;
+          $offerBeaconRegion->regionID = $regionID;
+          $offerBeaconRegion->offerID = $offerID;
+          $offerBeaconRegion->modified = $modified;
+          $offerBeaconRegionArray[] = $offerBeaconRegion;
       }
 
       foreach ($values as $key => $value) {
-          $offerBeaconRegionFeature = new stdClass();
-          $offerBeaconRegionFeature->id = $key;
-          $offerBeaconRegionFeature->modified = null;
-          $offerBeaconRegionFeatureArray[]=$offerBeaconRegionFeature;
+          $offerBeaconRegion = new stdClass();
+          $offerBeaconRegion->id = $key;
+          $offerBeaconRegion->modified = null;
+          $offerBeaconRegionArray[]=$offerBeaconRegion;
       }
       $stmt->close();
       $mysqli->close();
 
       $jObj = new stdClass();
       $jObj->success = 1;
-      $jObj->offerBeaconRegionFeatureArray = $offerBeaconRegionFeatureArray;
+      $jObj->offerBeaconRegionArray = $offerBeaconRegionArray;
     }
     else{
       $jObj->success = 0;

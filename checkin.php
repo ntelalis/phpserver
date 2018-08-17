@@ -18,7 +18,7 @@ $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 //Response Object
 $jObj = new stdClass();
 
- //$_POST['reservationID']='6';
+//$_POST['reservationID']='13';
 
 //Parse POST Variables
 if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
@@ -30,7 +30,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
               WHERE Reservation.ID=? AND Room.RoomTypeID=Reservation.RoomTypeID AND Room.ID NOT IN (SELECT Occupancy.RoomID
                                                                                                     FROM Occupancy
                                                                                                     WHERE Occupancy.CheckOut IS NULL)
-              ORDER by rand()
+              /* !!REMOVE THIS COMMENT!!! ORDER by rand()*/
               LIMIT 1";
 
     $stmt = $dbCon->prepare($query);
@@ -40,7 +40,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $stmt->store_result();
     $stmt->fetch();
 
-    $query = "SELECT v.ID, v.UniqueID,v.UUID,v.Major,v.Minor,v.Exclusive,v.Background,v.RegionType,v.Modified
+    $query = "SELECT v.ID, v.UniqueID,v.UUID,v.Major,v.Minor,v.Exclusive,v.Background,v.Modified
               FROM BeaconRegionView v
               WHERE v.ID IN(SELECT br.BeaconRegionID
                             FROM BeaconMonitoredRegionRoom br
@@ -48,7 +48,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('i', $roomID);
     $stmt->execute();
-    $stmt->bind_result($brID, $brUniqueID, $brUUID, $brMajor, $brMinor, $brExclusive, $brBackground, $brRegionType, $brModified);
+    $stmt->bind_result($brID, $brUniqueID, $brUUID, $brMajor, $brMinor, $brExclusive, $brBackground, $brModified);
     $stmt->store_result();
 
     $roomBeaconRegionArray = array();
@@ -62,7 +62,6 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
       $beaconRegion->minor = $brMinor;
       $beaconRegion->exclusive= $brExclusive == 1;
       $beaconRegion->background = $brBackground == 1;
-      $beaconRegion->regionType = $brRegionType;
       $beaconRegion->modified = $brModified;
       $roomBeaconRegionArray[] = $beaconRegion;
     }

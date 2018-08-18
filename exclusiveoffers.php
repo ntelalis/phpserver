@@ -12,14 +12,14 @@ include 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
-//$_POST['customerID'] = 23;
-//$_POST['check'] = '[{"id":2,"modified":"2020-01-18 01:00:58"}]';
+$_POST['customerID'] = 23;
+$_POST['check'] = '[{"id":2,"modified":"2020-01-18 01:00:58"}]';
 
 if (isset($_POST['customerID'])) {
 
   $customerID = $_POST['customerID'];
 
-  $query = "SELECT oe.ID, o.ServiceID, o.Price, o.Discount, o.Description, o.Details,oe.Special, oe.StartDate, oe.EndDate, oc.Code, oc.Used, oc.Created, GREATEST(o.Modified, oe.Modified, IFNULL(oc.Modified, 0)) AS Modified
+  $query = "SELECT oe.ID, o.ServiceID, o.Price, o.Discount, o.Title, o.Description, o.Details,oe.Special, oe.StartDate, oe.EndDate, oc.Code, oc.Used, oc.Created, GREATEST(o.Modified, oe.Modified, IFNULL(oc.Modified, 0)) AS Modified
 FROM (SELECT ee.ID
       FROM (SELECT oe.ID, oe.MaximumUsage
             FROM OfferExclusive oe
@@ -49,7 +49,7 @@ WHERE o.ID=oe.OfferID AND oo.ID=oe.ID AND IFNULL(oe.EndDate,CURRENT_DATE)>=CURRE
   $stmt = $mysqli->prepare($query);
   $stmt->bind_param('iiii',$customerID, $customerID, $customerID, $customerID);
   $stmt->execute();
-  $stmt->bind_result($id, $serviceID, $price, $discount, $description, $details, $special, $startDate, $endDate, $code, $codeUsed, $codeCreated, $modified);
+  $stmt->bind_result($id, $serviceID, $price, $discount, $title, $description, $details, $special, $startDate, $endDate, $code, $codeUsed, $codeCreated, $modified);
   $stmt->store_result();
 
   if (isset($_POST['check']) && !empty($_POST['check'])) {
@@ -82,6 +82,7 @@ WHERE o.ID=oe.OfferID AND oo.ID=oe.ID AND IFNULL(oe.EndDate,CURRENT_DATE)>=CURRE
       else{
         $exclusiveOffer->priceDiscount = ($discount*100)."%";
       }
+      $exclusiveOffer->title = $title;
       $exclusiveOffer->description = $description;
       $exclusiveOffer->details = $details;
       $exclusiveOffer->special = $special == 1;

@@ -35,7 +35,7 @@ $_POST['city']='salonica';
 $_POST['postalCode']='2124';
 */
 
-if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['departure'],$_POST['adults'],$_POST['children'],$_POST['freeNights'],$_POST['cashNights'],$_POST['ccNumber'],$_POST['ccName'],$_POST['ccMonth'],$_POST['ccYear'],$_POST['ccCVV'],$_POST['phone'],$_POST['address1'],$_POST['address2',$_POST['city'],$_POST['postalCode'])) {
+if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['departure'],$_POST['adults'],$_POST['children'],$_POST['freeNights'],$_POST['cashNights'],$_POST['ccNumber'],$_POST['ccName'],$_POST['ccMonth'],$_POST['ccYear'],$_POST['ccCVV'],$_POST['phone'],$_POST['address1'],$_POST['address2'],$_POST['city'],$_POST['postalCode'])) {
     $customerID = $_POST['customerID'];
     $roomTypeID = $_POST['roomTypeID'];
     $arrival = $_POST['arrival'];

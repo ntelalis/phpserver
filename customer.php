@@ -42,9 +42,7 @@ if (isset($_POST['customerID'],$_POST['modified'])) {
             $customer->firstName = $firstName;
             $customer->lastName = $lastName;
             $customer->birthDate = $birthDate;
-            $customer->email = $email;
             $customer->countryID = $countryID;
-            $customer->additionalInfo = $additionalInfo;
             $customer->modified = $modified;
             $jObj->success = 1;
             $jObj->customer = $customer;

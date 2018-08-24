@@ -4,6 +4,7 @@ ini_set('display_errors',1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
+
 include 'dbConfig.php';
 require 'Functions/externalpayment.php';
 require 'Functions/addpoints.php';
@@ -26,10 +27,15 @@ $_POST['ccNumber']='0';
 $_POST['ccName']='0';
 $_POST['ccYear']='0';
 $_POST['ccMonth']='0';
-$_POST['ccCVV']='0';
+$_POST['ccCVV']='888';
+$_POST['phone']='6989665086';
+$_POST['address1']='Mavromixali 52';
+$_POST['address2']=NULL;
+$_POST['city']='salonica';
+$_POST['postalCode']='2124';
 */
 
-if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['departure'],$_POST['adults'],$_POST['children'],$_POST['freeNights'],$_POST['cashNights'],$_POST['ccNumber'],$_POST['ccName'],$_POST['ccMonth'],$_POST['ccYear'],$_POST['ccCVV'])) {
+if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['departure'],$_POST['adults'],$_POST['children'],$_POST['freeNights'],$_POST['cashNights'],$_POST['ccNumber'],$_POST['ccName'],$_POST['ccMonth'],$_POST['ccYear'],$_POST['ccCVV'],$_POST['phone'],$_POST['address1'],$_POST['address2',$_POST['city'],$_POST['postalCode'])) {
     $customerID = $_POST['customerID'];
     $roomTypeID = $_POST['roomTypeID'];
     $arrival = $_POST['arrival'];
@@ -43,6 +49,12 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
     $ccMonth = $_POST['ccMonth'];
     $ccYear = $_POST['ccYear'];
     $ccCVV = $_POST['ccCVV'];
+
+    $phone = $_POST['phone'];
+    $address1 = $_POST['address1'];
+    $address2 = $_POST['address2'];
+    $city = $_POST['city'];
+    $postalCode = $_POST['postalCode'];
 
     //IMPLEMENT CURRENCY
     $currencyID = 1;
@@ -124,6 +136,15 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                     $success = $stmt->execute();
 
                     $reservationId = $dbCon->insert_id;
+
+                    $query = "INSERT INTO ContactInfo (CustomerID,Phone,Address1,Address2,City,PostalCode)
+                              VALUES (?,?,?,?,?,?)
+                              ON DUPLICATE KEY
+                              UPDATE Phone = ?, Address1 = ?, Address2 = ?, City = ?, PostalCode = ?";
+                    $stmt = $dbCon->prepare($query);
+                    $stmt->bind_param('issssssssss',$customerID, $phone, $address1, $address2, $city, $postalCode, $phone, $address1, $address2, $city, $postalCode);
+                    $success = $stmt->execute();
+
                     if ($success) {
                         $jObj->success=1;
                         $jObj->reservationID=$reservationId;
@@ -131,7 +152,7 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                         $jObj->modified = $modified;
                     } else {
                         $jObj->success=0;
-                        $jObj->errorMessage="$dbCon->error";
+                        $jObj->errorMessage=$dbCon->error;
                     }
                 } else {
                     $jObj->success=0;
@@ -155,8 +176,6 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
     $jObj->success=0;
     $jObj->ErrorMessage="There is a problem with the given parameters";
 }
-
-
 
 //Encode data in JSON Format
 $JsonResponse = json_encode($jObj);

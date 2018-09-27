@@ -22,7 +22,7 @@ $_POST['departure']='2018-06-27';
 $_POST['adults']='1';
 $_POST['children']='0';
 $_POST['freeNights']='0';
-$_POST['cashNights']='0';
+$_POST['cashNights']='1';
 $_POST['ccNumber']='0';
 $_POST['ccName']='0';
 $_POST['ccYear']='0';
@@ -30,7 +30,7 @@ $_POST['ccMonth']='0';
 $_POST['ccCVV']='888';
 $_POST['phone']='6989665086';
 $_POST['address1']='Mavromixali 52';
-$_POST['address2']=NULL;
+$_POST['address2']='';
 $_POST['city']='salonica';
 $_POST['postalCode']='2124';
 */
@@ -104,60 +104,74 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
 
                 //WARNING Must implement transaction Insert first then payment and commit or rollback!!!
 
-                //Execute payment
-                $paymentExecuted = externalPayment($ccNumber, $ccName, $ccMonth, $ccYear, $ccCVV, $totalPrice);
+                $dbCon->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 
-                //If payment was executed
-                if ($paymentExecuted) {
-                    if ($freeNights>0) {
-                        $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
-                    VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Free Night'),
-                          (SELECT SpendingPoints FROM RoomTypePoints WHERE RoomTypeID=? AND Adults=? AND Children=?)*?,
-                          now())";
-                        $stmt = $dbCon->prepare($query);
-                        $stmt->bind_param('ii', $customerID, $roomTypeID, $adults, $children, $freeNights);
-                        $success = $stmt->execute();
-                    }
-                    if ($cashNights>0) {
-                        $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
-                    VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash And Points'),
-                          (SELECT Points FROM RoomTypeCashPoints WHERE RoomTypeID=? AND Adults=? AND Children=? AND CurrencyID=?)*?,
-                          now())";
-                        $stmt = $dbCon->prepare($query);
-                        $stmt->bind_param('iiii', $customerID, $roomTypeID, $adults, $children, $currencyID, $cashNights);
-                        $success = $stmt->execute();
-                    }
-
-                    $bookDate = date('Y-m-d');
-                    $modified = date("Y-m-d H:i:s");
-                    $query = "INSERT INTO Reservation(CustomerID,RoomTypeID,ReservationTypeID,Adults,Children,DateBooked,StartDate,EndDate,Modified) VALUES (?,?,3,?,?,?,?,?,?)";
+                if ($freeNights>0) {
+                    $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
+                VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Free Night'),
+                      (SELECT SpendingPoints FROM RoomTypePoints WHERE RoomTypeID=? AND Adults=? AND Children=?)*?,
+                      now())";
                     $stmt = $dbCon->prepare($query);
-                    $stmt->bind_param('iiiissss', $customerID, $roomTypeID, $adults, $children, $bookDate, $arrival, $departure, $modified);
+                    $stmt->bind_param('iiiii', $customerID, $roomTypeID, $adults, $children, $freeNights);
                     $success = $stmt->execute();
-
-                    $reservationId = $dbCon->insert_id;
-
-                    $query = "INSERT INTO ContactInfo (CustomerID,Phone,Address1,Address2,City,PostalCode)
-                              VALUES (?,?,?,?,?,?)
-                              ON DUPLICATE KEY
-                              UPDATE Phone = ?, Address1 = ?, Address2 = ?, City = ?, PostalCode = ?";
-                    $stmt = $dbCon->prepare($query);
-                    $stmt->bind_param('issssssssss',$customerID, $phone, $address1, $address2, $city, $postalCode, $phone, $address1, $address2, $city, $postalCode);
-                    $success = $stmt->execute();
-
-                    if ($success) {
-                        $jObj->success=1;
-                        $jObj->reservationID=$reservationId;
-                        $jObj->bookedDate = $bookDate;
-                        $jObj->modified = $modified;
-                    } else {
-                        $jObj->success=0;
-                        $jObj->errorMessage=$dbCon->error;
+                    if(!$success){
+                      exit(1);
                     }
-                } else {
-                    $jObj->success=0;
-                    $jObj->ErrorMessage="There is an error with the payment. Please try again later";
                 }
+                if ($cashNights>0) {
+                    $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
+                VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash And Points'),
+                      (SELECT Points FROM RoomTypeCashPoints WHERE RoomTypeID=? AND Adults=? AND Children=? AND CurrencyID=?)*?,
+                      now())";
+                    $stmt = $dbCon->prepare($query);
+                    $stmt->bind_param('iiiiii', $customerID, $roomTypeID, $adults, $children, $currencyID, $cashNights);
+                    $success = $stmt->execute();
+                    if(!$success){
+                      exit(1);
+                    }
+                }
+
+                $bookDate = date('Y-m-d');
+                $modified = date("Y-m-d H:i:s");
+                $query = "INSERT INTO Reservation(CustomerID,RoomTypeID,ReservationTypeID,Adults,Children,DateBooked,StartDate,EndDate,Modified) VALUES (?,?,3,?,?,?,?,?,?)";
+                $stmt = $dbCon->prepare($query);
+                $stmt->bind_param('iiiissss', $customerID, $roomTypeID, $adults, $children, $bookDate, $arrival, $departure, $modified);
+                $success = $stmt->execute();
+
+                $reservationId = $dbCon->insert_id;
+
+                $query = "INSERT INTO ContactInfo (CustomerID,Phone,Address1,Address2,City,PostalCode)
+                          VALUES (?,?,?,?,?,?)
+                          ON DUPLICATE KEY
+                          UPDATE Phone = ?, Address1 = ?, Address2 = ?, City = ?, PostalCode = ?";
+                $stmt = $dbCon->prepare($query);
+                $stmt->bind_param('issssssssss',$customerID, $phone, $address1, $address2, $city, $postalCode, $phone, $address1, $address2, $city, $postalCode);
+                $success = $stmt->execute();
+
+                if ($success) {
+
+                  //Execute payment
+                  $paymentExecuted = externalPayment($ccNumber, $ccName, $ccMonth, $ccYear, $ccCVV, $totalPrice);
+
+                  //If payment was executed
+                  if ($paymentExecuted) {
+                      $dbCon->commit();
+                      $jObj->success=1;
+                      $jObj->reservationID=$reservationId;
+                      $jObj->bookedDate = $bookDate;
+                      $jObj->modified = $modified;
+                  } else {
+                      $dbCon->rollback();
+                      $jObj->success=0;
+                      $jObj->errorMessage="There is an error with the payment. Please try again later";
+                  }
+                } else {
+                    $dbCon->rollback();
+                    $jObj->success=0;
+                    $jObj->errorMessage=$dbCon->error;
+                }
+
+
             } else {
                 $jObj->success=0;
                 $jObj->errorMessage="Something is wrong with loyalty points!";

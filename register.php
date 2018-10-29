@@ -18,6 +18,20 @@ $countryID = $_POST['countryID'];
 $birthDate = $_POST['birthDate'];
 $phone = $_POST['phone'];
 
+$errorMessage = new stdClass();
+$errorMessage->email = $email;
+$errorMessage->pass = $pass;
+$errorMessage->fname = $fname;
+$errorMessage->lname = $lname;
+$errorMessage->titleID = $titleID;
+$errorMessage->countryID = $countryID;
+$errorMessage->birthDate = $birthDate;
+$errorMessage->phone = $phone;
+
+$errorMessageStr = encode($errorMessage);
+$jObj->success=0;
+$jObj->errorMessage=$errorMessageStr;
+/*
 $query = "INSERT INTO Customer(TitleID,FirstName,LastName,BirthDate,CountryId) VALUES(?,?,?,?,?)";
 $stmt = $dbCon->prepare($query);
 $stmt->bind_param('isssi', $titleID, $fname, $lname, $birthDate, $email, $countryID);
@@ -48,3 +62,4 @@ $JsonResponse = json_encode($jObj);
 
 //Show Data
 echo $JsonResponse;
+*/

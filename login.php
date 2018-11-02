@@ -13,9 +13,9 @@ include 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
-$_POST['email'] = 'kate@gmail.com';
-$_POST['pass'] = 'asdF12!@';
-$_POST['modified'] = '2018-06-19 23:25:06';
+$_POST['email'];// = 'kate@gmail.com';
+$_POST['pass'];// = 'asdF12!@';
+$_POST['modified'];// = '2018-06-19 23:25:06';
 
 if(isset($_POST['email'],$_POST['pass'])){
 

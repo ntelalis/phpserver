@@ -1,6 +1,10 @@
 <?php
 
-
+/*
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+*/
 include 'dbConfig.php';
 
 $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
@@ -8,18 +12,18 @@ $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 //Response Object
 $jObj = new stdClass();
 
-$email = $_POST['email'];
-$pass = $_POST['pass'];
-$fname = $_POST['firstName'];
-$lname = $_POST['lastName'];
-$titleID = $_POST['titleID'];
-$countryID = $_POST['countryID'];
-$birthDate = $_POST['birthDate'];
-$phone = $_POST['phone'];
+$email = $_POST['email'];// = "gpaschos@epi.com.gr";
+$pass = $_POST['pass'];// = "Qqwerty1!";
+$fname = $_POST['firstName'];// = "ghj";
+$lname = $_POST['lastName'];// = "bbn";
+$titleID = $_POST['titleID'];// = 2;
+$countryID = $_POST['countryID'];// = 4;
+$birthDate = $_POST['birthDate'];// = "2000-11-02";
+$phone = $_POST['phone'];// = 96599965899;
 
 $query = "INSERT INTO Customer(TitleID,FirstName,LastName,BirthDate,CountryId) VALUES(?,?,?,?,?)";
 $stmt = $dbCon->prepare($query);
-$stmt->bind_param('isssi', $titleID, $fname, $lname, $birthDate, $email, $countryID);
+$stmt->bind_param('isssi', $titleID, $fname, $lname, $birthDate, $countryID);
 $success = $stmt->execute();
 
 
@@ -41,6 +45,7 @@ if ($success) {
 
 $stmt->close();
 $dbCon->close();
+
 
 //Encode data in JSON Format
 $JsonResponse = json_encode($jObj);

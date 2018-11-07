@@ -1,6 +1,6 @@
 <?php
-
-/*ini_set('display_errors',1);
+/*
+ini_set('display_errors',1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
@@ -12,20 +12,21 @@ include 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
-// $_POST['customerID'] = '23';
+//$_POST['customerID'] = 23;
 
 if (isset($_POST['customerID'])) {
 
   $customerID = $_POST['customerID'];
 
-  $query = "SELECT res.ID, res.RoomTypeID, res.Adults, res.Children, res.DateBooked, res.StartDate, res.EndDate, o.CheckIn, o.CheckOut, r.Number, r.Floor, GREATEST(res.Modified,IFNULL(o.Modified,0)) AS Modified
+  $query = "SELECT res.ID, res.RoomTypeID, res.Adults, res.Children, res.DateBooked, res.StartDate, res.EndDate, o.CheckIn, o.CheckOut, r.Number, r.Floor, rat.Rating, GREATEST(res.Modified,IFNULL(o.Modified,0),IFNULL(rat.Modified,0)) AS Modified
             FROM Reservation res LEFT JOIN Occupancy o ON res.ID = o.ReservationID
                                  LEFT JOIN Room r ON r.ID = o.RoomID
-            WHERE res.CustomerID = ? AND res.EndDate >= CURRENT_DATE";
+                                 LEFT JOIN Rating rat ON res.ID = rat.ReservationID
+            WHERE res.CustomerID = ? AND res.EndDate >= CURRENT_DATE;";
   $stmt = $mysqli->prepare($query);
   $stmt->bind_param('i',$customerID);
   $stmt->execute();
-  $stmt->bind_result($id, $roomTypeID, $adults, $children, $bookDate, $startDate, $endDate, $checkIn, $checkOut, $roomNumber, $roomFloor, $modified);
+  $stmt->bind_result($id, $roomTypeID, $adults, $children, $bookDate, $startDate, $endDate, $checkIn, $checkOut, $roomNumber, $roomFloor, $review, $modified);
   $stmt->store_result();
 
   if (isset($_POST['check']) && !empty($_POST['check'])) {
@@ -63,6 +64,7 @@ if (isset($_POST['customerID'])) {
     $upcomingReservation->checkOut = $checkOut;
     $upcomingReservation->roomNumber = $roomNumber;
     $upcomingReservation->roomFloor = $roomFloor;
+    $upcomingReservation->reviewed = is_null($review)==0;
     $upcomingReservation->modified = $modified;
     $upcomingReservationsArray[] = $upcomingReservation;
   }

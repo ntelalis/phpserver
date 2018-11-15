@@ -1,7 +1,7 @@
 <?php
 
-/*
-ini_set('display_errors',1);
+
+/*ini_set('display_errors',1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
@@ -12,6 +12,7 @@ include 'dbConfig.php';
 //Create new database object
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
+
 
 $_POST['email'];// = 'kate@gmail.com';
 $_POST['pass'];// = 'asdF12!@';

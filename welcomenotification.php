@@ -12,7 +12,7 @@ $jObj = new stdClass();
 if (isset($_POST['customerID']) && !empty($_POST['customerID'])) {
     $customerID = $_POST['customerID'];
 
-    $query = "SELECT COUNT(Occupancy.ID)
+    $query = "SELECT COUNT(Occupancy.ReservationID)
             FROM Occupancy, Reservation
             WHERE Occupancy.ReservationID=Reservation.ID AND Reservation.CustomerID=?";
 

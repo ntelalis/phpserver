@@ -1,4 +1,4 @@
-<?php
+FoodServingTime<?php
 
 include 'dbConfig.php';
 
@@ -10,9 +10,9 @@ if (isset($_POST['timeType'])) {
     $jObj = new stdClass();
 
     $query = "SELECT f.ID,f.Name,f.Description,f.Price,fc.ID,fc.Name
-  FROM Food f, FoodTime ft, FoodCategory fc, Food_Category_Time fct
-  WHERE f.ID = fct.FoodID AND ft.ID = fct.FoodTimeID  AND fc.ID = fct.FoodCategoryID
-  AND f.Availability = 1 AND ft.Name = ?";
+  FROM Food f, FoodTimeZone ftz, FoodCategory fc, FoodServingTime fst
+  WHERE f.ID = fst.FoodID AND ftz.ID = fst.FoodTimeZoneID  AND fc.ID = fst.FoodCategoryID
+  AND f.Availability = 1 AND ftz.Name = ?";
 
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('s', $timeType);

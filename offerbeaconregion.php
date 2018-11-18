@@ -26,9 +26,9 @@ if (isset($_POST['offerIDJsonArray'])) {
       //create a string for bind_param types like "iiii"
       $paramTypes = str_repeat("i", count($offerIDArray));
 
-      $query = "SELECT obr.ID, obr.BeaconMonitoredRegionID, obr.HotelServicesOfferID, obr.Modified
-                FROM OfferBeaconRegion obr
-                WHERE obr.HotelServicesOfferID IN ($questionMarks)";
+      $query = "SELECT bro.ID, bro.BeaconRegionID, bro.HotelServicesOfferID, bro.Modified
+                FROM BeaconRegionOffer bro
+                WHERE bro.HotelServicesOfferID IN ($questionMarks)";
       $stmt = $mysqli->prepare($query);
       $stmt->bind_param($paramTypes, ...$offerIDArray);
       $stmt->execute();
@@ -47,7 +47,7 @@ if (isset($_POST['offerIDJsonArray'])) {
       }
 
 
-      $offerBeaconRegionArray = array();
+      $BeaconRegionOfferArray = array();
       while ($stmt->fetch()) {
           if (isset($values[$id])) {
               $timeInDB = strtotime($modified);
@@ -58,26 +58,26 @@ if (isset($_POST['offerIDJsonArray'])) {
               }
           }
 
-          $offerBeaconRegion = new stdClass();
-          $offerBeaconRegion->id = $id;
-          $offerBeaconRegion->regionID = $regionID;
-          $offerBeaconRegion->offerID = $offerID;
-          $offerBeaconRegion->modified = $modified;
-          $offerBeaconRegionArray[] = $offerBeaconRegion;
+          $BeaconRegionOffer = new stdClass();
+          $BeaconRegionOffer->id = $id;
+          $BeaconRegionOffer->regionID = $regionID;
+          $BeaconRegionOffer->offerID = $offerID;
+          $BeaconRegionOffer->modified = $modified;
+          $BeaconRegionOfferArray[] = $BeaconRegionOffer;
       }
 
       foreach ($values as $key => $value) {
-          $offerBeaconRegion = new stdClass();
-          $offerBeaconRegion->id = $key;
-          $offerBeaconRegion->modified = null;
-          $offerBeaconRegionArray[]=$offerBeaconRegion;
+          $BeaconRegionOffer = new stdClass();
+          $BeaconRegionOffer->id = $key;
+          $BeaconRegionOffer->modified = null;
+          $BeaconRegionOfferArray[]=$BeaconRegionOffer;
       }
       $stmt->close();
       $mysqli->close();
 
       $jObj = new stdClass();
       $jObj->success = 1;
-      $jObj->offerBeaconRegionArray = $offerBeaconRegionArray;
+      $jObj->BeaconRegionOfferArray = $BeaconRegionOfferArray;
     }
     else{
       $jObj->success = 0;

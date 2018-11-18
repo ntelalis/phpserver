@@ -7,7 +7,7 @@ $dbCon->set_charset("utf8");
 //Response Object
 $jObj = new stdClass();
 
-$query = "SELECT ID, Name, BeginTime, EndTime FROM FoodTime";
+$query = "SELECT ID, Name, BeginTime, EndTime FROM FoodTimeZone";
 
 $stmt = $dbCon->prepare($query);
 $executed = $stmt->execute();

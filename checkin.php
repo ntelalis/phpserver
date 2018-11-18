@@ -42,27 +42,27 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
 
     $query = "SELECT v.ID, v.UniqueID,v.UUID,v.Major,v.Minor,v.Exclusive,v.Background,v.Modified
               FROM BeaconRegionView v
-              WHERE v.ID IN(SELECT br.BeaconRegionID
-                            FROM BeaconMonitoredRegionRoom br
-                            WHERE br.RoomID = ?)";
+              WHERE v.ID IN(SELECT brm.BeaconRegionID
+                            FROM BeaconRegionRoom brm
+                            WHERE brm.RoomID = ?)";
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('i', $roomID);
     $stmt->execute();
-    $stmt->bind_result($brID, $brUniqueID, $brUUID, $brMajor, $brMinor, $brExclusive, $brBackground, $brModified);
+    $stmt->bind_result($brmID, $brmUniqueID, $brmUUID, $brmMajor, $brmMinor, $brmExclusive, $brmBackground, $brmModified);
     $stmt->store_result();
 
     $roomBeaconRegionArray = array();
 
     while ($stmt->fetch()) {
       $beaconRegion = new stdClass();
-      $beaconRegion->id = $brID;
-      $beaconRegion->uniqueID = $brUniqueID;
-      $beaconRegion->uuid = $brUUID;
-      $beaconRegion->major = $brMajor;
-      $beaconRegion->minor = $brMinor;
-      $beaconRegion->exclusive= $brExclusive == 1;
-      $beaconRegion->background = $brBackground == 1;
-      $beaconRegion->modified = $brModified;
+      $beaconRegion->id = $brmID;
+      $beaconRegion->uniqueID = $brmUniqueID;
+      $beaconRegion->uuid = $brmUUID;
+      $beaconRegion->major = $brmMajor;
+      $beaconRegion->minor = $brmMinor;
+      $beaconRegion->exclusive= $brmExclusive == 1;
+      $beaconRegion->background = $brmBackground == 1;
+      $beaconRegion->modified = $brmModified;
       $roomBeaconRegionArray[] = $beaconRegion;
     }
 

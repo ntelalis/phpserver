@@ -1,4 +1,4 @@
-<?php
+BeaconRegionRoom<?php
 
 /*
 ini_set('display_errors',1);
@@ -20,8 +20,8 @@ if (isset($_POST['reservationID'])) {
   $reservationID = $_POST['reservationID'];
 
   $query ="SELECT v.ID, v.UniqueID, v.UUID, v.Major, v.Minor, v.Exclusive, v.Background, v.Modified
-           FROM BeaconMonitoredRegionRoom bmr, Occupancy o, BeaconRegionView v
-           WHERE bmr.RoomID=o.RoomID AND o.ReservationID=? AND v.ID=bmr.BeaconRegionID" ;
+           FROM BeaconRegionRoom brr, Occupancy o, BeaconRegionView v
+           WHERE brr.RoomID=o.RoomID AND o.ReservationID=? AND v.ID=brr.BeaconRegionID" ;
   $stmt = $mysqli->prepare($query);
   $stmt->bind_param('i',$reservationID);
   $stmt->execute();

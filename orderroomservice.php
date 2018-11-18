@@ -24,14 +24,14 @@ if (isset($_POST['order']) && $_POST['reservationID']) {
     $orderid = $dbCon->insert_id;
 
 
-    $query = "INSERT INTO RoomServiceOrderItem(OrderID,FoodID,Quantity) VALUES(?,?,?)";
+    $query = "INSERT INTO RoomServiceOrderItem(RoomServiceOrderID,FoodID,Quantity) VALUES(?,?,?)";
     $stmt = $dbCon->prepare($query);
     foreach ($list as $item) {
         $stmt->bind_param('iii', $orderid, $item->id, $item->quantity);
         $success = $stmt->execute();
     }
 
-    $query = "SELECT SUM(Quantity*Price) FROM RoomServiceOrderItem INNER JOIN Food f ON FoodID=ID WHERE OrderID=?";
+    $query = "SELECT SUM(Quantity*Price) FROM RoomServiceOrderItem INNER JOIN Food f ON FoodID=ID WHERE RoomServiceOrderID=?";
     $stmt = $dbCon->prepare($query);
     $stmt->bind_param('i', $orderid);
     $success = $stmt->execute();

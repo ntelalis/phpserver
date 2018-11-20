@@ -56,15 +56,13 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST[
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param('ssiiii', $departureDate, $arrivalDate, $adults, $adults, $children,$childrenSupported);
     $stmt->execute();
-    $stmt->bind_result($rid);
+    $stmt->bind_result($roomTypeID);
     $stmt->store_result();
 
     //Build the response
-    $typesArray = array();
+    $roomTypeArray = array();
     while ($stmt->fetch()) {
-        $type = new stdClass();
-        $type->roomTypeID = $rid;
-        $typesArray[] = $type;
+        $roomTypeArray[] = $roomTypeID;
     }
 
     //Close Connection to DB
@@ -73,7 +71,7 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST[
 
     //Build the json response
     $jObj->success = 1;
-    $jObj->results = $typesArray;
+    $jObj->roomTypeArray = $roomTypeArray;
 }
 //Bad request
 else {

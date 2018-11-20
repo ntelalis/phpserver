@@ -43,13 +43,23 @@ if(isset($_POST['email'],$_POST['pass'])){
 		$jObj->success = 1;
 
 		//get all necessary customer data
-			$query = "SELECT t.Title, c.FirstName, c.LastName, c.BirthDate, co.Name, ci.Address1, ci.Address2, ci.City, ci.PostalCode, ci.Phone,
-															(SELECT COUNT(o.ReservationID)
-															 FROM Occupancy o, Reservation r
-															 WHERE r.CustomerID = c.ID AND o.ReservationID = r.ID AND o.CheckOut IS NOT NULL) AS finishedStays,
-															 GREATEST(c.Modified,IFNULL(ci.Modified,0)) AS Modified
-			 					FROM Country co, Title t, Customer c LEFT JOIN ContactInfo ci ON c.ID=ci.CustomerID
-								WHERE c.ID = ? AND co.ID=c.CountryID AND t.ID=c.TitleID";
+			$query = "SELECT t.Title, c.FirstName, c.LastName, c.BirthDate, co.Name,
+											 ci.Address1, ci.Address2, ci.City, ci.PostalCode, ci.Phone,
+								       (SELECT COUNT(o.ReservationID)
+								        FROM   Occupancy o,
+								               Reservation r
+								        WHERE  r.CustomerID = c.ID
+								               AND o.ReservationID = r.ID
+								               AND o.CheckOut IS NOT NULL)          AS finishedStays,
+								       GREATEST(c.Modified, IFNULL(ci.Modified, 0)) AS Modified
+								FROM   Country co,
+								       Title t,
+								       Customer c
+								       LEFT JOIN ContactInfo ci
+								              ON c.ID = ci.CustomerID
+								WHERE  c.ID = ?
+								       AND co.ID = c.CountryID
+								       AND t.ID = c.TitleID";
 			$stmt = $mysqli->prepare($query);
 			$stmt->bind_param('i', $customerID);
 			$stmt->execute();

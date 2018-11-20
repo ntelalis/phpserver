@@ -69,7 +69,7 @@ if(isset($_POST['email'],$_POST['pass'])){
 
 			//Close Connection to DB
 			$stmt->close();
-	    $mysqli->close();
+            $mysqli->close();
 
 			//Check if customer has up to date data
 			if(isset($_POST['modified'])){

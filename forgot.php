@@ -7,7 +7,7 @@ require 'Functions/Email.php';
 require 'Functions/RandomString.php';
 
 //Connection to Database
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
@@ -19,7 +19,7 @@ if (isset($_POST['email']) && !empty($_POST['email'])) {
     //Check if email matches a record in database and return customerID
     $query = "SELECT CustomerID FROM Account WHERE Email=?";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('s', $email);
     $stmt->execute();
     $stmt->bind_result($customerID);
@@ -37,7 +37,7 @@ if (isset($_POST['email']) && !empty($_POST['email'])) {
 
       $query = "UPDATE Account SET Verify=?,VerifyTime=now() WHERE CustomerID=?";
 
-      $stmt = $dbCon->prepare($query);
+      $stmt = $mysqli->prepare($query);
       $stmt->bind_param('si', $code, $customerID);
       $stmt->execute();
       $success = $stmt->execute();
@@ -69,7 +69,7 @@ if (isset($_POST['email']) && !empty($_POST['email'])) {
 
     //Close Connections
     $stmt->close();
-    $dbCon->close();
+    $mysqli->close();
 }
 //Email variable is not supplied
 else {

@@ -3,7 +3,7 @@
 require 'dbConfig.php';
 
 //Connection to Database
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
@@ -17,7 +17,7 @@ if (isset($_POST['pass'],$_POST['email'],$_POST['code']) && !empty($_POST['pass'
     //Check if email matches a record in database and return customerID,Verification Code and VerificationTime
     $query = "SELECT CustomerID,Verify,VerifyTime FROM Account WHERE Email=?";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
 
     $stmt->bind_param('s', $email);
 
@@ -40,7 +40,7 @@ if (isset($_POST['pass'],$_POST['email'],$_POST['code']) && !empty($_POST['pass'
 
             //Set new Password and remove Verification Code for the account in database
             $query = "UPDATE Account SET Hash = ?, Verify = NULL WHERE CustomerID = ?";
-            $stmt = $dbCon->prepare($query);
+            $stmt = $mysqli->prepare($query);
             $stmt->bind_param('si', $hash, $customerID);
             $success = $stmt->execute();
             $stmt->close();
@@ -65,7 +65,7 @@ if (isset($_POST['pass'],$_POST['email'],$_POST['code']) && !empty($_POST['pass'
     }
 
     //Close Connection
-    $dbCon->close();
+    $mysqli->close();
 } else {
     //Variables not set
     $jObj->success=0;

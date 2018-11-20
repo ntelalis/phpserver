@@ -9,7 +9,7 @@ mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 require 'dbConfig.php';
 require 'Functions/addpoints.php';
 //Connection to Database
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
@@ -26,22 +26,22 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
   SET Occupancy.CheckOut=?
   WHERE Occupancy.ReservationID=?";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('si', $checkoutDate, $reservationID);
     $stmt->execute();
 
-    if ($dbCon->affected_rows==1) {
+    if ($mysqli->affected_rows==1) {
         $query = "SELECT DATEDIFF(Occupancy.CheckOut,Occupancy.CheckIn) + 1
     FROM Occupancy
     WHERE Occupancy.ReservationID = ?";
-        $stmt = $dbCon->prepare($query);
+        $stmt = $mysqli->prepare($query);
         $stmt->bind_param('i', $reservationID);
         $stmt->execute();
         $stmt->bind_result($days);
         $stmt->store_result();
         $stmt->fetch();
 
-        if (addPointsByReservationID($dbCon, $reservationID, "night", $days)) {
+        if (addPointsByReservationID($mysqli, $reservationID, "night", $days)) {
             $jObj->success=1;
             $jObj->date=$checkoutDate;
             $jObj->modified=$checkoutDate;
@@ -61,7 +61,7 @@ else {
     $jObj->errorMessage= "reservationID not correctly set";
 }
 
-$dbCon->close();
+$mysqli->close();
 //Encode data in JSON Format
 $JsonResponse = json_encode($jObj);
 

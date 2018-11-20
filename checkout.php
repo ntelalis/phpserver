@@ -8,7 +8,7 @@ mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 require 'dbConfig.php';
 
 //Connection to Database
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
@@ -22,7 +22,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     // Total Charges
     $query = "SELECT IFNULL(SUM(Charge.Price),0) FROM Charge WHERE ReservationID=?";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('i', $reservationID);
     $stmt->execute();
     $stmt->bind_result($totalPrice);
@@ -31,7 +31,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
 
     //Detailed Charges
     $query = "SELECT Service.Name, SUM(Charge.Price) FROM Charge,Service WHERE Charge.ServiceID=Service.ID AND Charge.ReservationID=? GROUP BY Service.Name";
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('i', $reservationID);
     $stmt->execute();
     $stmt->bind_result($serviceName, $servicePrice);
@@ -52,7 +52,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
 
     //Close Connections
     $stmt->close();
-    $dbCon->close();
+    $mysqli->close();
 } else {
     $jObj->success = 0;
     $jObj->errorMessage= "variables not correctly set";

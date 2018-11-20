@@ -3,7 +3,7 @@
 require 'dbConfig.php';
 
 //Connection to Database
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
@@ -16,7 +16,7 @@ if (isset($_POST['customerID']) && !empty($_POST['customerID'])) {
             FROM Occupancy, Reservation
             WHERE Occupancy.ReservationID=Reservation.ID AND Reservation.CustomerID=?";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('i', $customerID);
     $stmt->execute();
     $stmt->bind_result($reservationIDCount);
@@ -33,7 +33,7 @@ if (isset($_POST['customerID']) && !empty($_POST['customerID'])) {
 
     //Close Connections
     $stmt->close();
-    $dbCon->close();
+    $mysqli->close();
 }
 //Email variable is not supplied
 else {

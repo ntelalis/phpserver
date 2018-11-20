@@ -2,8 +2,8 @@ FoodServingTime<?php
 
 include 'dbConfig.php';
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
-$dbCon->set_charset("utf8");
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
 
 if (isset($_POST['timeType'])) {
     $timeType = $_POST['timeType'];
@@ -14,7 +14,7 @@ if (isset($_POST['timeType'])) {
   WHERE f.ID = fst.FoodID AND ftz.ID = fst.FoodTimeZoneID  AND fc.ID = fst.FoodCategoryID
   AND f.Availability = 1 AND ftz.Name = ?";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('s', $timeType);
     $stmt->execute();
     $stmt->bind_result($foodID, $foodName, $foodDesc, $foodPrice, $categoryID, $categoryName);
@@ -46,13 +46,13 @@ if (isset($_POST['timeType'])) {
     }
 
     $stmt->close();
-    $dbCon->close();
+    $mysqli->close();
 
     $jObj->success=1;
     $jObj->typeCategory = $finalarray;
 } else {
     $jObj->success=0;
-    $jObj->errorMessage=$dbCon->error;
+    $jObj->errorMessage=$mysqli->error;
 }
 
 //Encode data in JSON Format

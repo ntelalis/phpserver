@@ -2,11 +2,11 @@
 
 include 'dbConfig.php';
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 $query = "SELECT MAX(Capacity) as maxCap FROM RoomType";
 
-$stmt = $dbCon->prepare($query);
+$stmt = $mysqli->prepare($query);
 
 $stmt->execute();
 
@@ -30,4 +30,4 @@ $JsonResponse = json_encode($jObj);
 echo $JsonResponse;
 
 $stmt->close();
-$dbCon->close();
+$mysqli->close();

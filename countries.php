@@ -2,13 +2,13 @@
 
 include 'dbConfig.php';
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
 
 $query = "SELECT ID,Name FROM Country";
-$stmt = $dbCon->prepare($query);
+$stmt = $mysqli->prepare($query);
 $stmt->execute();
 $stmt->bind_result($countryID, $countryName);
 $stmt->store_result();
@@ -25,7 +25,7 @@ while ($stmt->fetch()) {
   $jObj->countryArray = $countryList;
 
 $stmt->close();
-$dbCon->close();
+$mysqli->close();
 
 //Encode data in JSON Format
 $JsonResponse = json_encode($jObj);

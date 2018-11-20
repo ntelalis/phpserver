@@ -13,7 +13,7 @@ use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 //Connection to Database
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
@@ -33,7 +33,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
               /* !!REMOVE THIS COMMENT!!! ORDER by rand()*/
               LIMIT 1";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('i', $reservationID);
     $stmt->execute();
     $stmt->bind_result($roomID, $roomNumber, $roomFloor);
@@ -45,7 +45,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
               WHERE v.ID IN(SELECT brm.BeaconRegionID
                             FROM BeaconRegionRoom brm
                             WHERE brm.RoomID = ?)";
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('i', $roomID);
     $stmt->execute();
     $stmt->bind_result($brmID, $brmUniqueID, $brmUUID, $brmMajor, $brmMinor, $brmExclusive, $brmBackground, $brmModified);
@@ -72,7 +72,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
 
     $checkinDate=date("Y-m-d H:i:s");
     $query = "INSERT INTO Occupancy(RoomID,ReservationID,RoomPasswordHash,CheckIn,Modified) VALUES(?,?,?,?,?)";
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
 
     try {
         // Generate a version 4 (random) UUID object
@@ -86,7 +86,7 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $stmt->bind_param('iisss', $roomID, $reservationID, $roomPasswordHash, $checkinDate, $checkinDate);
     $success = $stmt->execute();
 
-    if ($dbCon->affected_rows==1) {
+    if ($mysqli->affected_rows==1) {
         $jObj->success=1;
         $jObj->reservationID = $reservationID;
         $jObj->roomNumber=$roomNumber;
@@ -97,12 +97,12 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
         $jObj->modified=$checkinDate;
     } else {
         $jObj->success=0;
-        $jObj->errorMessage= $dbCon->error;
+        $jObj->errorMessage= $mysqli->error;
     }
 
     $stmt->close();
 
-    $dbCon->close();
+    $mysqli->close();
 }
 //Email variable is not supplied
 else {

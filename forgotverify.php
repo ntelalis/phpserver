@@ -3,7 +3,7 @@
 require 'dbConfig.php';
 
 //Connection to Database
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
@@ -16,7 +16,7 @@ if (isset($_POST['verification'], $_POST['email']) && !empty($_POST['verificatio
     //Check if email matches a record in database and return customerID,Verification Code and VerificationTime
     $query = "SELECT CustomerID,Verify,VerifyTime FROM Account WHERE Email=?";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('s', $email);
     $stmt->execute();
     $stmt->bind_result($customerID, $verificationDB, $VerifyTime);
@@ -52,7 +52,7 @@ if (isset($_POST['verification'], $_POST['email']) && !empty($_POST['verificatio
 
     //Close Connections
     $stmt->close();
-    $dbCon->close();
+    $mysqli->close();
 } else {
     //Variables not set
     $jObj->success=0;

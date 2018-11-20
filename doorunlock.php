@@ -9,7 +9,7 @@ if (isset($_POST['reservationID'],$_POST['roomPassword'])) {
     require 'Functions/doorUnlock.php';
 
     //Connection to Database
-    $dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+    $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
     //Response Object
     $jObj = new stdClass();
@@ -17,7 +17,7 @@ if (isset($_POST['reservationID'],$_POST['roomPassword'])) {
     $query = "SELECT RoomID,RoomPasswordHash FROM Occupancy WHERE ReservationID=? AND Occupancy.CheckOut IS NULL";
 
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('i', $reservationID);
     $stmt->execute();
     $stmt->bind_result($roomID, $roomPasswordHash);

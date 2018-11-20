@@ -28,15 +28,15 @@ FROM (SELECT ee.ID
                               WHERE t.TierID = getTierIDByCustomerID(?))
             UNION
             SELECT MinFreq.ID, MinFreq.MaximumUsage
-            FROM(SELECT oe.ID, oe.MaximumUsage, hs.CategoryID, hscf.MinimumUsages
+            FROM(SELECT oe.ID, oe.MaximumUsage, hs.ServiceCategoryID, hscf.MinimumUsages
                  FROM Offer o, OfferExclusive oe, OfferExclusiveFrequency oef, Service hs, ServiceCategoryFrequency hscf
                  WHERE oef.OfferExclusiveID = oe.ID AND o.ID = oe.OfferID AND o.ServiceID = hs.ID AND
-                 hs.CategoryID = hscf.CategoryID AND oef.FrequencyID = hscf.FrequencyID) MinFreq,
-            (SELECT hs.CategoryID, COUNT(hs.CategoryID) AS CustomerCount
+                 hs.ServiceCategoryID = hscf.ServiceCategoryID AND oef.FrequencyID = hscf.FrequencyID) MinFreq,
+            (SELECT hs.ServiceCategoryID, COUNT(hs.ServiceCategoryID) AS CustomerCount
              FROM Charge ch, Reservation r, Service hs
              WHERE ch.ReservationID = r.ID AND ch.ServiceID = hs.ID AND r.CustomerID = ?
-             GROUP BY hs.CategoryID) CusFreq
-            WHERE MinFreq.CategoryID = CusFreq.CategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee LEFT JOIN
+             GROUP BY hs.ServiceCategoryID) CusFreq
+            WHERE MinFreq.ServiceCategoryID = CusFreq.ServiceCategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee LEFT JOIN
               OfferCoupon oc ON oc.OfferExclusiveID=ee.ID
             WHERE ee.ID NOT IN (SELECT oe.ID
 FROM OfferCoupon oc, OfferExclusive oe

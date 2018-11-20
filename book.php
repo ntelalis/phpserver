@@ -9,7 +9,7 @@ include 'dbConfig.php';
 require 'Functions/externalpayment.php';
 require 'Functions/addpoints.php';
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 
 //Response Object
 $jObj = new stdClass();
@@ -68,7 +68,7 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
     if ($dateDiff>=$freeNights+$cashNights) {
         //Checks if customer already has a reservation within given dates
         $query = "SELECT ID FROM Reservation WHERE CustomerID=? AND NOT (StartDate>=? OR EndDate<=?)";
-        $stmt = $dbCon->prepare($query);
+        $stmt = $mysqli->prepare($query);
         $stmt->bind_param('iss', $customerID, $departure, $arrival);
         $stmt->execute();
         $stmt->bind_result($resId);
@@ -80,10 +80,10 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
         if ($numrows==0) {
 
     //check if enough points
-            $customerPoints = getPointsByCustomerID($dbCon, $customerID);
+            $customerPoints = getPointsByCustomerID($mysqli, $customerID);
             $pointsNeeded = 0;
-            $pointsNeeded += getFreeNightsPoints($dbCon, $roomTypeID, $adults, $children)*$freeNights;
-            $pointsNeeded += getCashNightsPoints($dbCon, $roomTypeID, $adults, $children, $currencyID)*$cashNights;
+            $pointsNeeded += getFreeNightsPoints($mysqli, $roomTypeID, $adults, $children)*$freeNights;
+            $pointsNeeded += getCashNightsPoints($mysqli, $roomTypeID, $adults, $children, $currencyID)*$cashNights;
 
 
             if ($customerPoints>=$pointsNeeded) {
@@ -95,21 +95,21 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
       WHERE rtc.RoomTypeID=? AND rtc.Adults=? AND rtc.Children=? AND rtc.CurrencyID=?
       AND rtcp.RoomTypeID=rtc.RoomTypeID AND rtcp.Adults=rtc.Adults AND rtcp.Children=rtc.Children AND rtcp.CurrencyID=rtc.CurrencyID";
                 //$query = "SELECT (datediff(?,?)-?)*rt.Price - ?*? from RoomType rt where rt.ID=?";
-                $stmt = $dbCon->prepare($query);
+                $stmt = $mysqli->prepare($query);
                 $stmt->bind_param('ssiiiiii', $departure, $arrival, $freeNights, $cashNights, $roomTypeID, $adults, $children, $currencyID);
                 $stmt->execute();
                 $stmt->bind_result($totalPrice);
                 $stmt->store_result();
                 $stmt->fetch();
 
-                $dbCon->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+                $mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 
                 if ($freeNights>0) {
                     $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
                 VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Free Night'),
                       (SELECT SpendingPoints FROM RoomTypePoints WHERE RoomTypeID=? AND Adults=? AND Children=?)*?,
                       now())";
-                    $stmt = $dbCon->prepare($query);
+                    $stmt = $mysqli->prepare($query);
                     $stmt->bind_param('iiiii', $customerID, $roomTypeID, $adults, $children, $freeNights);
                     $success = $stmt->execute();
                     if(!$success){
@@ -121,7 +121,7 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                 VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash And Points'),
                       (SELECT Points FROM RoomTypeCashPoints WHERE RoomTypeID=? AND Adults=? AND Children=? AND CurrencyID=?)*?,
                       now())";
-                    $stmt = $dbCon->prepare($query);
+                    $stmt = $mysqli->prepare($query);
                     $stmt->bind_param('iiiiii', $customerID, $roomTypeID, $adults, $children, $currencyID, $cashNights);
                     $success = $stmt->execute();
                     if(!$success){
@@ -132,17 +132,17 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                 $bookDate = date('Y-m-d');
                 $modified = date("Y-m-d H:i:s");
                 $query = "INSERT INTO Reservation(CustomerID,RoomTypeID,ReservationTypeID,Adults,Children,DateBooked,StartDate,EndDate,Modified) VALUES (?,?,3,?,?,?,?,?,?)";
-                $stmt = $dbCon->prepare($query);
+                $stmt = $mysqli->prepare($query);
                 $stmt->bind_param('iiiissss', $customerID, $roomTypeID, $adults, $children, $bookDate, $arrival, $departure, $modified);
                 $success = $stmt->execute();
 
-                $reservationId = $dbCon->insert_id;
+                $reservationId = $mysqli->insert_id;
 
                 $query = "INSERT INTO ContactInfo (CustomerID,Phone,Address1,Address2,City,PostalCode)
                           VALUES (?,?,?,?,?,?)
                           ON DUPLICATE KEY
                           UPDATE Phone = ?, Address1 = ?, Address2 = ?, City = ?, PostalCode = ?";
-                $stmt = $dbCon->prepare($query);
+                $stmt = $mysqli->prepare($query);
                 $stmt->bind_param('issssssssss',$customerID, $phone, $address1, $address2, $city, $postalCode, $phone, $address1, $address2, $city, $postalCode);
                 $success = $stmt->execute();
 
@@ -150,7 +150,7 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                           SELECT ?,NULL,pm.ID,?,NOW()
                           FROM PaymentMethod pm
                           WHERE pm.Method='Card'";
-                $stmt = $dbCon->prepare($query);
+                $stmt = $mysqli->prepare($query);
                 $stmt->bind_param('id',$reservationId, $totalPrice);
                 $success = $stmt->execute();
 
@@ -161,20 +161,20 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
 
                   //If payment was executed
                   if ($paymentExecuted) {
-                      $dbCon->commit();
+                      $mysqli->commit();
                       $jObj->success=1;
                       $jObj->reservationID=$reservationId;
                       $jObj->bookedDate = $bookDate;
                       $jObj->modified = $modified;
                   } else {
-                      $dbCon->rollback();
+                      $mysqli->rollback();
                       $jObj->success=0;
                       $jObj->errorMessage="There is an error with the payment. Please try again later";
                   }
                 } else {
-                    $dbCon->rollback();
+                    $mysqli->rollback();
                     $jObj->success=0;
-                    $jObj->errorMessage=$dbCon->error;
+                    $jObj->errorMessage=$mysqli->error;
                 }
 
 
@@ -187,7 +187,7 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
             $jObj->errorMessage="You already have an active reservation within these days";
         }
         $stmt->close();
-        $dbCon->close();
+        $mysqli->close();
     } else {
         $jObj->success=0;
         $jObj->errorMessage="Something is wrong with date picked!";

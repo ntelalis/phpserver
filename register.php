@@ -1,54 +1,79 @@
 <?php
 
+//DEBUG
 /*
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
+
+//Database connection variables
 include 'dbConfig.php';
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+//Create new database object
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
 
 //Response Object
 $jObj = new stdClass();
 
-$email = $_POST['email'];// = "gpaschos@epi.com.gr";
-$pass = $_POST['pass'];// = "Qqwerty1!";
-$fname = $_POST['firstName'];// = "ghj";
-$lname = $_POST['lastName'];// = "bbn";
-$titleID = $_POST['titleID'];// = 2;
-$countryID = $_POST['countryID'];// = 4;
-$birthDate = $_POST['birthDate'];// = "2000-11-02";
-$phone = $_POST['phone'];// = 96599965899;
+//DEBUG
+//$_POST['email'] = "gpaschos@epi.com.gr";
+//$_POST['pass'] = "Qqwerty1!";
+//$_POST['firstName'] = "George";
+//$_POST['lastName'] = "Paschos";
+//$_POST['titleID'] = 2;
+//$_POST['countryID'] = 4;
+//$_POST['birthDate'] = "1991-11-02";
+//$_POST['phone'] = "6987453152";
 
-$query = "INSERT INTO Customer(TitleID,FirstName,LastName,BirthDate,CountryId) VALUES(?,?,?,?,?)";
-$stmt = $dbCon->prepare($query);
-$stmt->bind_param('isssi', $titleID, $fname, $lname, $birthDate, $countryID);
-$success = $stmt->execute();
+if(isset($_POST['email'],$_POST['pass'],$_POST['firstName'],$_POST['lastName'],
+$_POST['titleID'],$_POST['countryID'],$_POST['birthDate'],
+$_POST['phone'])){
+
+    $email = $_POST['email'];
+    $pass = $_POST['pass'];
+    $firstName = $_POST['firstName'];
+    $lastName = $_POST['lastName'];
+    $titleID = $_POST['titleID'];
+    $countryID = $_POST['countryID'];
+    $birthDate = $_POST['birthDate'];
+    $phone = $_POST['phone'];
+
+    $query = "INSERT INTO Customer(TitleID,FirstName,LastName,BirthDate,CountryId) VALUES(?,?,?,?,?)";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('isssi', $titleID, $firstName, $lastName, $birthDate, $countryID);
+    $success = $stmt->execute();
 
 
-$customerId = $dbCon->insert_id;
-$hash = password_hash($pass, PASSWORD_DEFAULT);
-$query = "INSERT INTO Account(CustomerID,Email,Hash) VALUES(?,?,?)";
-$stmt = $dbCon->prepare($query);
-$stmt->bind_param('iss', $customerId, $email, $hash);
-$success = $stmt->execute();
+    $customerID = $mysqli->insert_id;
+    $hash = password_hash($pass, PASSWORD_DEFAULT);
+    $query = "INSERT INTO Account(CustomerID,Email,Hash) VALUES(?,?,?)";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('iss', $customerID, $email, $hash);
+    $success = $stmt->execute();
 
-if ($success) {
-    $jObj->success=1;
-    $jObj->customerID=$customerId;
-} else {
-    $jObj->success=0;
-    $jObj->errorMessage=$dbCon->error;
+    //Close Connection to DB
+    $stmt->close();
+    $mysqli->close();
+
+    if ($success) {
+        $jObj->success=1;
+        $jObj->customerID=$customerID;
+    } else {
+        $jObj->success=0;
+        $jObj->errorMessage=$mysqli->error;
+    }
+}
+//Bad request
+else{
+    $jObj->success = 0;
+    $jObj->errorMessage = "Bad request";
 }
 
+//Specify that the response is json in the header
+header('Content-type:application/json;charset=utf-8');
 
-$stmt->close();
-$dbCon->close();
-
-
-//Encode data in JSON Format
-$JsonResponse = json_encode($jObj);
-
-//Show Data
+//Encode the JSON Object and print the result
+$JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

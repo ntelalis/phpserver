@@ -2,14 +2,14 @@
 
 include 'dbConfig.php';
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
-$dbCon->set_charset("utf8");
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
 //Response Object
 $jObj = new stdClass();
 
 $query = "SELECT ID, Name, BeginTime, EndTime FROM FoodTimeZone";
 
-$stmt = $dbCon->prepare($query);
+$stmt = $mysqli->prepare($query);
 $executed = $stmt->execute();
 $stmt->bind_result($categoryID, $categoryName, $categoryFrom, $categoryTo);
 $stmt->store_result();
@@ -26,14 +26,14 @@ while ($stmt->fetch()) {
 }
 
 $stmt->close();
-$dbCon->close();
+$mysqli->close();
 
 if ($executed) {
     $jObj->success=1;
     $jObj->timeCategory = $timeCategory;
 } else {
     $jObj->success=0;
-    $jObj->errorMessage=$dbCon->error;
+    $jObj->errorMessage=$mysqli->error;
 }
 
 //Encode data in JSON Format

@@ -2,8 +2,8 @@
 
 include 'dbConfig.php';
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
-$dbCon->set_charset("utf8");
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
 
 if (isset($_POST['reservationID'])) {
     $reservationID = $_POST['reservationID'];
@@ -12,7 +12,7 @@ if (isset($_POST['reservationID'])) {
 
     $query = "SELECT r.Rating,r.Comments FROM Rating r WHERE r.ReservationID=?";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('i', $reservationID);
     $stmt->execute();
     $stmt->bind_result($rating, $comments);
@@ -32,7 +32,7 @@ if (isset($_POST['reservationID'])) {
     }
 
     $stmt->close();
-    $dbCon->close();
+    $mysqli->close();
 } else {
     $jObj->success=0;
     $jObj->errorMessage="Wrong given arguments";

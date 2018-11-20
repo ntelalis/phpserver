@@ -2,8 +2,8 @@
 
 include 'dbConfig.php';
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
-$dbCon->set_charset("utf8");
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
 
 if (isset($_POST['rating'],$_POST['comments'],$_POST['reservationID'])) {
     $rating = $_POST['rating'];
@@ -14,11 +14,11 @@ if (isset($_POST['rating'],$_POST['comments'],$_POST['reservationID'])) {
 
     $query = "INSERT INTO Rating(ReservationID,Rating,Comments) VALUES (?,?,?)";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('ids', $reservationID, $rating, $comments);
     $stmt->execute();
 
-    if ($dbCon->affected_rows>0) {
+    if ($mysqli->affected_rows>0) {
         $jObj->success=1;
     } else {
         $jObj->success=0;
@@ -26,7 +26,7 @@ if (isset($_POST['rating'],$_POST['comments'],$_POST['reservationID'])) {
     }
 
     $stmt->close();
-    $dbCon->close();
+    $mysqli->close();
 } else {
     $jObj->success=0;
     $jObj->errorMessage="Wrong given arguments";

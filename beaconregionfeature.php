@@ -1,4 +1,5 @@
 <?php
+
 /*
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -11,6 +12,9 @@ include 'dbConfig.php';
 //Create new database object
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
+
+//Response Object
+$jObj = new stdClass();
 
 //$_POST['beaconRegionIDJsonArray'] = "[13,16,17,18,28]";
 //$_POST['check']= '[{"id":1,"modified":"2019-01-01"},{"id":2,"modified":"2019-01-01"},{"id":3,"modified":"2019-01-01"},{"id":6,"modified":"2012-01-01"}]';

@@ -1,10 +1,27 @@
 <?php
 
+//DEBUG
+/*
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+*/
+
+//Database connection variables
 include 'dbConfig.php';
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+//Create new database object
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
 
+//Response Object
 $jObj = new stdClass();
+
+//DEBUG
+//$_POST['arrivalDate'] = '2018-06-19';
+//$_POST['departureDate'] = '2018-06-21';
+//$_POST['adults'] = 1;
+//$_POST['children'] = 0;
 
 if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST['children'])) {
     $arrivalDate=$_POST['arrivalDate'];
@@ -12,6 +29,7 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST[
     $adults=$_POST['adults'];
     $children=$_POST['children'];
 
+    //Check if customer wants a room with children support
     if($children>0){
       $childrenSupported=1;
     }
@@ -19,6 +37,7 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST[
       $childrenSupported=0;
     }
 
+    //get all available rooms based on parameters
     $query = " SELECT ID
             FROM (
                 SELECT COUNT(RoomTypeID) AS total, RoomTypeID
@@ -34,14 +53,13 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST[
             GROUP BY RoomTypeID
             HAVING sum(total)>0";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('ssiiii', $departureDate, $arrivalDate, $adults, $adults, $children,$childrenSupported);
     $stmt->execute();
     $stmt->bind_result($rid);
     $stmt->store_result();
 
-    $numrows = $stmt->num_rows;
-
+    //Build the response
     $typesArray = array();
     while ($stmt->fetch()) {
         $type = new stdClass();
@@ -49,16 +67,23 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST[
         $typesArray[] = $type;
     }
 
+    //Close Connection to DB
     $stmt->close();
-    $dbCon->close();
+    $mysqli->close();
 
+    //Build the json response
     $jObj->success = 1;
     $jObj->results = $typesArray;
-} else {
+}
+//Bad request
+else {
     $jObj->success = 0;
-    $jObj->errorMessage = $dbCon->error;
+    $jObj->errorMessage = "Bad Request";
 }
 
-$JsonResponse = json_encode($jObj);
+//Specify that the response is json in the header
+header('Content-type:application/json;charset=utf-8');
 
+//Encode the JSON Object and print the result
+$JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

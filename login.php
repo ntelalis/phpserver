@@ -83,7 +83,7 @@ if(isset($_POST['email'],$_POST['pass'])){
 				$jObj->postalCode = $postalCode;
 				//Check if Customer has revisited the hotel
 				$jObj->oldCustomer = $finishedStays != 0;
-				$jObj->modified = $modified;
+				$jObj->modified = $modifiedDB;
 		}
 	}
 	//Wrong credentials

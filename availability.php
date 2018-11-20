@@ -20,7 +20,7 @@ $jObj = new stdClass();
 //DEBUG
 //$_POST['arrivalDate'] = '2018-06-19';
 //$_POST['departureDate'] = '2018-06-21';
-//$_POST['adults'] = 1;
+//$_POST['adults'] = 3;
 //$_POST['children'] = 0;
 
 if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST['children'])) {

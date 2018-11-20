@@ -35,6 +35,8 @@ if ($numrows == 0) {
     $jObj->titleList = $titleArray;
 }
 
+header('Content-type:application/json;charset=utf-8');
+
 $JsonResponse = json_encode($jObj);
 
 echo $JsonResponse;

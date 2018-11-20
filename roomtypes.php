@@ -135,6 +135,8 @@ if ($numrows == 0) {
     $jObj->roomTypeCashPointsArray = $roomTypeCashPointsArray;
 }
 
+header('Content-type:application/json;charset=utf-8');
+
 $JsonResponse = json_encode($jObj,JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;
 

@@ -317,7 +317,7 @@ INSERT INTO `BeaconUUID` (`ID`, `UUID`) VALUES
 CREATE TABLE `Charge` (
   `ID` int(11) NOT NULL,
   `ReservationID` int(11) NOT NULL,
-  `HotelServiceID` int(11) NOT NULL,
+  `ServiceID` int(11) NOT NULL,
   `PaymentMethodID` int(11) NOT NULL DEFAULT '1',
   `Price` double NOT NULL,
   `TimePaid` timestamp NULL DEFAULT NULL
@@ -967,10 +967,10 @@ INSERT INTO `Food_Category_Time` (`FoodID`, `FoodTimeID`, `FoodCategoryID`) VALU
 -- --------------------------------------------------------
 
 --
--- Table structure for table `HotelService`
+-- Table structure for table `Service`
 --
 
-CREATE TABLE `HotelService` (
+CREATE TABLE `Service` (
   `ID` int(11) NOT NULL,
   `PartnerID` int(11) DEFAULT NULL,
   `CategoryID` int(11) DEFAULT NULL,
@@ -979,10 +979,10 @@ CREATE TABLE `HotelService` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `HotelService`
+-- Dumping data for table `Service`
 --
 
-INSERT INTO `HotelService` (`ID`, `PartnerID`, `CategoryID`, `Name`, `Tag`) VALUES
+INSERT INTO `Service` (`ID`, `PartnerID`, `CategoryID`, `Name`, `Tag`) VALUES
 (6, NULL, 5, 'Manicure/Pedicure Services', 'manicurePedicure'),
 (7, NULL, 5, 'MakeUp Artist Services', 'makeupArtist'),
 (8, NULL, 5, 'Hair Dresser Services', 'hairdresser'),
@@ -996,19 +996,19 @@ INSERT INTO `HotelService` (`ID`, `PartnerID`, `CategoryID`, `Name`, `Tag`) VALU
 -- --------------------------------------------------------
 
 --
--- Table structure for table `HotelServiceCategory`
+-- Table structure for table `ServiceCategory`
 --
 
-CREATE TABLE `HotelServiceCategory` (
+CREATE TABLE `ServiceCategory` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `HotelServiceCategory`
+-- Dumping data for table `ServiceCategory`
 --
 
-INSERT INTO `HotelServiceCategory` (`ID`, `Name`) VALUES
+INSERT INTO `ServiceCategory` (`ID`, `Name`) VALUES
 (1, 'Wellness/Spa'),
 (2, 'FoodAndDrink'),
 (5, 'In-Room Services'),
@@ -1017,10 +1017,10 @@ INSERT INTO `HotelServiceCategory` (`ID`, `Name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `HotelServiceCategoryFrequency`
+-- Table structure for table `ServiceCategoryFrequency`
 --
 
-CREATE TABLE `HotelServiceCategoryFrequency` (
+CREATE TABLE `ServiceCategoryFrequency` (
   `ID` int(11) NOT NULL,
   `CategoryID` int(11) NOT NULL,
   `FrequencyID` int(11) NOT NULL,
@@ -1029,10 +1029,10 @@ CREATE TABLE `HotelServiceCategoryFrequency` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `HotelServiceCategoryFrequency`
+-- Dumping data for table `ServiceCategoryFrequency`
 --
 
-INSERT INTO `HotelServiceCategoryFrequency` (`ID`, `CategoryID`, `FrequencyID`, `MinimumUsages`) VALUES
+INSERT INTO `ServiceCategoryFrequency` (`ID`, `CategoryID`, `FrequencyID`, `MinimumUsages`) VALUES
 (1, 1, 1, 2),
 (2, 1, 2, 5),
 (3, 1, 3, 10),
@@ -1049,19 +1049,19 @@ INSERT INTO `HotelServiceCategoryFrequency` (`ID`, `CategoryID`, `FrequencyID`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `HotelServiceFrequency`
+-- Table structure for table `ServiceFrequency`
 --
 
-CREATE TABLE `HotelServiceFrequency` (
+CREATE TABLE `ServiceFrequency` (
   `ID` int(11) NOT NULL,
   `Frequency` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `HotelServiceFrequency`
+-- Dumping data for table `ServiceFrequency`
 --
 
-INSERT INTO `HotelServiceFrequency` (`ID`, `Frequency`) VALUES
+INSERT INTO `ServiceFrequency` (`ID`, `Frequency`) VALUES
 (3, 'Frequent'),
 (2, 'Occasional'),
 (1, 'Rare');
@@ -1308,7 +1308,7 @@ INSERT INTO `Offer` (`ID`, `ServiceID`, `Price`, `Discount`, `Title`, `Descripti
 CREATE TABLE `OfferBeaconRegion` (
   `ID` int(11) NOT NULL,
   `BeaconMonitoredRegionID` int(11) NOT NULL,
-  `HotelServicesOfferID` int(11) NOT NULL,
+  `OfferExclusiveID` int(11) NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -1316,7 +1316,7 @@ CREATE TABLE `OfferBeaconRegion` (
 -- Dumping data for table `OfferBeaconRegion`
 --
 
-INSERT INTO `OfferBeaconRegion` (`ID`, `BeaconMonitoredRegionID`, `HotelServicesOfferID`) VALUES
+INSERT INTO `OfferBeaconRegion` (`ID`, `BeaconMonitoredRegionID`, `OfferExclusiveID`) VALUES
 (1, 16, 2),
 (4, 16, 3),
 (7, 16, 8);
@@ -1330,7 +1330,7 @@ INSERT INTO `OfferBeaconRegion` (`ID`, `BeaconMonitoredRegionID`, `HotelServices
 CREATE TABLE `OfferCoupon` (
   `ID` int(11) NOT NULL,
   `CustomerID` int(11) DEFAULT NULL,
-  `ExclusiveOfferID` int(11) DEFAULT NULL,
+  `OfferExclusiveID` int(11) DEFAULT NULL,
   `Code` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `Used` tinyint(1) DEFAULT '0',
   `Created` date NOT NULL,
@@ -1341,7 +1341,7 @@ CREATE TABLE `OfferCoupon` (
 -- Dumping data for table `OfferCoupon`
 --
 
-INSERT INTO `OfferCoupon` (`ID`, `CustomerID`, `ExclusiveOfferID`, `Code`, `Used`, `Created`) VALUES
+INSERT INTO `OfferCoupon` (`ID`, `CustomerID`, `OfferExclusiveID`, `Code`, `Used`, `Created`) VALUES
 (1, 23, 8, 'EO417095', 0, '2018-11-02'),
 (2, 23, 2, 'JS170341', 0, '2018-11-02'),
 (3, 52, 7, 'ZS217148', 0, '2018-11-06');
@@ -1384,7 +1384,7 @@ INSERT INTO `OfferExclusive` (`ID`, `OfferID`, `Special`, `MaximumUsage`, `EndDa
 
 CREATE TABLE `OfferExclusiveFrequency` (
   `ID` int(11) NOT NULL,
-  `ExclusiveOfferID` int(11) NOT NULL,
+  `OfferExclusiveID` int(11) NOT NULL,
   `FrequencyID` int(11) NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1393,7 +1393,7 @@ CREATE TABLE `OfferExclusiveFrequency` (
 -- Dumping data for table `OfferExclusiveFrequency`
 --
 
-INSERT INTO `OfferExclusiveFrequency` (`ID`, `ExclusiveOfferID`, `FrequencyID`) VALUES
+INSERT INTO `OfferExclusiveFrequency` (`ID`, `OfferExclusiveID`, `FrequencyID`) VALUES
 (4, 3, 1);
 
 -- --------------------------------------------------------
@@ -1404,7 +1404,7 @@ INSERT INTO `OfferExclusiveFrequency` (`ID`, `ExclusiveOfferID`, `FrequencyID`) 
 
 CREATE TABLE `OfferExclusiveTier` (
   `ID` int(11) NOT NULL,
-  `ExclusiveOfferID` int(11) NOT NULL,
+  `OfferExclusiveID` int(11) NOT NULL,
   `TierID` int(11) NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1413,7 +1413,7 @@ CREATE TABLE `OfferExclusiveTier` (
 -- Dumping data for table `OfferExclusiveTier`
 --
 
-INSERT INTO `OfferExclusiveTier` (`ID`, `ExclusiveOfferID`, `TierID`) VALUES
+INSERT INTO `OfferExclusiveTier` (`ID`, `OfferExclusiveID`, `TierID`) VALUES
 (4, 2, 2),
 (1, 2, 3),
 (9, 3, 2),
@@ -1910,7 +1910,7 @@ ALTER TABLE `BeaconUUID`
 --
 ALTER TABLE `Charge`
   ADD PRIMARY KEY (`ID`),
-  ADD KEY `Charge_HotelService` (`HotelServiceID`) USING BTREE,
+  ADD KEY `Charge_Service` (`ServiceID`) USING BTREE,
   ADD KEY `Charge_Reservation` (`ReservationID`) USING BTREE;
 
 --
@@ -1995,31 +1995,31 @@ ALTER TABLE `Food_Category_Time`
   ADD KEY `FoodTime_Food_Category_Time` (`FoodTimeID`);
 
 --
--- Indexes for table `HotelService`
+-- Indexes for table `Service`
 --
-ALTER TABLE `HotelService`
+ALTER TABLE `Service`
   ADD PRIMARY KEY (`ID`),
-  ADD KEY `HotelService_HotelServicesCategory` (`CategoryID`),
-  ADD KEY `HotelService_Partner` (`PartnerID`);
+  ADD KEY `Service_ServicesCategory` (`CategoryID`),
+  ADD KEY `Service_Partner` (`PartnerID`);
 
 --
--- Indexes for table `HotelServiceCategory`
+-- Indexes for table `ServiceCategory`
 --
-ALTER TABLE `HotelServiceCategory`
+ALTER TABLE `ServiceCategory`
   ADD PRIMARY KEY (`ID`);
 
 --
--- Indexes for table `HotelServiceCategoryFrequency`
+-- Indexes for table `ServiceCategoryFrequency`
 --
-ALTER TABLE `HotelServiceCategoryFrequency`
+ALTER TABLE `ServiceCategoryFrequency`
   ADD PRIMARY KEY (`ID`),
   ADD UNIQUE KEY `CategoryID` (`CategoryID`,`FrequencyID`),
   ADD KEY `CategoryFrequencyUsages_CategoryFrequency` (`FrequencyID`);
 
 --
--- Indexes for table `HotelServiceFrequency`
+-- Indexes for table `ServiceFrequency`
 --
-ALTER TABLE `HotelServiceFrequency`
+ALTER TABLE `ServiceFrequency`
   ADD PRIMARY KEY (`ID`),
   ADD UNIQUE KEY `Frequency` (`Frequency`);
 
@@ -2084,23 +2084,23 @@ ALTER TABLE `Occupancy`
 ALTER TABLE `Offer`
   ADD PRIMARY KEY (`ID`),
   ADD UNIQUE KEY `UNIQUE` (`Price`,`Discount`,`Description`),
-  ADD KEY `Offer_HotelService` (`ServiceID`);
+  ADD KEY `Offer_Service` (`ServiceID`);
 
 --
 -- Indexes for table `OfferBeaconRegion`
 --
 ALTER TABLE `OfferBeaconRegion`
   ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `BeaconMonitoredRegionID` (`BeaconMonitoredRegionID`,`HotelServicesOfferID`),
-  ADD KEY `BeaconMonitoredRegionOffer_HotelServicesOffer` (`HotelServicesOfferID`);
+  ADD UNIQUE KEY `BeaconMonitoredRegionID` (`BeaconMonitoredRegionID`,`OfferExclusiveID`),
+  ADD KEY `BeaconMonitoredRegionOffer_ServicesOffer` (`OfferExclusiveID`);
 
 --
 -- Indexes for table `OfferCoupon`
 --
 ALTER TABLE `OfferCoupon`
   ADD PRIMARY KEY (`ID`),
-  ADD KEY `HotelServicesCustomerCoupon_HotelServicesOffer` (`ExclusiveOfferID`),
-  ADD KEY `HotelServicesCustomerCoupon_Customer` (`CustomerID`);
+  ADD KEY `ServicesCustomerCoupon_ServicesOffer` (`OfferExclusiveID`),
+  ADD KEY `ServicesCustomerCoupon_Customer` (`CustomerID`);
 
 --
 -- Indexes for table `OfferExclusive`
@@ -2114,15 +2114,15 @@ ALTER TABLE `OfferExclusive`
 --
 ALTER TABLE `OfferExclusiveFrequency`
   ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `UNIQUE` (`ExclusiveOfferID`,`FrequencyID`),
-  ADD KEY `OfferExclusiveHistory_HotelServiceFrequency` (`FrequencyID`);
+  ADD UNIQUE KEY `UNIQUE` (`OfferExclusiveID`,`FrequencyID`),
+  ADD KEY `OfferExclusiveHistory_ServiceFrequency` (`FrequencyID`);
 
 --
 -- Indexes for table `OfferExclusiveTier`
 --
 ALTER TABLE `OfferExclusiveTier`
   ADD PRIMARY KEY (`ID`),
-  ADD UNIQUE KEY `UNIQUE` (`ExclusiveOfferID`,`TierID`),
+  ADD UNIQUE KEY `UNIQUE` (`OfferExclusiveID`,`TierID`),
   ADD KEY `OfferExclusiveTier_LoyaltyTier` (`TierID`);
 
 --
@@ -2361,27 +2361,27 @@ ALTER TABLE `FoodTime`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `HotelService`
+-- AUTO_INCREMENT for table `Service`
 --
-ALTER TABLE `HotelService`
+ALTER TABLE `Service`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT for table `HotelServiceCategory`
+-- AUTO_INCREMENT for table `ServiceCategory`
 --
-ALTER TABLE `HotelServiceCategory`
+ALTER TABLE `ServiceCategory`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `HotelServiceCategoryFrequency`
+-- AUTO_INCREMENT for table `ServiceCategoryFrequency`
 --
-ALTER TABLE `HotelServiceCategoryFrequency`
+ALTER TABLE `ServiceCategoryFrequency`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `HotelServiceFrequency`
+-- AUTO_INCREMENT for table `ServiceFrequency`
 --
-ALTER TABLE `HotelServiceFrequency`
+ALTER TABLE `ServiceFrequency`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
@@ -2594,7 +2594,7 @@ ALTER TABLE `BeaconRegionFeature`
 -- Constraints for table `Charge`
 --
 ALTER TABLE `Charge`
-  ADD CONSTRAINT `Charge_HotelService` FOREIGN KEY (`HotelServiceID`) REFERENCES `hotelservice` (`id`),
+  ADD CONSTRAINT `Charge_Service` FOREIGN KEY (`ServiceID`) REFERENCES `Service` (`id`),
   ADD CONSTRAINT `Charge_Reservation` FOREIGN KEY (`ReservationID`) REFERENCES `reservation` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
@@ -2633,18 +2633,18 @@ ALTER TABLE `Food_Category_Time`
   ADD CONSTRAINT `Food_Food_Category_Time` FOREIGN KEY (`FoodID`) REFERENCES `food` (`id`);
 
 --
--- Constraints for table `HotelService`
+-- Constraints for table `Service`
 --
-ALTER TABLE `HotelService`
-  ADD CONSTRAINT `HotelService_HotelServicesCategory` FOREIGN KEY (`CategoryID`) REFERENCES `hotelservicecategory` (`id`),
-  ADD CONSTRAINT `HotelService_Partner` FOREIGN KEY (`PartnerID`) REFERENCES `partner` (`id`);
+ALTER TABLE `Service`
+  ADD CONSTRAINT `Service_ServicesCategory` FOREIGN KEY (`CategoryID`) REFERENCES `Servicecategory` (`id`),
+  ADD CONSTRAINT `Service_Partner` FOREIGN KEY (`PartnerID`) REFERENCES `partner` (`id`);
 
 --
--- Constraints for table `HotelServiceCategoryFrequency`
+-- Constraints for table `ServiceCategoryFrequency`
 --
-ALTER TABLE `HotelServiceCategoryFrequency`
-  ADD CONSTRAINT `CategoryFrequencyUsages_Category` FOREIGN KEY (`CategoryID`) REFERENCES `hotelservicecategory` (`id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `CategoryFrequencyUsages_CategoryFrequency` FOREIGN KEY (`FrequencyID`) REFERENCES `hotelservicefrequency` (`id`) ON UPDATE CASCADE;
+ALTER TABLE `ServiceCategoryFrequency`
+  ADD CONSTRAINT `CategoryFrequencyUsages_Category` FOREIGN KEY (`CategoryID`) REFERENCES `Servicecategory` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `CategoryFrequencyUsages_CategoryFrequency` FOREIGN KEY (`FrequencyID`) REFERENCES `Servicefrequency` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `LoyaltyPointsEarningHistory`
@@ -2678,21 +2678,21 @@ ALTER TABLE `Occupancy`
 -- Constraints for table `Offer`
 --
 ALTER TABLE `Offer`
-  ADD CONSTRAINT `Offer_HotelService` FOREIGN KEY (`ServiceID`) REFERENCES `hotelservice` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `Offer_Service` FOREIGN KEY (`ServiceID`) REFERENCES `Service` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `OfferBeaconRegion`
 --
 ALTER TABLE `OfferBeaconRegion`
   ADD CONSTRAINT `BeaconMonitoredRegionOffer_BeaconMonitoredRegion` FOREIGN KEY (`BeaconMonitoredRegionID`) REFERENCES `beaconmonitoredregion` (`id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `BeaconMonitoredRegionOffer_HotelServicesOffer` FOREIGN KEY (`HotelServicesOfferID`) REFERENCES `offerexclusive` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `BeaconMonitoredRegionOffer_ServicesOffer` FOREIGN KEY (`OfferExclusiveID`) REFERENCES `offerexclusive` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `OfferCoupon`
 --
 ALTER TABLE `OfferCoupon`
-  ADD CONSTRAINT `HotelServicesCustomerCoupon_Customer` FOREIGN KEY (`CustomerID`) REFERENCES `customer` (`id`),
-  ADD CONSTRAINT `HotelServicesCustomerCoupon_HotelServicesOffer` FOREIGN KEY (`ExclusiveOfferID`) REFERENCES `offerexclusive` (`id`);
+  ADD CONSTRAINT `ServicesCustomerCoupon_Customer` FOREIGN KEY (`CustomerID`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `ServicesCustomerCoupon_ServicesOffer` FOREIGN KEY (`OfferExclusiveID`) REFERENCES `offerexclusive` (`id`);
 
 --
 -- Constraints for table `OfferExclusive`
@@ -2704,15 +2704,15 @@ ALTER TABLE `OfferExclusive`
 -- Constraints for table `OfferExclusiveFrequency`
 --
 ALTER TABLE `OfferExclusiveFrequency`
-  ADD CONSTRAINT `OfferExclusiveFrequency_OfferExclusive` FOREIGN KEY (`ExclusiveOfferID`) REFERENCES `offerexclusive` (`id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `OfferExclusiveHistory_HotelServiceFrequency` FOREIGN KEY (`FrequencyID`) REFERENCES `hotelservicefrequency` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `OfferExclusiveFrequency_OfferExclusive` FOREIGN KEY (`OfferExclusiveID`) REFERENCES `offerexclusive` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `OfferExclusiveHistory_ServiceFrequency` FOREIGN KEY (`FrequencyID`) REFERENCES `Servicefrequency` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `OfferExclusiveTier`
 --
 ALTER TABLE `OfferExclusiveTier`
   ADD CONSTRAINT `OfferExclusiveTier_LoyaltyTier` FOREIGN KEY (`TierID`) REFERENCES `loyaltytier` (`id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `OfferExclusiveTier_OfferExclusive` FOREIGN KEY (`ExclusiveOfferID`) REFERENCES `offerexclusive` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `OfferExclusiveTier_OfferExclusive` FOREIGN KEY (`OfferExclusiveID`) REFERENCES `offerexclusive` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `OfferGeneral`

@@ -146,7 +146,7 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                 $stmt->bind_param('issssssssss',$customerID, $phone, $address1, $address2, $city, $postalCode, $phone, $address1, $address2, $city, $postalCode);
                 $success = $stmt->execute();
 
-                $query = "INSERT INTO Charge (ReservationID,HotelServiceID,PaymentMethodID,Price,TimePaid)
+                $query = "INSERT INTO Charge (ReservationID,ServiceID,PaymentMethodID,Price,TimePaid)
                           SELECT ?,NULL,pm.ID,?,NOW()
                           FROM PaymentMethod pm
                           WHERE pm.Method='Card'";

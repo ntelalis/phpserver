@@ -26,9 +26,9 @@ if (isset($_POST['offerIDJsonArray'])) {
       //create a string for bind_param types like "iiii"
       $paramTypes = str_repeat("i", count($offerIDArray));
 
-      $query = "SELECT bro.ID, bro.BeaconRegionID, bro.HotelServicesOfferID, bro.Modified
+      $query = "SELECT bro.ID, bro.BeaconRegionID, bro.OfferExclusiveID, bro.Modified
                 FROM BeaconRegionOffer bro
-                WHERE bro.HotelServicesOfferID IN ($questionMarks)";
+                WHERE bro.OfferExclusiveID IN ($questionMarks)";
       $stmt = $mysqli->prepare($query);
       $stmt->bind_param($paramTypes, ...$offerIDArray);
       $stmt->execute();

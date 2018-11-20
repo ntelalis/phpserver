@@ -18,10 +18,10 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-//$_POST['arrivalDate'] = '2018-06-19';
-//$_POST['departureDate'] = '2018-06-21';
-//$_POST['adults'] = 3;
-//$_POST['children'] = 0;
+$_POST['arrivalDate'] = '2018-06-19';
+$_POST['departureDate'] = '2018-06-21';
+$_POST['adults'] = 1;
+$_POST['children'] = 0;
 
 if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST['children'])) {
     $arrivalDate=$_POST['arrivalDate'];
@@ -38,20 +38,25 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST[
     }
 
     //get all available rooms based on parameters
-    $query = " SELECT ID
-            FROM (
-                SELECT COUNT(RoomTypeID) AS total, RoomTypeID
-                FROM Room
-                GROUP BY RoomTypeID
-                UNION ALL
-                SELECT COUNT(RoomTypeID)*-1 AS total, RoomTypeID
-                FROM Reservation
-                WHERE NOT (StartDate > ? OR EndDate < ?)
-                GROUP BY RoomTypeID
-                ) AvailableRooms, RoomType
-            WHERE RoomTypeID=ID AND Adults>=? AND Capacity>=?+? AND ChildrenSupported IN (?,1)
-            GROUP BY RoomTypeID
-            HAVING sum(total)>0";
+    $query = "SELECT ID
+              FROM   (SELECT COUNT(RoomTypeID) AS total,
+                             RoomTypeID
+                      FROM   Room
+                      GROUP  BY RoomTypeID
+                      UNION ALL
+                      SELECT COUNT(RoomTypeID) *- 1 AS total,
+                             RoomTypeID
+                      FROM   Reservation
+                      WHERE  NOT ( StartDate > ?
+                                    OR EndDate < ? )
+                      GROUP  BY RoomTypeID) AvailableRooms,
+                     RoomType
+              WHERE  RoomTypeID = ID
+                     AND Adults >=?
+                     AND Capacity >=?+?
+                     AND ChildrenSupported IN ( ?, 1 )
+              GROUP  BY RoomTypeID
+              HAVING sum(total) > 0";
 
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param('ssiiii', $departureDate, $arrivalDate, $adults, $adults, $children,$childrenSupported);

@@ -24,6 +24,8 @@ $stmt->execute();
 $stmt->bind_result($id,$title);
 $stmt->store_result();
 
+$numrows = $stmt->num_rows;
+
 //Create titles array from DB results
 $titleArray = array();
 while ($stmt->fetch()) {
@@ -38,7 +40,6 @@ $stmt->close();
 $mysqli->close();
 
 //If there are not titles return error
-$numrows = $stmt->num_rows;
 if ($numrows == 0) {
     $jObj->success = 0;
     $jObj->errorMessage = "There are no titles available";

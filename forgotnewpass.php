@@ -15,21 +15,21 @@ if (isset($_POST['pass'],$_POST['email'],$_POST['code']) && !empty($_POST['pass'
     $code = $_POST['code'];
 
     //Check if email matches a record in database and return customerID,Verification Code and VerificationTime
-    $query = "SELECT CustomerID,Verify,VerifyTime FROM Account WHERE Email=?";
+    $query = "SELECT CustomerID,VerificationCode,ResetTime FROM Account WHERE Email=?";
 
     $stmt = $mysqli->prepare($query);
 
     $stmt->bind_param('s', $email);
 
     $stmt->execute();
-    $stmt->bind_result($customerID, $verificationDB, $VerifyTime);
+    $stmt->bind_result($customerID, $verificationDB, $resetTime);
     $stmt->fetch();
     $stmt->close();
 
     //Current Time
     $now = time();
     //Verification Time
-    $timeDB = strtotime($VerifyTime);
+    $timeDB = strtotime($resetTime);
     //Seconds Passed
     $diff = $now - $timeDB;
 
@@ -39,7 +39,7 @@ if (isset($_POST['pass'],$_POST['email'],$_POST['code']) && !empty($_POST['pass'
             $hash = password_hash($pass, PASSWORD_DEFAULT);
 
             //Set new Password and remove Verification Code for the account in database
-            $query = "UPDATE Account SET Hash = ?, Verify = NULL WHERE CustomerID = ?";
+            $query = "UPDATE Account SET Hash = ?, VerificationCode = NULL WHERE CustomerID = ?";
             $stmt = $mysqli->prepare($query);
             $stmt->bind_param('si', $hash, $customerID);
             $success = $stmt->execute();

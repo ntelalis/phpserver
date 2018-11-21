@@ -35,7 +35,7 @@ if (isset($_POST['email']) && !empty($_POST['email'])) {
 
       //Insert Verification code for the account in database
 
-      $query = "UPDATE Account SET Verify=?,VerifyTime=now() WHERE CustomerID=?";
+      $query = "UPDATE Account SET VerificationCode=?,ResetTime=now() WHERE CustomerID=?";
 
       $stmt = $mysqli->prepare($query);
       $stmt->bind_param('si', $code, $customerID);

@@ -63,14 +63,14 @@ CREATE TABLE `Account` (
   `Email` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
   `Hash` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
   `Verify` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `VerifyTime` datetime DEFAULT NULL
+  `ResetTime` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `Account`
 --
 
-INSERT INTO `Account` (`CustomerID`, `Email`, `Hash`, `Verify`, `VerifyTime`) VALUES
+INSERT INTO `Account` (`CustomerID`, `Email`, `Hash`, `Verify`, `ResetTime`) VALUES
 (23, 'kate@gmail.com', '$2y$10$izvH23AG/GPTDVoAhUuJuumYEhZRjk9hn/9V27V8lAf8WU49jWiD2', '464873', '2018-06-12 01:46:44'),
 (51, 'ntelalis@gmail.com', '$2y$10$ZWa64u/2VUIIFsOqpTl12.X80Rn0aZJ2uLuZpm/7QGnLrYoKs6Spa', NULL, '2018-06-12 02:42:20');
 

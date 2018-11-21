@@ -1,14 +1,18 @@
 <?php
 
 //DEBUG
-/*
+
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
-*/
+
 
 //Database connection variables
 include 'dbConfig.php';
+include 'serverConfig.php';
+require 'Functions/Email.php';
+require 'Functions/RandomString.php';
 
 //Create new database object
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
@@ -18,14 +22,14 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-//$_POST['email'] = "gpaschos@epi.com.gr";
-//$_POST['pass'] = "Qqwerty1!";
-//$_POST['firstName'] = "George";
-//$_POST['lastName'] = "Paschos";
-//$_POST['titleID'] = 2;
-//$_POST['countryID'] = 4;
-//$_POST['birthDate'] = "1991-11-02";
-//$_POST['phone'] = "6987453152";
+$_POST['email'] = "ntelalis@gmail.com";
+$_POST['pass'] = "Qqwerty1!";
+$_POST['firstName'] = "George";
+$_POST['lastName'] = "Paschos";
+$_POST['titleID'] = 2;
+$_POST['countryID'] = 4;
+$_POST['birthDate'] = "1991-11-02";
+$_POST['phone'] = "6987453152";
 
 if(isset($_POST['email'],$_POST['pass'],$_POST['firstName'],$_POST['lastName'],
 $_POST['titleID'],$_POST['countryID'],$_POST['birthDate'],
@@ -56,23 +60,51 @@ $_POST['phone'])){
         //hash the password
         $hash = password_hash($pass, PASSWORD_DEFAULT);
 
+        //Generate random string to email for verifaction
+        $verificationCode = random_str(24);
+
         //insert it into database along with email
-        $query = "INSERT INTO Account(CustomerID,Email,Hash) VALUES(?,?,?)";
+        $query = "INSERT INTO Account(CustomerID,Email,Hash,VerificationCode,Verified) VALUES(?,?,?,?,0)";
         $stmt = $mysqli->prepare($query);
-        $stmt->bind_param('iss', $customerID, $email, $hash);
+        $stmt->bind_param('isss', $customerID, $email, $hash, $verificationCode);
         $success = $stmt->execute();
 
         if($success){
-            $mysqli->commit();
-            //if success return customer ID
-            $jObj->success=1;
-            $jObj->customerID=$customerID;
+
+            $mail = getEmailServer();
+
+            //Mail Contents
+            $mail->Subject = "Verify your account";
+            $msg = "http://".$serverIP.":".$serverPort."/".$serverPath."/"."verify.php?verCode=".$verificationCode;
+            $mail->Body = $msg;
+
+            //Send To
+            $mail->addAddress($email);
+
+            //Success
+            if ($mail->Send()) {
+                $mysqli->commit();
+                //if success return customer ID
+                $jObj->success=1;
+                $jObj->customerID=$customerID;
+            }
+            //email could not be send
+            else {
+                $mysqli->rollback();
+                $jObj->success = 0;
+                $jObj->errorMessage="Could not send email. Please try again later";
+            }
         }
         else{
             //inserting into Account failed
             $mysqli->rollback();
             $jObj->success=0;
-            $jObj->errorMessage=$mysqli->errorMessage;
+            if($stmt->errno==1062){
+                $jObj->errorMessage="Email is already in use";
+            }
+            else{
+                $jObj->errorMessage="An error has occured";
+            }
         }
     }
     else{

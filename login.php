@@ -18,94 +18,110 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-//$_POST['email'] = 'kate@gmail.com';
-//$_POST['pass'] = 'asdF12!@';
+$_POST['email'] = 'ntelalis@gmail.com';
+$_POST['pass'] = 'Qqwerty1!';
 //$_POST['modified'] = '2018-09-05 20:41:00';
 
 if(isset($_POST['email'],$_POST['pass'])){
 
-	$email = $_POST['email'];
-	$pass = $_POST['pass'];
+    $email = $_POST['email'];
+    $pass = $_POST['pass'];
 
-	//Get customerID and Hash for this email
-	$query = "SELECT a.CustomerID,a.Hash FROM Account a, Customer c WHERE a.Email = ? AND c.ID=a.CustomerID";
-	$stmt = $mysqli->prepare($query);
-	$stmt->bind_param('s', $email);
-	$stmt->execute();
-	$stmt->bind_result($customerID,$hash);
-	$stmt->store_result();
-	$stmt->fetch();
+    //Get customerID and Hash for this email
+    $query = "SELECT a.CustomerID, a.Hash, a.Verified FROM Account a, Customer c WHERE a.Email = ? AND c.ID=a.CustomerID";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('s', $email);
+    $stmt->execute();
+    $stmt->bind_result($customerID,$hash,$verified);
+    $stmt->store_result();
+    $stmt->fetch();
 
-	//Check if customer is found and hash matches the password
-	if ($stmt->num_rows == 1 && password_verify($pass, $hash)) {
+    //check if customer if found
+    if($stmt->num_rows == 1){
+        //check if email is verified
+        if($verified==1){
+            //Check if hash matches the password
+            if (password_verify($pass, $hash)) {
 
-		//Login success
-		$jObj->success = 1;
+                //Login success
+                $jObj->success = 1;
 
-		//get all necessary customer data
-			$query = "SELECT t.Title, c.FirstName, c.LastName, c.BirthDate, co.Name,
-											 ci.Address1, ci.Address2, ci.City, ci.PostalCode, ci.Phone,
-								       (SELECT COUNT(o.ReservationID)
-								        FROM   Occupancy o,
-								               Reservation r
-								        WHERE  r.CustomerID = c.ID
-								               AND o.ReservationID = r.ID
-								               AND o.CheckOut IS NOT NULL)          AS finishedStays,
-								       GREATEST(c.Modified, IFNULL(ci.Modified, 0)) AS Modified
-								FROM   Country co,
-								       Title t,
-								       Customer c
-								       LEFT JOIN ContactInfo ci
-								              ON c.ID = ci.CustomerID
-								WHERE  c.ID = ?
-								       AND co.ID = c.CountryID
-								       AND t.ID = c.TitleID";
-			$stmt = $mysqli->prepare($query);
-			$stmt->bind_param('i', $customerID);
-			$stmt->execute();
-			$stmt->bind_result($title, $firstName, $lastName, $birthDate, $country, $address1, $address2, $city, $postalCode, $phone, $finishedStays, $modifiedDB);
-			$stmt->store_result();
-			$stmt->fetch();
+                //get all necessary customer data
+                $query = "SELECT t.Title, c.FirstName, c.LastName, c.BirthDate, co.Name,
+                ci.Address1, ci.Address2, ci.City, ci.PostalCode, ci.Phone,
+                (SELECT COUNT(o.ReservationID)
+                FROM   Occupancy o,
+                Reservation r
+                WHERE  r.CustomerID = c.ID
+                AND o.ReservationID = r.ID
+                AND o.CheckOut IS NOT NULL)          AS finishedStays,
+                GREATEST(c.Modified, IFNULL(ci.Modified, 0)) AS Modified
+                FROM   Country co,
+                Title t,
+                Customer c
+                LEFT JOIN ContactInfo ci
+                ON c.ID = ci.CustomerID
+                WHERE  c.ID = ?
+                AND co.ID = c.CountryID
+                AND t.ID = c.TitleID";
+                $stmt = $mysqli->prepare($query);
+                $stmt->bind_param('i', $customerID);
+                $stmt->execute();
+                $stmt->bind_result($title, $firstName, $lastName, $birthDate, $country, $address1, $address2, $city, $postalCode, $phone, $finishedStays, $modifiedDB);
+                $stmt->store_result();
+                $stmt->fetch();
 
-			//Close Connection to DB
-			$stmt->close();
-            $mysqli->close();
+                //Close Connection to DB
+                $stmt->close();
+                $mysqli->close();
 
-			//Check if customer has up to date data
-			if(isset($_POST['modified'])){
-				$modifiedClient = $_POST['modified'];
-				$timeInDB = strtotime($modifiedDB);
-				$timeInClient = strtotime($modifiedClient);
-			}
+                //Check if customer has up to date data
+                if(isset($_POST['modified'])){
+                    $modifiedClient = $_POST['modified'];
+                    $timeInDB = strtotime($modifiedDB);
+                    $timeInClient = strtotime($modifiedClient);
+                }
 
-			//If he isn't uptodate, return the results with the login success message
-			if (!isset($modifiedClient) || $timeInDB!=$timeInClient) {
-				$jObj->customerID = $customerID;
-				$jObj->title = $title;
-				$jObj->firstName = $firstName;
-				$jObj->lastName = $lastName;
-				$jObj->birthDate = $birthDate;
-				$jObj->country = $country;
-				$jObj->phone = $phone;
-				$jObj->address1 = $address1;
-				$jObj->address2 = $address2;
-				$jObj->city = $city;
-				$jObj->postalCode = $postalCode;
-				//Check if Customer has revisited the hotel
-				$jObj->oldCustomer = $finishedStays != 0;
-				$jObj->modified = $modifiedDB;
-		}
-	}
-	//Wrong credentials
-	else{
-		$jObj->success = 0;
-		$jObj->errorMessage = "Login failed";
-	}
+                //If he isn't uptodate, return the results with the login success message
+                if (!isset($modifiedClient) || $timeInDB!=$timeInClient) {
+                    $jObj->customerID = $customerID;
+                    $jObj->title = $title;
+                    $jObj->firstName = $firstName;
+                    $jObj->lastName = $lastName;
+                    $jObj->birthDate = $birthDate;
+                    $jObj->country = $country;
+                    $jObj->phone = $phone;
+                    $jObj->address1 = $address1;
+                    $jObj->address2 = $address2;
+                    $jObj->city = $city;
+                    $jObj->postalCode = $postalCode;
+                    //Check if Customer has revisited the hotel
+                    $jObj->oldCustomer = $finishedStays != 0;
+                    $jObj->modified = $modifiedDB;
+                }
+            }
+            //Password not correct
+            else{
+                $jObj->success = 0;
+                $jObj->errorMessage = "Login failed";
+            }
+        }
+        //Email not verified yet
+        else{
+            $jObj->success = 0;
+            $jObj->errorMessage = "Please verify your email";
+        }
+    }
+    //Customer not found
+    else{
+        $jObj->success = 0;
+        $jObj->errorMessage = "Login failed";
+    }
 }
 //Bad request
 else{
-	$jObj->success = 0;
-	$jObj->errorMessage = "Bad request";
+    $jObj->success = 0;
+    $jObj->errorMessage = "Bad request";
 }
 
 //Specify that the response is json in the header

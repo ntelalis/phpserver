@@ -14,12 +14,12 @@ if (isset($_POST['verification'], $_POST['email']) && !empty($_POST['verificatio
     $verification = $_POST['verification'];
 
     //Check if email matches a record in database and return customerID,Verification Code and VerificationTime
-    $query = "SELECT CustomerID,Verify,VerifyTime FROM Account WHERE Email=?";
+    $query = "SELECT CustomerID,VerificationCode,ResetTime FROM Account WHERE Email=?";
 
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param('s', $email);
     $stmt->execute();
-    $stmt->bind_result($customerID, $verificationDB, $VerifyTime);
+    $stmt->bind_result($customerID, $verificationDB, $resetTime);
     $stmt->store_result();
     $stmt->fetch();
     $numrows = $stmt->num_rows;
@@ -27,7 +27,7 @@ if (isset($_POST['verification'], $_POST['email']) && !empty($_POST['verificatio
     //Current Time
     $now = time();
     //Verification Time
-    $timeDB = strtotime($VerifyTime);
+    $timeDB = strtotime($resetTime);
     //Seconds Passed
     $diff = $now - $timeDB;
 

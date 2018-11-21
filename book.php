@@ -102,8 +102,6 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                 $stmt->store_result();
                 $stmt->fetch();
 
-                //WARNING Must implement transaction Insert first then payment and commit or rollback!!!
-
                 $dbCon->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 
                 if ($freeNights>0) {
@@ -146,6 +144,14 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                           UPDATE Phone = ?, Address1 = ?, Address2 = ?, City = ?, PostalCode = ?";
                 $stmt = $dbCon->prepare($query);
                 $stmt->bind_param('issssssssss',$customerID, $phone, $address1, $address2, $city, $postalCode, $phone, $address1, $address2, $city, $postalCode);
+                $success = $stmt->execute();
+
+                $query = "INSERT INTO Charge (ReservationID,HotelServiceID,PaymentMethodID,Price,TimePaid)
+                          SELECT ?,NULL,pm.ID,?,NOW()
+                          FROM PaymentMethod pm
+                          WHERE pm.Method='Card'";
+                $stmt = $dbCon->prepare($query);
+                $stmt->bind_param('id',$reservationId, $totalPrice);
                 $success = $stmt->execute();
 
                 if ($success) {

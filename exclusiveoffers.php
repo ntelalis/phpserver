@@ -34,8 +34,7 @@ FROM (SELECT ee.ID
              		  FROM Charge ch, Reservation r, HotelService hs
              		  WHERE ch.ReservationID = r.ID AND ch.HotelServiceID = hs.ID AND r.CustomerID = ?
              		  GROUP BY hs.CategoryID) CusFreq
-            WHERE MinFreq.CategoryID = CusFreq.CategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee LEFT JOIN
-              OfferCoupon oc ON oc.ExclusiveOfferID=ee.ID
+            WHERE MinFreq.CategoryID = CusFreq.CategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee 
        WHERE ee.ID NOT IN (SELECT oe.ID
 FROM OfferCoupon oc, OfferExclusive oe
 WHERE oc.ExclusiveOfferID=oe.ID AND oc.CustomerID=? AND ((oc.Created<CURRENT_DATE-INTERVAL 7 DAY AND oc.used=0 )OR(oc.Used=1))

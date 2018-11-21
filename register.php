@@ -40,30 +40,51 @@ $_POST['phone'])){
     $birthDate = $_POST['birthDate'];
     $phone = $_POST['phone'];
 
+    //begin transaction
+    $mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+
+    //insert customer related data
     $query = "INSERT INTO Customer(TitleID,FirstName,LastName,BirthDate,CountryId) VALUES(?,?,?,?,?)";
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param('isssi', $titleID, $firstName, $lastName, $birthDate, $countryID);
     $success = $stmt->execute();
 
+    if($success){
+        //if success get the customer id
+        $customerID = $mysqli->insert_id;
 
-    $customerID = $mysqli->insert_id;
-    $hash = password_hash($pass, PASSWORD_DEFAULT);
-    $query = "INSERT INTO Account(CustomerID,Email,Hash) VALUES(?,?,?)";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param('iss', $customerID, $email, $hash);
-    $success = $stmt->execute();
+        //hash the password
+        $hash = password_hash($pass, PASSWORD_DEFAULT);
+
+        //insert it into database along with email
+        $query = "INSERT INTO Account(CustomerID,Email,Hash) VALUES(?,?,?)";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param('iss', $customerID, $email, $hash);
+        $success = $stmt->execute();
+
+        if($success){
+            $mysqli->commit();
+            //if success return customer ID
+            $jObj->success=1;
+            $jObj->customerID=$customerID;
+        }
+        else{
+            //inserting into Account failed
+            $mysqli->rollback();
+            $jObj->success=0;
+            $jObj->errorMessage=$mysqli->errorMessage;
+        }
+    }
+    else{
+        //inserting into Customer failed
+        $mysqli->rollback();
+        $jObj->success=0;
+        $jObj->errorMessage=$mysqli->error;
+    }
 
     //Close Connection to DB
     $stmt->close();
     $mysqli->close();
-
-    if ($success) {
-        $jObj->success=1;
-        $jObj->customerID=$customerID;
-    } else {
-        $jObj->success=0;
-        $jObj->errorMessage=$mysqli->error;
-    }
 }
 //Bad request
 else{

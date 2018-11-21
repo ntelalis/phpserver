@@ -5,7 +5,6 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
-
 function doorUnlock($roomID)
 {
     //this function sends a message to door to unlock through external api
@@ -25,7 +24,7 @@ function doorUnlock($roomID)
 
 function initConnection(){
 
-  $address1 = "192.168.102.239";
+  $address1 = "192.168.102.98";
   $port1 = 54325;
 
     $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);

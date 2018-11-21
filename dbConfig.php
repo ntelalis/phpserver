@@ -2,6 +2,6 @@
 
 //DB connection variables
 $dbip = "localhost";
-$dbusername = "root";
-$dbpass = "Papaki101";
+$dbusername = "da";
+$dbpass = "1234";
 $dbname = "hotel";

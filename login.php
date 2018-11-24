@@ -18,8 +18,8 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-$_POST['email'] = 'ntelalis@gmail.com';
-$_POST['pass'] = 'Qqwerty1!';
+//$_POST['email'] = 'ntelalis@gmail.com';
+//$_POST['pass'] = 'Qqwerty1!';
 //$_POST['modified'] = '2018-09-05 20:41:00';
 
 if(isset($_POST['email'],$_POST['pass'])){
@@ -36,12 +36,12 @@ if(isset($_POST['email'],$_POST['pass'])){
     $stmt->store_result();
     $stmt->fetch();
 
-    //check if customer if found
+    //check if customer is found
     if($stmt->num_rows == 1){
-        //check if email is verified
-        if($verified==1){
-            //Check if hash matches the password
-            if (password_verify($pass, $hash)) {
+        //Check if hash matches the password
+        if(password_verify($pass, $hash)){
+            //check if email is verified
+            if($verified==1) {
 
                 //Login success
                 $jObj->success = 1;
@@ -100,16 +100,16 @@ if(isset($_POST['email'],$_POST['pass'])){
                     $jObj->modified = $modifiedDB;
                 }
             }
-            //Password not correct
+            //Email not verified yet
             else{
                 $jObj->success = 0;
-                $jObj->errorMessage = "Login failed";
+                $jObj->errorMessage = "Please verify your email";
             }
         }
-        //Email not verified yet
+        //Password not correct
         else{
             $jObj->success = 0;
-            $jObj->errorMessage = "Please verify your email";
+            $jObj->errorMessage = "Login failed";
         }
     }
     //Customer not found

@@ -22,14 +22,14 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-$_POST['email'] = "ntelalis@gmail.com";
-$_POST['pass'] = "Qqwerty1!";
-$_POST['firstName'] = "George";
-$_POST['lastName'] = "Paschos";
-$_POST['titleID'] = 2;
-$_POST['countryID'] = 4;
-$_POST['birthDate'] = "1991-11-02";
-$_POST['phone'] = "6987453152";
+//$_POST['email'] = "ntelalis@gmail.com";
+//$_POST['pass'] = "Qqwerty1!";
+//$_POST['firstName'] = "George";
+//$_POST['lastName'] = "Paschos";
+//$_POST['titleID'] = 2;
+//$_POST['countryID'] = 4;
+//$_POST['birthDate'] = "1991-11-02";
+//$_POST['phone'] = "6987453152";
 
 if(isset($_POST['email'],$_POST['pass'],$_POST['firstName'],$_POST['lastName'],
 $_POST['titleID'],$_POST['countryID'],$_POST['birthDate'],
@@ -61,7 +61,7 @@ $_POST['phone'])){
         $hash = password_hash($pass, PASSWORD_DEFAULT);
 
         //Generate random string to email for verifaction
-        $verificationCode = random_str(24);
+        $verificationCode = random_str(12);
 
         //insert it into database along with email
         $query = "INSERT INTO Account(CustomerID,Email,Hash,VerificationCode,Verified) VALUES(?,?,?,?,0)";

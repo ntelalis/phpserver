@@ -22,28 +22,25 @@ if (isset($_POST['customerID'])) {
   $query = "SELECT oe.ID, o.ServiceID, o.Price, o.Discount, o.Title, o.Description, o.Details,oe.Special, oe.StartDate, oe.EndDate, oc.Code, oc.Used, oc.Created, GREATEST(o.Modified, oe.Modified, IFNULL(oc.Modified, 0)) AS Modified
 FROM (SELECT ee.ID
       FROM (SELECT oe.ID, oe.MaximumUsage
-            FROM OfferExclusive oe
-            WHERE oe.ID IN(SELECT t.OfferExclusiveID
-                              FROM OfferExclusiveTier t
-                              WHERE t.TierID = getTierIDByCustomerID(?))
+			FROM OfferExclusive oe, OfferExclusiveTier oet
+			WHERE oe.ID=oet.ExclusiveOfferID AND oet.TierID = getTierIDByCustomerID(?)
             UNION
             SELECT MinFreq.ID, MinFreq.MaximumUsage
-            FROM(SELECT oe.ID, oe.MaximumUsage, hs.ServiceCategoryID, hscf.MinimumUsages
-                 FROM Offer o, OfferExclusive oe, OfferExclusiveFrequency oef, Service hs, ServiceCategoryFrequency hscf
-                 WHERE oef.OfferExclusiveID = oe.ID AND o.ID = oe.OfferID AND o.ServiceID = hs.ID AND
-                 hs.ServiceCategoryID = hscf.ServiceCategoryID AND oef.FrequencyID = hscf.FrequencyID) MinFreq,
-            (SELECT hs.ServiceCategoryID, COUNT(hs.ServiceCategoryID) AS CustomerCount
-             FROM Charge ch, Reservation r, Service hs
-             WHERE ch.ReservationID = r.ID AND ch.ServiceID = hs.ID AND r.CustomerID = ?
-             GROUP BY hs.ServiceCategoryID) CusFreq
-            WHERE MinFreq.ServiceCategoryID = CusFreq.ServiceCategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee LEFT JOIN
-              OfferCoupon oc ON oc.OfferExclusiveID=ee.ID
-            WHERE ee.ID NOT IN (SELECT oe.ID
+            FROM(SELECT oe.ID, oe.MaximumUsage, hs.CategoryID, hscf.MinimumUsages
+                 FROM Offer o, OfferExclusive oe, OfferExclusiveFrequency oef, HotelService hs, HotelServiceCategoryFrequency hscf
+                 WHERE oef.ExclusiveOfferID = oe.ID AND o.ID = oe.OfferID AND o.ServiceID = hs.ID AND
+                	 hs.CategoryID = hscf.CategoryID AND oef.FrequencyID = hscf.FrequencyID) MinFreq,
+           			 (SELECT hs.CategoryID, COUNT(hs.CategoryID) AS CustomerCount
+             		  FROM Charge ch, Reservation r, HotelService hs
+             		  WHERE ch.ReservationID = r.ID AND ch.HotelServiceID = hs.ID AND r.CustomerID = ?
+             		  GROUP BY hs.CategoryID) CusFreq
+            WHERE MinFreq.CategoryID = CusFreq.CategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee
+       WHERE ee.ID NOT IN (SELECT oe.ID
 FROM OfferCoupon oc, OfferExclusive oe
-WHERE oc.OfferExclusiveID=oe.ID AND oc.CustomerID=? AND ((oc.Created<CURRENT_DATE-INTERVAL 7 DAY AND oc.used=0 )OR(oc.Used=1))
+WHERE oc.ExclusiveOfferID=oe.ID AND oc.CustomerID=? AND ((oc.Created<CURRENT_DATE-INTERVAL 7 DAY AND oc.used=0 )OR(oc.Used=1))
 GROUP BY oe.ID,oe.MaximumUsage
 HAVING COUNT(oe.ID)>=oe.MaximumUsage)
-GROUP BY ee.ID) oo LEFT JOIN  OfferCoupon oc ON (oc.OfferExclusiveID=oo.ID AND oc.CustomerID=? AND oc.Used=0 AND oc.Created>CURRENT_DATE-INTERVAL 7 DAY), Offer o, OfferExclusive oe
+GROUP BY ee.ID) oo LEFT JOIN  OfferCoupon oc ON (oc.ExclusiveOfferID=oo.ID AND oc.CustomerID=? AND oc.Used=0 AND oc.Created>CURRENT_DATE-INTERVAL 7 DAY), Offer o, OfferExclusive oe
 WHERE o.ID=oe.OfferID AND oo.ID=oe.ID AND IFNULL(oe.EndDate,CURRENT_DATE)>=CURRENT_DATE";
 
   $stmt = $mysqli->prepare($query);

@@ -16,7 +16,7 @@ $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
 //$_POST['customerID'] = 23;
-//$_POST['offerID'] = 3;
+//$_POST['offerID'] = 2;
 //$_POST['check'] = '[{"id":2,"modified":"2020-01-18 01:00:58"}]';
 
 if (isset($_POST['customerID'],$_POST['offerID'])) {
@@ -27,27 +27,27 @@ if (isset($_POST['customerID'],$_POST['offerID'])) {
   $query = "SELECT ee.ID
             FROM (SELECT oe.ID
 	                FROM OfferExclusive oe, OfferExclusiveTier oet
-	                WHERE oe.ID=oet.ExclusiveOfferID AND oet.TierID = getTierIDByCustomerID(?)
+	                WHERE oe.ID=oet.OfferExclusiveID AND oet.TierID = getTierIDByCustomerID(?)
 	                UNION
 	                SELECT MinFreq.ID
-	                FROM (SELECT oe.ID, hs.CategoryID, hscf.MinimumUsages
-			                  FROM Offer o, OfferExclusive oe, OfferExclusiveFrequency oef, HotelService hs, HotelServiceCategoryFrequency hscf
-			WHERE oef.ExclusiveOfferID = oe.ID AND o.ID = oe.OfferID AND o.ServiceID = hs.ID AND
-				hs.CategoryID = hscf.CategoryID AND oef.FrequencyID = hscf.FrequencyID) MinFreq,
-		   (SELECT hs.CategoryID, COUNT(hs.CategoryID) AS CustomerCount
-			FROM Charge ch, Reservation r, HotelService hs
-			WHERE ch.ReservationID = r.ID AND ch.HotelServiceID = hs.ID AND r.CustomerID = ?
-			GROUP BY hs.CategoryID) CusFreq
-	  WHERE MinFreq.CategoryID = CusFreq.CategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee
+	                FROM (SELECT oe.ID, s.ServiceCategoryID, scf.MinimumUsages
+			                  FROM Offer o, OfferExclusive oe, OfferExclusiveFrequency oef, Service s, ServiceCategoryFrequency scf
+			WHERE oef.OfferExclusiveID = oe.ID AND o.ID = oe.OfferID AND o.ServiceID = s.ID AND
+				s.ServiceCategoryID = scf.CategoryID AND oef.FrequencyID = scf.FrequencyID) MinFreq,
+		   (SELECT s.ServiceCategoryID, COUNT(s.ServiceCategoryID) AS CustomerCount
+			FROM Charge ch, Reservation r, Service s
+			WHERE ch.ReservationID = r.ID AND ch.ServiceID = s.ID AND r.CustomerID = ?
+			GROUP BY s.ServiceCategoryID) CusFreq
+	  WHERE MinFreq.ServiceCategoryID = CusFreq.ServiceCategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee
 WHERE ee.ID NOT IN (SELECT oe.ID
 					FROM OfferCoupon oc, OfferExclusive oe
-					WHERE oc.ExclusiveOfferID=oe.ID AND oc.CustomerID=?
+					WHERE oc.OfferExclusiveID=oe.ID AND oc.CustomerID=?
 					GROUP BY oe.ID,oe.MaximumUsage
 					HAVING COUNT(oe.ID)>=oe.MaximumUsage
 					UNION
 					SELECT oe.ID
 					FROM OfferCoupon oc, OfferExclusive oe
-					WHERE oc.ExclusiveOfferID=oe.ID AND oc.CustomerID=? AND Used=0 AND oc.Created>=CURRENT_DATE-INTERVAL 7 DAY) AND ee.ID=?
+					WHERE oc.OfferExclusiveID=oe.ID AND oc.CustomerID=? AND Used=0 AND oc.Created>=CURRENT_DATE-INTERVAL 7 DAY) AND ee.ID=?
 GROUP BY ee.ID";
 
   $stmt = $mysqli->prepare($query);

@@ -14,7 +14,7 @@ require 'Functions/addpoints.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
-//$_POST['customerID'] = 23;
+$_POST['customerID'] = 23;
 //$_POST['modified'] = "1994-03-30 07:25:04";
 
 if (isset($_POST['customerID'])) {
@@ -98,5 +98,9 @@ if (isset($_POST['customerID'])) {
     $jObj->errorMessage="customerID not set";
 }
 
+//Specify that the response is json in the header
+header('Content-type:application/json;charset=utf-8');
+
+//Encode the JSON Object and print the result
 $JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

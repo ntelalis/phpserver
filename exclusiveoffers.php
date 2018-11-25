@@ -1,4 +1,6 @@
 <?php
+
+//DEBUG
 /*
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -12,7 +14,11 @@ include 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
-//$_POST['customerID'] = 23;
+//Response Object
+$jObj = new stdClass();
+
+//DEBUG
+$_POST['customerID'] = 23;
 //$_POST['check'] = '[{"id":2,"modified":"2020-01-18 01:00:58"}]';
 
 if (isset($_POST['customerID'])) {
@@ -23,24 +29,24 @@ if (isset($_POST['customerID'])) {
 FROM (SELECT ee.ID
       FROM (SELECT oe.ID, oe.MaximumUsage
 			FROM OfferExclusive oe, OfferExclusiveTier oet
-			WHERE oe.ID=oet.ExclusiveOfferID AND oet.TierID = getTierIDByCustomerID(?)
+			WHERE oe.ID=oet.OfferExclusiveID AND oet.TierID = getTierIDByCustomerID(?)
             UNION
             SELECT MinFreq.ID, MinFreq.MaximumUsage
-            FROM(SELECT oe.ID, oe.MaximumUsage, hs.CategoryID, hscf.MinimumUsages
-                 FROM Offer o, OfferExclusive oe, OfferExclusiveFrequency oef, HotelService hs, HotelServiceCategoryFrequency hscf
-                 WHERE oef.ExclusiveOfferID = oe.ID AND o.ID = oe.OfferID AND o.ServiceID = hs.ID AND
-                	 hs.CategoryID = hscf.CategoryID AND oef.FrequencyID = hscf.FrequencyID) MinFreq,
-           			 (SELECT hs.CategoryID, COUNT(hs.CategoryID) AS CustomerCount
-             		  FROM Charge ch, Reservation r, HotelService hs
-             		  WHERE ch.ReservationID = r.ID AND ch.HotelServiceID = hs.ID AND r.CustomerID = ?
-             		  GROUP BY hs.CategoryID) CusFreq
-            WHERE MinFreq.CategoryID = CusFreq.CategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee
+            FROM(SELECT oe.ID, oe.MaximumUsage, s.ServiceCategoryID, scf.MinimumUsages
+                 FROM Offer o, OfferExclusive oe, OfferExclusiveFrequency oef, Service s, ServiceCategoryFrequency scf
+                 WHERE oef.OfferExclusiveID = oe.ID AND o.ID = oe.OfferID AND o.ServiceID = s.ID AND
+                	 s.ServiceCategoryID = scf.CategoryID AND oef.FrequencyID = scf.FrequencyID) MinFreq,
+           			 (SELECT s.ServiceCategoryID, COUNT(s.ServiceCategoryID) AS CustomerCount
+             		  FROM Charge ch, Reservation r, Service s
+             		  WHERE ch.ReservationID = r.ID AND ch.ServiceID = s.ID AND r.CustomerID = ?
+             		  GROUP BY s.ServiceCategoryID) CusFreq
+            WHERE MinFreq.ServiceCategoryID = CusFreq.ServiceCategoryID AND MinFreq.MinimumUsages <= CusFreq.CustomerCount) ee
        WHERE ee.ID NOT IN (SELECT oe.ID
 FROM OfferCoupon oc, OfferExclusive oe
-WHERE oc.ExclusiveOfferID=oe.ID AND oc.CustomerID=? AND ((oc.Created<CURRENT_DATE-INTERVAL 7 DAY AND oc.used=0 )OR(oc.Used=1))
+WHERE oc.OfferExclusiveID=oe.ID AND oc.CustomerID=? AND ((oc.Created<CURRENT_DATE-INTERVAL 7 DAY AND oc.used=0 )OR(oc.Used=1))
 GROUP BY oe.ID,oe.MaximumUsage
 HAVING COUNT(oe.ID)>=oe.MaximumUsage)
-GROUP BY ee.ID) oo LEFT JOIN  OfferCoupon oc ON (oc.ExclusiveOfferID=oo.ID AND oc.CustomerID=? AND oc.Used=0 AND oc.Created>CURRENT_DATE-INTERVAL 7 DAY), Offer o, OfferExclusive oe
+GROUP BY ee.ID) oo LEFT JOIN  OfferCoupon oc ON (oc.OfferExclusiveID=oo.ID AND oc.CustomerID=? AND oc.Used=0 AND oc.Created>CURRENT_DATE-INTERVAL 7 DAY), Offer o, OfferExclusive oe
 WHERE o.ID=oe.OfferID AND oo.ID=oe.ID AND IFNULL(oe.EndDate,CURRENT_DATE)>=CURRENT_DATE";
 
   $stmt = $mysqli->prepare($query);
@@ -106,10 +112,15 @@ WHERE o.ID=oe.OfferID AND oo.ID=oe.ID AND IFNULL(oe.EndDate,CURRENT_DATE)>=CURRE
   $jObj->success = 1;
   $jObj->exclusiveOfferArray = $exclusiveOfferArray;
 }
+//Bad request
 else{
-  $jObj->success = 0;
-  $jObj->errorMessage = "Bad request";
+    $jObj->success = 0;
+    $jObj->errorMessage = "Bad request";
 }
 
+//Specify that the response is json in the header
+header('Content-type:application/json;charset=utf-8');
+
+//Encode the JSON Object and print the result
 $JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

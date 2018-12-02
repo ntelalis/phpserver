@@ -22,7 +22,6 @@ $jObj = new stdClass();
 //$_POST['verCode'] = "306539";
 //$_POST['pass'] = "asdF12!@";
 
-//Parse POST Variables
 if (isset($_POST['email'],$_POST['verCode'],$_POST['pass']) && !empty($_POST['email']) && !empty($_POST['verCode']) && !empty($_POST['pass'])) {
 
     $email = $_POST['email'];

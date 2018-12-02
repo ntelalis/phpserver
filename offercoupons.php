@@ -7,7 +7,7 @@ mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
 
 //Database connection variables
-include 'dbConfig.php';
+require 'dbConfig.php';
 
 require 'Functions/RandomString.php';
 

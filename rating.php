@@ -8,7 +8,7 @@ mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
 
 //Database connection variables
-include 'dbConfig.php';
+require 'dbConfig.php';
 
 //Create new database object
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
@@ -20,7 +20,7 @@ $jObj = new stdClass();
 //DEBUG
 //$_POST['reservationID'] = 1;
 //$_POST['rating'] = "4";
-//$_POST['comments'] = "Good";
+//$_POST['comments'] = "Very good hotel";
 
 if (isset($_POST['reservationID'],$_POST['rating'],$_POST['comments'])) {
 

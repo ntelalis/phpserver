@@ -810,19 +810,19 @@ INSERT INTO `Food` (`ID`, `Name`, `Description`, `Price`, `maxOrderQuantity`, `A
 -- --------------------------------------------------------
 
 --
--- Table structure for table `FoodCategory`
+-- Table structure for table `FoodMenuCategory`
 --
 
-CREATE TABLE `FoodCategory` (
+CREATE TABLE `FoodMenuCategory` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `FoodCategory`
+-- Dumping data for table `FoodMenuCategory`
 --
 
-INSERT INTO `FoodCategory` (`ID`, `Name`) VALUES
+INSERT INTO `FoodMenuCategory` (`ID`, `Name`) VALUES
 (18, 'Αναψυκτικά'),
 (23, 'Βάφλες'),
 (26, 'Βραδινό'),
@@ -873,14 +873,14 @@ INSERT INTO `FoodTime` (`ID`, `Name`, `BeginTime`, `EndTime`) VALUES
 CREATE TABLE `Food_Category_Time` (
   `FoodID` int(11) NOT NULL,
   `FoodTimeID` int(11) NOT NULL,
-  `FoodCategoryID` int(11) NOT NULL
+  `FoodMenuCategoryID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `Food_Category_Time`
 --
 
-INSERT INTO `Food_Category_Time` (`FoodID`, `FoodTimeID`, `FoodCategoryID`) VALUES
+INSERT INTO `Food_Category_Time` (`FoodID`, `FoodTimeID`, `FoodMenuCategoryID`) VALUES
 (1, 2, 9),
 (2, 2, 9),
 (3, 2, 9),
@@ -1974,9 +1974,9 @@ ALTER TABLE `Food`
   ADD PRIMARY KEY (`ID`);
 
 --
--- Indexes for table `FoodCategory`
+-- Indexes for table `FoodMenuCategory`
 --
-ALTER TABLE `FoodCategory`
+ALTER TABLE `FoodMenuCategory`
   ADD PRIMARY KEY (`ID`),
   ADD UNIQUE KEY `Name` (`Name`);
 
@@ -1991,7 +1991,7 @@ ALTER TABLE `FoodTime`
 --
 ALTER TABLE `Food_Category_Time`
   ADD PRIMARY KEY (`FoodID`,`FoodTimeID`),
-  ADD KEY `FoodCategory_Food_Category_Time` (`FoodCategoryID`),
+  ADD KEY `FoodMenuCategory_Food_Category_Time` (`FoodMenuCategoryID`),
   ADD KEY `FoodTime_Food_Category_Time` (`FoodTimeID`);
 
 --
@@ -2349,9 +2349,9 @@ ALTER TABLE `Food`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=149;
 
 --
--- AUTO_INCREMENT for table `FoodCategory`
+-- AUTO_INCREMENT for table `FoodMenuCategory`
 --
-ALTER TABLE `FoodCategory`
+ALTER TABLE `FoodMenuCategory`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
@@ -2628,7 +2628,7 @@ ALTER TABLE `EventPoints`
 -- Constraints for table `Food_Category_Time`
 --
 ALTER TABLE `Food_Category_Time`
-  ADD CONSTRAINT `FoodCategory_Food_Category_Time` FOREIGN KEY (`FoodCategoryID`) REFERENCES `foodcategory` (`id`),
+  ADD CONSTRAINT `FoodMenuCategory_Food_Category_Time` FOREIGN KEY (`FoodMenuCategoryID`) REFERENCES `foodcategory` (`id`),
   ADD CONSTRAINT `FoodTime_Food_Category_Time` FOREIGN KEY (`FoodTimeID`) REFERENCES `foodtime` (`id`),
   ADD CONSTRAINT `Food_Food_Category_Time` FOREIGN KEY (`FoodID`) REFERENCES `food` (`id`);
 

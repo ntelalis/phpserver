@@ -1,6 +1,6 @@
 <?php
 
-include 'dbConfig.php';
+require 'dbConfig.php';
 
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 

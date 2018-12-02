@@ -6,7 +6,7 @@ mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
 
 //Database connection variables
-include 'dbConfig.php';
+require 'dbConfig.php';
 
 //Create new database object
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
@@ -18,12 +18,21 @@ if (isset($_POST['customerID'])) {
 
   $customerID = $_POST['customerID'];
 
-  $query = "SELECT res.ID, res.RoomTypeID, res.Adults, res.Children, res.DateBooked, res.StartDate, res.EndDate,
-  o.CheckIn, o.CheckOut, r.Number, r.Floor, rat.Rating, rat.Comments, GREATEST(res.Modified,IFNULL(o.Modified,0),IFNULL(rat.Modified,0)) AS Modified
-            FROM Reservation res LEFT JOIN Occupancy o ON res.ID = o.ReservationID
-                                 LEFT JOIN Room r ON r.ID = o.RoomID
-                                 LEFT JOIN Rating rat ON res.ID = rat.ReservationID
-            WHERE res.CustomerID = ? AND res.EndDate >= CURRENT_DATE;";
+  $query = "SELECT res.ID, res.RoomTypeID, res.Adults, res.Children,
+            res.DateBooked, res.StartDate, res.EndDate, o.CheckIn, o.CheckOut,
+            r.Number, r.Floor, rat.Rating, rat.Comments,
+            FROM_UNIXTIME(  ( UNIX_TIMESTAMP(res.Modified)
+                            + UNIX_TIMESTAMP(COALESCE(o.Modified, res.Modified))
+                            + UNIX_TIMESTAMP(COALESCE(rat.Modified, res.Modified))  ) / 3, '%Y-%m-%d %H:%i:%s') AS Modified
+            FROM   Reservation res
+                   LEFT JOIN Occupancy o
+                          ON res.ID = o.ReservationID
+                   LEFT JOIN Room r
+                          ON r.ID = o.RoomID
+                   LEFT JOIN Rating rat
+                          ON res.ID = rat.ReservationID
+            WHERE  res.CustomerID = ?
+                   AND res.EndDate >= CURRENT_DATE";
   $stmt = $mysqli->prepare($query);
   $stmt->bind_param('i',$customerID);
   $stmt->execute();

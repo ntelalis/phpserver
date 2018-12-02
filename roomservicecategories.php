@@ -1,13 +1,13 @@
 <?php
 
-include 'dbConfig.php';
+require 'dbConfig.php';
 
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 //Response Object
 $jObj = new stdClass();
 
-$query = "SELECT ID, Name, BeginTime, EndTime FROM FoodTimeZone";
+$query = "SELECT ID, Name, BeginTime, EndTime FROM FoodMenuTime";
 
 $stmt = $mysqli->prepare($query);
 $executed = $stmt->execute();

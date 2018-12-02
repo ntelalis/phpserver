@@ -1,7 +1,7 @@
 <?php
 
 //Database connection variables
-include 'dbConfig.php';
+require 'dbConfig.php';
 
 //Create new database object
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);

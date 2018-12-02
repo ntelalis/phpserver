@@ -7,7 +7,7 @@ mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
 
 //Database connection variables
-include 'dbConfig.php';
+require 'dbConfig.php';
 
 //Create new database object
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);

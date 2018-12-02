@@ -834,19 +834,19 @@ INSERT INTO `Food` (`ID`, `Name`, `Description`, `Price`, `MaxOrderQuantity`, `A
 -- --------------------------------------------------------
 
 --
--- Table structure for table `FoodCategory`
+-- Table structure for table `FoodMenuCategory`
 --
 
-CREATE TABLE `FoodCategory` (
+CREATE TABLE `FoodMenuCategory` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `FoodCategory`
+-- Dumping data for table `FoodMenuCategory`
 --
 
-INSERT INTO `FoodCategory` (`ID`, `Name`) VALUES
+INSERT INTO `FoodMenuCategory` (`ID`, `Name`) VALUES
 (18, 'Αναψυκτικά'),
 (23, 'Βάφλες'),
 (26, 'Βραδινό'),
@@ -869,20 +869,20 @@ INSERT INTO `FoodCategory` (`ID`, `Name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `FoodServingTime`
+-- Table structure for table `FoodMenuItem`
 --
 
-CREATE TABLE `FoodServingTime` (
+CREATE TABLE `FoodMenuItem` (
   `FoodID` int(11) NOT NULL,
-  `FoodTimeZoneID` int(11) NOT NULL,
-  `FoodCategoryID` int(11) NOT NULL
+  `FoodMenuTimeID` int(11) NOT NULL,
+  `FoodMenuCategoryID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `FoodServingTime`
+-- Dumping data for table `FoodMenuItem`
 --
 
-INSERT INTO `FoodServingTime` (`FoodID`, `FoodTimeZoneID`, `FoodCategoryID`) VALUES
+INSERT INTO `FoodMenuItem` (`FoodID`, `FoodMenuTimeID`, `FoodMenuCategoryID`) VALUES
 (1, 2, 9),
 (2, 2, 9),
 (3, 2, 9),
@@ -969,10 +969,10 @@ INSERT INTO `FoodServingTime` (`FoodID`, `FoodTimeZoneID`, `FoodCategoryID`) VAL
 -- --------------------------------------------------------
 
 --
--- Table structure for table `FoodTimeZone`
+-- Table structure for table `FoodMenuTime`
 --
 
-CREATE TABLE `FoodTimeZone` (
+CREATE TABLE `FoodMenuTime` (
   `ID` int(11) NOT NULL,
   `Name` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
   `BeginTime` time NOT NULL,
@@ -980,10 +980,10 @@ CREATE TABLE `FoodTimeZone` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `FoodTimeZone`
+-- Dumping data for table `FoodMenuTime`
 --
 
-INSERT INTO `FoodTimeZone` (`ID`, `Name`, `BeginTime`, `EndTime`) VALUES
+INSERT INTO `FoodMenuTime` (`ID`, `Name`, `BeginTime`, `EndTime`) VALUES
 (1, 'Πρωινό', '00:00:00', '10:00:00'),
 (2, 'Μεσημεριανό', '12:00:00', '17:59:00'),
 (3, 'Βραδινό', '18:00:00', '23:59:59');
@@ -1950,25 +1950,25 @@ ALTER TABLE `Food`
   ADD PRIMARY KEY (`ID`);
 
 --
--- Indexes for table `FoodCategory`
+-- Indexes for table `FoodMenuCategory`
 --
-ALTER TABLE `FoodCategory`
+ALTER TABLE `FoodMenuCategory`
   ADD PRIMARY KEY (`ID`),
   ADD UNIQUE KEY `Name` (`Name`);
 
 --
--- Indexes for table `FoodServingTime`
+-- Indexes for table `FoodMenuItem`
 --
-ALTER TABLE `FoodServingTime`
-  ADD PRIMARY KEY (`FoodID`,`FoodTimeZoneID`),
-  ADD KEY `FK_FoodCategory_FoodServingTime` (`FoodCategoryID`) USING BTREE,
-  ADD KEY `FK_FoodTimeZone_FoodServingTime` (`FoodTimeZoneID`) USING BTREE,
-  ADD KEY `FK_Food_FoodServingTime` (`FoodID`) USING BTREE;
+ALTER TABLE `FoodMenuItem`
+  ADD PRIMARY KEY (`FoodID`,`FoodMenuTimeID`),
+  ADD KEY `FK_FoodMenuCategory_FoodMenuItem` (`FoodMenuCategoryID`) USING BTREE,
+  ADD KEY `FK_FoodMenuTime_FoodMenuItem` (`FoodMenuTimeID`) USING BTREE,
+  ADD KEY `FK_Food_FoodMenuItem` (`FoodID`) USING BTREE;
 
 --
--- Indexes for table `FoodTimeZone`
+-- Indexes for table `FoodMenuTime`
 --
-ALTER TABLE `FoodTimeZone`
+ALTER TABLE `FoodMenuTime`
   ADD PRIMARY KEY (`ID`);
 
 --
@@ -2296,14 +2296,14 @@ ALTER TABLE `EventType`
 ALTER TABLE `Food`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=149;
 --
--- AUTO_INCREMENT for table `FoodCategory`
+-- AUTO_INCREMENT for table `FoodMenuCategory`
 --
-ALTER TABLE `FoodCategory`
+ALTER TABLE `FoodMenuCategory`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 --
--- AUTO_INCREMENT for table `FoodTimeZone`
+-- AUTO_INCREMENT for table `FoodMenuTime`
 --
-ALTER TABLE `FoodTimeZone`
+ALTER TABLE `FoodMenuTime`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `LoyaltyBenefits`
@@ -2522,12 +2522,12 @@ ALTER TABLE `EventPoints`
   ADD CONSTRAINT `EventPoints_HostedEvent` FOREIGN KEY (`EventTypeID`) REFERENCES `EventType` (`ID`);
 
 --
--- Constraints for table `FoodServingTime`
+-- Constraints for table `FoodMenuItem`
 --
-ALTER TABLE `FoodServingTime`
-  ADD CONSTRAINT `FK_FoodCategory_FoodServingTime` FOREIGN KEY (`FoodCategoryID`) REFERENCES `FoodCategory` (`ID`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_FoodTimeZone_FoodServingTime` FOREIGN KEY (`FoodTimeZoneID`) REFERENCES `FoodTimeZone` (`ID`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_Food_FoodServingTime` FOREIGN KEY (`FoodID`) REFERENCES `Food` (`ID`) ON UPDATE CASCADE;
+ALTER TABLE `FoodMenuItem`
+  ADD CONSTRAINT `FK_FoodMenuCategory_FoodMenuItem` FOREIGN KEY (`FoodMenuCategoryID`) REFERENCES `FoodMenuCategory` (`ID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_FoodMenuTime_FoodMenuItem` FOREIGN KEY (`FoodMenuTimeID`) REFERENCES `FoodMenuTime` (`ID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_Food_FoodMenuItem` FOREIGN KEY (`FoodID`) REFERENCES `Food` (`ID`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `LoyaltyPointsEarningHistory`

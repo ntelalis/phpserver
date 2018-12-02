@@ -1,18 +1,21 @@
-FoodServingTime<?php
+<?php
 
-include 'dbConfig.php';
+require 'dbConfig.php';
+
 
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
+
+$_POST['timeType'] = "Μεσημεριανό";
 
 if (isset($_POST['timeType'])) {
     $timeType = $_POST['timeType'];
     $jObj = new stdClass();
 
-    $query = "SELECT f.ID,f.Name,f.Description,f.Price,fc.ID,fc.Name
-  FROM Food f, FoodTimeZone ftz, FoodCategory fc, FoodServingTime fst
-  WHERE f.ID = fst.FoodID AND ftz.ID = fst.FoodTimeZoneID  AND fc.ID = fst.FoodCategoryID
-  AND f.Availability = 1 AND ftz.Name = ?";
+    $query = "SELECT f.ID,f.Name,f.Description,f.Price,fmc.ID,fmc.Name
+  FROM Food f, FoodMenuTime fmt, FoodMenuCategory fmc, FoodMenuItem fmi
+  WHERE f.ID = fmi.FoodID AND fmt.ID = fmi.FoodMenuTimeID  AND fmc.ID = fmi.FoodMenuCategoryID
+  AND f.Availability = 1 AND fmt.Name = ?";
 
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param('s', $timeType);

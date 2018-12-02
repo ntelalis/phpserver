@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
 
-include 'dbConfig.php';
+require 'dbConfig.php';
 require 'Functions/externalpayment.php';
 require 'Functions/addpoints.php';
 

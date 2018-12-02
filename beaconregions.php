@@ -9,7 +9,7 @@ mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 //$_POST['check'] = '[{"id":15,"modified":"2015-01-18 01:00:58"}]';
 
 //Database connection variables
-include 'dbConfig.php';
+require 'dbConfig.php';
 
 //Create new database object
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);

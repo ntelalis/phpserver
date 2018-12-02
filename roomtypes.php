@@ -66,10 +66,10 @@ foreach($values as $key => $value){
 
 // RoomTypeCash
 
-$query = "SELECT RoomTypeID,Adults,Children,CurrencyID,Cash FROM RoomTypeCash";
+$query = "SELECT RoomTypeID,Adults,Children,Cash FROM RoomTypeCash";
 $stmt = $mysqli->prepare($query);
 $stmt->execute();
-$stmt->bind_result($roomTypeID, $adults, $children, $currencyID, $cash);
+$stmt->bind_result($roomTypeID, $adults, $children, $cash);
 $stmt->store_result();
 
 $roomTypeCashArray = array();
@@ -78,7 +78,6 @@ while($stmt->fetch()){
   $roomTypeCash->roomTypeID = $roomTypeID;
   $roomTypeCash->adults = $adults;
   $roomTypeCash->children = $children;
-  $roomTypeCash->currencyID = $currencyID;
   $roomTypeCash->cash = $cash;
   $roomTypeCashArray[] = $roomTypeCash;
 }
@@ -104,10 +103,10 @@ while($stmt->fetch()){
 
 // RoomTypeCashPoints
 
-$query = "SELECT RoomTypeID,Adults,Children,CurrencyID,Cash,Points FROM RoomTypeCashPoints";
+$query = "SELECT RoomTypeID,Adults,Children,Cash,Points FROM RoomTypeCashPoints";
 $stmt = $mysqli->prepare($query);
 $stmt->execute();
-$stmt->bind_result($roomTypeID, $adults, $children, $currencyID, $cash, $points);
+$stmt->bind_result($roomTypeID, $adults, $children, $cash, $points);
 $stmt->store_result();
 
 $roomTypeCashPointsArray = array();
@@ -116,7 +115,6 @@ while($stmt->fetch()){
   $roomTypeCashPoints->roomTypeID = $roomTypeID;
   $roomTypeCashPoints->adults = $adults;
   $roomTypeCashPoints->children = $children;
-  $roomTypeCashPoints->currencyID = $currencyID;
   $roomTypeCashPoints->cash = $cash;
   $roomTypeCashPoints->points = $points;
   $roomTypeCashPointsArray[] = $roomTypeCashPoints;

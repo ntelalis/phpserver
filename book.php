@@ -56,9 +56,6 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
     $city = $_POST['city'];
     $postalCode = $_POST['postalCode'];
 
-    //IMPLEMENT CURRENCY
-    $currencyID = 1;
-
     //TODO remove points
 
     $arrivalDate = new DateTime($arrival);
@@ -83,7 +80,7 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
             $customerPoints = getPointsByCustomerID($mysqli, $customerID);
             $pointsNeeded = 0;
             $pointsNeeded += getFreeNightsPoints($mysqli, $roomTypeID, $adults, $children)*$freeNights;
-            $pointsNeeded += getCashNightsPoints($mysqli, $roomTypeID, $adults, $children, $currencyID)*$cashNights;
+            $pointsNeeded += getCashNightsPoints($mysqli, $roomTypeID, $adults, $children)*$cashNights;
 
 
             if ($customerPoints>=$pointsNeeded) {
@@ -92,11 +89,11 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                 //Get total price
                 $query = "SELECT (datediff(?,?)-?)*rtc.Cash + ?*(rtcp.Cash-rtc.Cash)
       FROM RoomTypeCash rtc, RoomTypeCashPoints rtcp
-      WHERE rtc.RoomTypeID=? AND rtc.Adults=? AND rtc.Children=? AND rtc.CurrencyID=?
-      AND rtcp.RoomTypeID=rtc.RoomTypeID AND rtcp.Adults=rtc.Adults AND rtcp.Children=rtc.Children AND rtcp.CurrencyID=rtc.CurrencyID";
+      WHERE rtc.RoomTypeID=? AND rtc.Adults=? AND rtc.Children=?
+      AND rtcp.RoomTypeID=rtc.RoomTypeID AND rtcp.Adults=rtc.Adults AND rtcp.Children=rtc.Children";
                 //$query = "SELECT (datediff(?,?)-?)*rt.Price - ?*? from RoomType rt where rt.ID=?";
                 $stmt = $mysqli->prepare($query);
-                $stmt->bind_param('ssiiiiii', $departure, $arrival, $freeNights, $cashNights, $roomTypeID, $adults, $children, $currencyID);
+                $stmt->bind_param('ssiiiiii', $departure, $arrival, $freeNights, $cashNights, $roomTypeID, $adults, $children);
                 $stmt->execute();
                 $stmt->bind_result($totalPrice);
                 $stmt->store_result();
@@ -119,10 +116,10 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                 if ($cashNights>0) {
                     $query = "INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
                 VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Cash And Points'),
-                      (SELECT Points FROM RoomTypeCashPoints WHERE RoomTypeID=? AND Adults=? AND Children=? AND CurrencyID=?)*?,
+                      (SELECT Points FROM RoomTypeCashPoints WHERE RoomTypeID=? AND Adults=? AND Children=?)*?,
                       now())";
                     $stmt = $mysqli->prepare($query);
-                    $stmt->bind_param('iiiiii', $customerID, $roomTypeID, $adults, $children, $currencyID, $cashNights);
+                    $stmt->bind_param('iiiiii', $customerID, $roomTypeID, $adults, $children, $cashNights);
                     $success = $stmt->execute();
                     if(!$success){
                       exit(1);

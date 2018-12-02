@@ -90,11 +90,11 @@ function getFreeNightsPoints($mysqli, $roomTypeID, $persons, $children)
         return null;
     }
 }
-function getCashNightsPoints($mysqli, $roomTypeID, $persons, $children, $currencyID)
+function getCashNightsPoints($mysqli, $roomTypeID, $persons, $children)
 {
-    $query = "SELECT Points FROM RoomTypeCashPoints rtcp WHERE rtcp.RoomTypeID=? AND rtcp.Adults=? AND rtcp.Children=? AND rtcp.CurrencyID=?";
+    $query = "SELECT Points FROM RoomTypeCashPoints rtcp WHERE rtcp.RoomTypeID=? AND rtcp.Adults=? AND rtcp.Children=?";
     $stmt = $mysqli->prepare($query);
-    $stmt-> bind_param('iiii', $roomTypeID, $persons, $children, $currencyID);
+    $stmt-> bind_param('iiii', $roomTypeID, $persons, $children);
     if ($stmt->execute()) {
         $stmt->bind_result($points);
         $stmt->store_result();

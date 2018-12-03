@@ -4,6 +4,8 @@ ini_set('display_errors',1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 
+require 'vendor/autoload.php';
+
 use \Firebase\JWT\JWT;
 
 //Database connection variables

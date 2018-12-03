@@ -1,6 +1,7 @@
 <?php
 
 //DEBUG
+
 /*
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -17,38 +18,61 @@ $mysqli->set_charset("utf8");
 //Response Object
 $jObj = new stdClass();
 
-//Get all countries
-$query = "  SELECT ID, Name
-            FROM Country";
-$stmt = $mysqli->prepare($query);
-$stmt->execute();
-$stmt->bind_result($countryID, $countryName);
-$stmt->store_result();
+//DEBUG
+//$_POST["modified"] = '201,2018-11-18 23:24:26';
 
-$numrows = $stmt->num_rows;
+if (isset($_POST['modified'])) {
 
-//If there are no countries return error
-if ($numrows == 0) {
-    $jObj->success = 0;
-    $jObj->errorMessage = "There are no countries available";
+    $modifiedClient = $_POST["modified"];
+
+    $query = "  SELECT CONCAT(COUNT(ID),',',MAX(Modified)) AS Modified
+                FROM Country";
+    $stmt = $mysqli->prepare($query);
+    $stmt->execute();
+    $stmt->bind_result($modifiedDB);
+    $stmt->store_result();
+    $stmt->fetch();
 }
-//Create countries array from DB results
-else {
-    $countryArray = array();
-    while ($stmt->fetch()) {
-        $countryObj = new stdClass();
-        $countryObj->id = $countryID;
-        $countryObj->name = $countryName;
-        $countryArray[] = $countryObj;
-    }
 
-    //Close Connection to DB
-    $stmt->close();
-    $mysqli->close();
-
+if(!is_null($modifiedClient) && $modifiedClient==$modifiedDB){
     $jObj->success = 1;
-    $jObj->countryArray = $countryArray;
 }
+else{
+    //Get all countries
+    $query = "  SELECT ID, Name, Modified
+                FROM Country";
+    $stmt = $mysqli->prepare($query);
+    $stmt->execute();
+    $stmt->bind_result($countryID, $countryName, $countryModified);
+    $stmt->store_result();
+
+    $numrows = $stmt->num_rows;
+
+    //If there are no countries return error
+    if ($numrows == 0) {
+        $jObj->success = 0;
+        $jObj->errorMessage = "There are no countries available";
+    }
+    //Create countries array from DB results
+    else {
+        $countryArray = array();
+        while ($stmt->fetch()) {
+            $countryObj = new stdClass();
+            $countryObj->id = $countryID;
+            $countryObj->name = $countryName;
+            $countryObj->modified = $countryModified;
+            $countryArray[] = $countryObj;
+        }
+
+        //Close Connection to DB
+        $stmt->close();
+        $mysqli->close();
+
+        $jObj->success = 1;
+        $jObj->countryArray = $countryArray;
+    }
+}
+
 
 //Specify that the response is json in the header
 header('Content-type:application/json;charset=utf-8');

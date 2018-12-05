@@ -22,7 +22,7 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-$_POST['reservationID']='37';
+//$_POST['reservationID']='37';
 
 if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $reservationID = $_POST['reservationID'];
@@ -95,13 +95,11 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     if ($mysqli->affected_rows==1) {
         //Build the json response
         $jObj->success=1;
-        $jObj->reservationID = $reservationID;
         $jObj->roomNumber=$roomNumber;
-        $jObj->checkInDate=$checkinDate;
         $jObj->roomFloor=$roomFloor;
-        $jObj->roomBeaconRegionArray=$roomBeaconRegionArray;
         $jObj->roomPassword=$roomPassword;
-        $jObj->modified=$checkinDate;
+        $jObj->roomBeaconRegionArray=$roomBeaconRegionArray;
+        $jObj->checkInDate=$checkinDate;
     } else {
         //could not insert checkin data
         $jObj->success=0;

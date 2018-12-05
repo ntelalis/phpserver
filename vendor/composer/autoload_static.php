@@ -15,12 +15,20 @@ class ComposerStaticInit4ac74914f0fee1d8431ea35887844700
         array (
             'Ramsey\\Uuid\\' => 12,
         ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'Ramsey\\Uuid\\' => 
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
     );
 

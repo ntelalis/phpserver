@@ -62,9 +62,9 @@ DELIMITER ;
 
 CREATE TABLE `Account` (
   `CustomerID` int(11) NOT NULL,
-  `Email` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Hash` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Verify` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Email` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Hash` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Verify` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `VerifyTime` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -87,7 +87,7 @@ INSERT INTO `Account` (`CustomerID`, `Email`, `Hash`, `Verify`, `VerifyTime`) VA
 
 CREATE TABLE `Amenity` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -100,7 +100,7 @@ CREATE TABLE `Beacon` (
   `ID` int(11) NOT NULL,
   `BeaconMajorID` int(11) NOT NULL,
   `Minor` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -131,7 +131,7 @@ INSERT INTO `Beacon` (`ID`, `BeaconMajorID`, `Minor`, `Name`) VALUES
 
 CREATE TABLE `BeaconFeature` (
   `ID` int(11) NOT NULL,
-  `Feature` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Feature` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -154,10 +154,10 @@ INSERT INTO `BeaconFeature` (`ID`, `Feature`) VALUES
 
 CREATE TABLE `BeaconMajor` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Major` int(11) NOT NULL,
   `UUID` int(11) NOT NULL,
-  `Description` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Description` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -178,7 +178,7 @@ INSERT INTO `BeaconMajor` (`ID`, `Name`, `Major`, `UUID`, `Description`) VALUES
 
 CREATE TABLE `BeaconMonitoredRegion` (
   `ID` int(11) NOT NULL,
-  `BeaconRegionUniqueID` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `BeaconRegionUniqueID` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `BeaconUUIDID` int(11) DEFAULT NULL,
   `BeaconMajorID` int(11) DEFAULT NULL,
   `BeaconID` int(11) DEFAULT NULL,
@@ -285,8 +285,8 @@ CREATE TABLE `beaconregionview` (
 ,`Major` binary(0)
 ,`Minor` binary(0)
 ,`Modified` timestamp
-,`UniqueID` varchar(500)
-,`UUID` varchar(500)
+,`UniqueID` varchar(200)
+,`UUID` varchar(200)
 );
 
 -- --------------------------------------------------------
@@ -297,7 +297,7 @@ CREATE TABLE `beaconregionview` (
 
 CREATE TABLE `BeaconUUID` (
   `ID` int(11) NOT NULL,
-  `UUID` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `UUID` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -331,11 +331,11 @@ CREATE TABLE `Charge` (
 
 CREATE TABLE `ContactInfo` (
   `CustomerID` int(11) NOT NULL,
-  `Phone` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Address1` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Address2` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
-  `City` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `PostalCode` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Phone` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Address1` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Address2` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `City` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `PostalCode` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -357,7 +357,7 @@ INSERT INTO `ContactInfo` (`CustomerID`, `Phone`, `Address1`, `Address2`, `City`
 
 CREATE TABLE `Country` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -597,11 +597,11 @@ INSERT INTO `Currency` (`ID`, `Name`, `Code`, `Symbol`) VALUES
 CREATE TABLE `Customer` (
   `ID` int(11) NOT NULL,
   `TitleID` int(11) NOT NULL,
-  `FirstName` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `LastName` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `FirstName` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `LastName` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `BirthDate` date DEFAULT NULL,
   `CountryID` int(11) NOT NULL,
-  `AdditionalInfo` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `AdditionalInfo` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -625,7 +625,7 @@ INSERT INTO `Customer` (`ID`, `TitleID`, `FirstName`, `LastName`, `BirthDate`, `
 CREATE TABLE `CustomerPhone` (
   `CustomerID` int(11) NOT NULL,
   `PhoneTypeID` int(11) NOT NULL,
-  `Phone` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Phone` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -693,7 +693,7 @@ INSERT INTO `EventSize` (`ID`, `maxPersons`) VALUES
 
 CREATE TABLE `EventType` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -713,8 +713,8 @@ INSERT INTO `EventType` (`ID`, `Name`) VALUES
 
 CREATE TABLE `Food` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Description` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Description` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `Price` double NOT NULL,
   `maxOrderQuantity` int(11) DEFAULT NULL,
   `Availability` tinyint(1) NOT NULL DEFAULT '1'
@@ -815,7 +815,7 @@ INSERT INTO `Food` (`ID`, `Name`, `Description`, `Price`, `maxOrderQuantity`, `A
 
 CREATE TABLE `FoodCategory` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -850,7 +850,7 @@ INSERT INTO `FoodCategory` (`ID`, `Name`) VALUES
 
 CREATE TABLE `FoodTime` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `BeginTime` time NOT NULL,
   `EndTime` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -974,8 +974,8 @@ CREATE TABLE `HotelService` (
   `ID` int(11) NOT NULL,
   `PartnerID` int(11) DEFAULT NULL,
   `CategoryID` int(11) DEFAULT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
-  `Tag` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Tag` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -1001,7 +1001,7 @@ INSERT INTO `HotelService` (`ID`, `PartnerID`, `CategoryID`, `Name`, `Tag`) VALU
 
 CREATE TABLE `HotelServiceCategory` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -1054,7 +1054,7 @@ INSERT INTO `HotelServiceCategoryFrequency` (`ID`, `CategoryID`, `FrequencyID`, 
 
 CREATE TABLE `HotelServiceFrequency` (
   `ID` int(11) NOT NULL,
-  `Frequency` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Frequency` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -1074,8 +1074,8 @@ INSERT INTO `HotelServiceFrequency` (`ID`, `Frequency`) VALUES
 
 CREATE TABLE `LoyaltyBenefits` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Description` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Description` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -1100,8 +1100,8 @@ INSERT INTO `LoyaltyBenefits` (`ID`, `Name`, `Description`) VALUES
 
 CREATE TABLE `LoyaltyPointsEarningAction` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Description` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Description` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -1158,7 +1158,7 @@ INSERT INTO `LoyaltyPointsEarningHistory` (`ID`, `CustomerID`, `GainingPointsID`
 
 CREATE TABLE `LoyaltyPointsSpendingAction` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -1199,7 +1199,7 @@ INSERT INTO `LoyaltyPointsSpendingHistory` (`ID`, `CustomerID`, `SpendingPointsI
 
 CREATE TABLE `LoyaltyTier` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `MinimumPoints` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -1254,7 +1254,7 @@ CREATE TABLE `Occupancy` (
   `ID` int(11) NOT NULL,
   `RoomID` int(11) NOT NULL,
   `ReservationID` int(11) NOT NULL,
-  `RoomPasswordHash` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `RoomPasswordHash` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `CheckIn` datetime NOT NULL,
   `CheckOut` datetime DEFAULT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -1282,9 +1282,9 @@ CREATE TABLE `Offer` (
   `ServiceID` int(11) NOT NULL,
   `Price` double DEFAULT NULL,
   `Discount` double DEFAULT NULL,
-  `Title` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Description` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Details` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Title` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Description` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Details` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -1331,7 +1331,7 @@ CREATE TABLE `OfferCoupon` (
   `ID` int(11) NOT NULL,
   `CustomerID` int(11) DEFAULT NULL,
   `ExclusiveOfferID` int(11) DEFAULT NULL,
-  `Code` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Code` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `Used` tinyint(1) DEFAULT '0',
   `Created` date NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -1451,8 +1451,8 @@ INSERT INTO `OfferGeneral` (`ID`, `OfferID`, `StartDate`, `EndDate`) VALUES
 
 CREATE TABLE `Partner` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
-  `Description` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Description` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -1484,7 +1484,7 @@ CREATE TABLE `Payment` (
 
 CREATE TABLE `PaymentMethod` (
   `ID` int(11) NOT NULL,
-  `Method` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Method` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -1503,7 +1503,7 @@ INSERT INTO `PaymentMethod` (`ID`, `Method`) VALUES
 
 CREATE TABLE `PhoneType` (
   `ID` int(11) NOT NULL,
-  `Type` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Type` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -1524,7 +1524,7 @@ INSERT INTO `PhoneType` (`ID`, `Type`) VALUES
 CREATE TABLE `Rating` (
   `ReservationID` int(11) NOT NULL,
   `Rating` float NOT NULL,
-  `Comments` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Comments` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -1581,7 +1581,7 @@ INSERT INTO `Reservation` (`ID`, `CustomerID`, `RoomTypeID`, `ReservationTypeID`
 
 CREATE TABLE `ReservationType` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -1633,7 +1633,7 @@ CREATE TABLE `RoomServiceOrder` (
   `ID` int(11) NOT NULL,
   `ReservationID` int(11) NOT NULL,
   `OrderDate` datetime NOT NULL,
-  `Comment` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
+  `Comment` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1656,12 +1656,12 @@ CREATE TABLE `RoomServiceOrderItem` (
 
 CREATE TABLE `RoomType` (
   `ID` int(11) NOT NULL,
-  `Name` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Capacity` int(11) NOT NULL,
   `Adults` int(11) NOT NULL,
   `ChildrenSupported` tinyint(1) NOT NULL,
   `Image` mediumblob,
-  `Description` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Description` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `Modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -1809,7 +1809,7 @@ INSERT INTO `RoomTypePoints` (`ID`, `RoomTypeID`, `Adults`, `Children`, `Spendin
 
 CREATE TABLE `Title` (
   `ID` int(11) NOT NULL,
-  `Title` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
+  `Title` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --

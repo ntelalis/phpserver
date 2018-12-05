@@ -44,7 +44,7 @@ $jwt = JWT::encode($token, $key);
 
 try {
   $decoded = JWT::decode($jwt, $key, array('HS256'));
-  echo "A";
+
 } catch (\Exception $e) {
 }
 

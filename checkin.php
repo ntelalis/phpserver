@@ -65,7 +65,6 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
         $beaconRegion->uuid = $brmUUID;
         $beaconRegion->major = $brmMajor;
         $beaconRegion->minor = $brmMinor;
-        $beaconRegion->exclusive= $brmExclusive == 1;
         $beaconRegion->background = $brmBackground == 1;
         $beaconRegion->modified = $brmModified;
         $roomBeaconRegionArray[] = $beaconRegion;

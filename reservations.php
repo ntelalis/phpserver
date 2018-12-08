@@ -1,6 +1,8 @@
 <?php
+
+//DEBUG
 /*
-ini_set('display_errors',1);
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
@@ -12,6 +14,10 @@ require 'dbConfig.php';
 $mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
 $mysqli->set_charset("utf8");
 
+//Response Object
+$jObj = new stdClass();
+
+//DEBUG
 //$_POST['customerID'] = 23;
 
 if (isset($_POST['customerID'])) {

@@ -19,12 +19,31 @@ $jObj = new stdClass();
 
 //DEBUG
 //$_POST['customerID'] = 23;
+//$_POST['check']= '[{"id":37,"modified":"2018-12-08 05:28:20"},{"id":8,"modified":"2019-01-01"}]';
 
 if (isset($_POST['customerID'])) {
+    $customerID = $_POST['customerID'];
 
-  $customerID = $_POST['customerID'];
+    //Check if customer has updated data for his reservations
 
-  $query = "SELECT res.ID, res.RoomTypeID, res.Adults, res.Children,
+    //Check if customer has any data for checking
+    if (isset($_POST['check']) && !empty($_POST['check'])) {
+        //parse json to array
+        $jsonToCheck = json_decode($_POST['check']);
+        //initialize a hash array which will be filled with reservations client knows about
+        $values = array();
+        //for each reservation customer has
+        foreach ($jsonToCheck as $item) {
+            //get the id and the modified date of the reservation client knows
+            $idClient = $item->id;
+            $modifiedClient = $item->modified;
+            //add these data to the array in order to be checked
+            $values[$idClient]=$modifiedClient;
+        }
+    }
+
+    //Get all reservations (reservation info + occupancy + rating) for this customer which have not ended yet.
+    $query = "SELECT res.ID, res.RoomTypeID, res.Adults, res.Children,
             res.DateBooked, res.StartDate, res.EndDate, o.CheckIn, o.CheckOut,
             r.Number, r.Floor, rat.Rating, rat.Comments,
             FROM_UNIXTIME(  ( UNIX_TIMESTAMP(res.Modified)
@@ -39,75 +58,87 @@ if (isset($_POST['customerID'])) {
                           ON res.ID = rat.ReservationID
             WHERE  res.CustomerID = ?
                    AND res.EndDate >= CURRENT_DATE";
-  $stmt = $mysqli->prepare($query);
-  $stmt->bind_param('i',$customerID);
-  $stmt->execute();
-  $stmt->bind_result($id, $roomTypeID, $adults, $children, $bookDate, $startDate, $endDate, $checkIn, $checkOut, $roomNumber, $roomFloor, $rating, $ratingComments, $modified);
-  $stmt->store_result();
-
-  if (isset($_POST['check']) && !empty($_POST['check'])) {
-      $jsonToCheck = json_decode($_POST['check']);
-      $values = array();
-      foreach ($jsonToCheck as $item) {
-          $idClient = $item->id;
-          $modifiedClient = $item->modified;
-          $values[$idClient]=$modifiedClient;
-      }
-  }
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('i', $customerID);
+    $stmt->execute();
+    $stmt->bind_result($id, $roomTypeID, $adults, $children, $bookDate, $startDate, $endDate, $checkIn, $checkOut, $roomNumber, $roomFloor, $rating, $ratingComments, $modified);
+    $stmt->store_result();
 
 
-  $upcomingReservationsArray = array();
-  while($stmt->fetch()){
+    //initialize reservation array which will be sent to client
+    $reservationArray = array();
 
-    if (isset($values[$id])) {
-        $timeInDB = strtotime($modified);
-        $timeInClient = strtotime($values[$id]);
-        unset($values[$id]);
-        if ($timeInDB==$timeInClient) {
-            continue;
+    //fetch server data row by row
+    while ($stmt->fetch()) {
+
+    //check if client knows about this reservation by checking if this reservation id
+        //is found in array which was filled with client data
+        //
+        if (isset($values[$id])) {
+            //convert client's and server's timestamps to time
+            $timeInDB = strtotime($modified);
+            $timeInClient = strtotime($values[$id]);
+            //remove this id from the client's array because it was found and compared
+            unset($values[$id]);
+            //if client has latest data skip the reservation and continue to next one
+            if ($timeInDB==$timeInClient) {
+                continue;
+            }
         }
+
+        //if client doesnt know about this reservation or he hasn't the latest data
+        //add the reservation to the response array
+
+        $reservation = new stdClass();
+        //Reservation data
+        $reservation->reservationId = $id;
+        $reservation->roomTypeID = $roomTypeID;
+        $reservation->adults = $adults;
+        $reservation->children = $children;
+        $reservation->bookedDate = $bookDate;
+        $reservation->startDate = $startDate;
+        $reservation->endDate = $endDate;
+        //Occupation data
+        $reservation->checkIn = $checkIn;
+        $reservation->checkOut = $checkOut;
+        $reservation->roomNumber = $roomNumber;
+        $reservation->roomFloor = $roomFloor;
+        //Rating data
+        $reservation->rating = $rating;
+        $reservation->ratingComments = $ratingComments;
+        $reservation->modified = $modified;
+        //add reservation to response array
+        $reservationArray[] = $reservation;
     }
 
-    $upcomingReservation = new stdClass();
-    $upcomingReservation->reservationID = $id;
-    $upcomingReservation->roomTypeID = $roomTypeID;
-    $upcomingReservation->adults = $adults;
-    $upcomingReservation->children = $children;
-    $upcomingReservation->bookedDate = $bookDate;
-    $upcomingReservation->startDate = $startDate;
-    $upcomingReservation->endDate = $endDate;
-    $upcomingReservation->checkIn = $checkIn;
-    $upcomingReservation->checkOut = $checkOut;
-    $upcomingReservation->roomNumber = $roomNumber;
-    $upcomingReservation->roomFloor = $roomFloor;
-    $upcomingReservation->rating = $rating;
-    $upcomingReservation->ratingComments = $ratingComments;
-    $upcomingReservation->modified = $modified;
-    $upcomingReservationsArray[] = $upcomingReservation;
-  }
+    //for each reservation that was sent by the client and server didn't find
+    //a match with his query to database
+    foreach ($values as $key => $value) {
+        //add it to response array but only set modified date with null value
+        //so the client will delete it from his list
+        $reservation = new stdClass();
+        $reservation->reservationId = $key;
+        $reservation->modified = null;
+        $reservationArray[]=$reservation;
+    }
 
-  foreach($values as $key => $value){
-    $upcomingReservation = new stdClass();
-    $upcomingReservation->reservationID = $key;
-    $upcomingReservation->modified = null;
-    $upcomingReservationsArray[]=$upcomingReservation;
-  }
+    //Close Connection to DB
+    $stmt->close();
+    $mysqli->close();
 
-
-  $stmt->close();
-  $mysqli->close();
-
-  $jObj = new stdClass();
-  $jObj->success = 1;
-  $jObj->upcomingReservationsArray = $upcomingReservationsArray;
-
+    //Build the json response
+    $jObj->success = 1;
+    $jObj->reservationArray = $reservationArray;
 }
-else{
-  $jObj->success = 0;
-  $jObj->errorMessage = "Bad request";
+//Bad request
+else {
+    $jObj->success = 0;
+    $jObj->errorMessage = "Bad Request";
 }
 
+//Specify that the response is json in the header
 header('Content-type:application/json;charset=utf-8');
 
-$JsonResponse = json_encode($jObj,JSON_UNESCAPED_UNICODE);
+//Encode the JSON Object and print the result
+$JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

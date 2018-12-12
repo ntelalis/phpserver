@@ -94,7 +94,7 @@ foreach ($values as $key => $value) {
     //add it to response array but only set modified date with null value
     //so the client will delete it from his list
     $generalOffer = new stdClass();
-    $generalOffer->reservationId = $key;
+    $generalOffer->id = $key;
     $generalOffer->modified = null;
     $generalOfferArray[]=$generalOffer;
 }

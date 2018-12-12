@@ -30,11 +30,11 @@ if (isset($_POST['customerID'])) {
     if (isset($_POST['check']) && !empty($_POST['check'])) {
         //parse json to array
         $jsonToCheck = json_decode($_POST['check']);
-        //initialize a hash array which will be filled with reservations client knows about
+        //initialize a hash array which will be filled with rows client knows about
         $values = array();
-        //for each reservation customer has
+        //for each row customer has
         foreach ($jsonToCheck as $item) {
-            //get the id and the modified date of the reservation client knows
+            //get the id and the modified date of the row client knows
             $idClient = $item->id;
             $modifiedClient = $item->modified;
             //add these data to the array in order to be checked
@@ -65,13 +65,13 @@ if (isset($_POST['customerID'])) {
     $stmt->store_result();
 
 
-    //initialize reservation array which will be sent to client
+    //initialize the array which will be sent to client
     $reservationArray = array();
 
     //fetch server data row by row
     while ($stmt->fetch()) {
 
-    //check if client knows about this reservation by checking if this reservation id
+    //check if client knows about this row by checking if this id
         //is found in array which was filled with client data
         //
         if (isset($values[$id])) {
@@ -80,14 +80,14 @@ if (isset($_POST['customerID'])) {
             $timeInClient = strtotime($values[$id]);
             //remove this id from the client's array because it was found and compared
             unset($values[$id]);
-            //if client has latest data skip the reservation and continue to next one
+            //if client has latest data skip the row and continue to next one
             if ($timeInDB==$timeInClient) {
                 continue;
             }
         }
 
-        //if client doesnt know about this reservation or he hasn't the latest data
-        //add the reservation to the response array
+        //if client doesnt know about this row or he hasn't the latest data
+        //add the row to the response array
 
         $reservation = new stdClass();
         //Reservation data
@@ -111,7 +111,7 @@ if (isset($_POST['customerID'])) {
         $reservationArray[] = $reservation;
     }
 
-    //for each reservation that was sent by the client and server didn't find
+    //for each row that was sent by the client and server didn't find
     //a match with his query to database
     foreach ($values as $key => $value) {
         //add it to response array but only set modified date with null value

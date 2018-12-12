@@ -8,6 +8,9 @@ mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 
 function doorUnlock($roomID)
 {
+    //DEBUG CODE
+    return true;
+
     //this function sends a message to door to unlock through external api
     $socket = initConnection();
     $msgSend = "room_door";

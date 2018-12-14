@@ -19,7 +19,7 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-$_POST['customerID'] = 23;
+//$_POST['customerID'] = 23;
 //$_POST['modified'] = "2018-09-19 21:29:34";
 
 if (isset($_POST['customerID'])) {

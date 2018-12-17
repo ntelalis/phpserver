@@ -108,6 +108,7 @@ if (isset($_POST['customerID'],$_POST['offerID'])) {
         if(!$generateNewCode){
             //Build the json response
             $jObj->success = 1;
+            $jObj->offerID = $offerID;
             $jObj->code = $couponCode;
             $jObj->codeCreated = $codeCreated;
         }

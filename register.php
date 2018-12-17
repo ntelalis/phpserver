@@ -1,16 +1,15 @@
 <?php
 
 //DEBUG
-
-
+/*
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
-
+*/
 
 //Database connection variables
 require 'dbConfig.php';
-include 'serverConfig.php';
+require 'serverConfig.php';
 require 'Functions/Email.php';
 require 'Functions/RandomString.php';
 
@@ -75,7 +74,7 @@ $_POST['phone'])){
 
             //Mail Contents
             $mail->Subject = "Verify your account";
-            $msg = "http://".$serverIP.":".$serverPort."/".$serverPath."/"."verify.php?verCode=".$verificationCode;
+            $msg = "{$url}verify.php?verCode={$verificationCode}";
             $mail->Body = $msg;
 
             //Send To

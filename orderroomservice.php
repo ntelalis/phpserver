@@ -18,8 +18,8 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-$_POST['reservationID'] = 38;
-$_POST['order'] = '[{"id":1,"quantity":2},{"id":2,"quantity":1},{"id":5,"quantity":3}]';
+//$_POST['reservationID'] = 38;
+//$_POST['order'] = '[{"id":1,"quantity":2},{"id":2,"quantity":1},{"id":5,"quantity":3}]';
 
 //Parse POST Variables
 if ($_POST['reservationID'] && isset($_POST['order'])) {

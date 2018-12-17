@@ -19,8 +19,8 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-$_POST['customerID'] = 23;
-$_POST['offerID'] = 2;
+//$_POST['customerID'] = 23;
+//$_POST['offerID'] = 2;
 
 if (isset($_POST['customerID'],$_POST['offerID'])) {
     $customerID = $_POST['customerID'];

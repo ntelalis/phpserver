@@ -18,7 +18,7 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-$_POST['customerID'] = 23;
+//$_POST['customerID'] = 23;
 //$_POST['check'] = '[{"id":2,"modified":"2018-10-25 09:44:31"}]';
 
 if (isset($_POST['customerID'])) {

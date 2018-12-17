@@ -20,12 +20,13 @@ $jObj = new stdClass();
 //DEBUG
 //$_POST['reservationID'] = 38;
 //$_POST['order'] = '[{"id":1,"quantity":2},{"id":2,"quantity":1},{"id":5,"quantity":3}]';
+//$_POST['comments'] = "Make it a good order";
 
 //Parse POST Variables
 if ($_POST['reservationID'] && isset($_POST['order'])) {
     $reservationId = $_POST['reservationID'];
     $order = $_POST['order'];
-    $comment = $_POST['comment'];
+    $comments = $_POST['comments'];
     $json = json_decode($order);
 
     //begin transaction
@@ -34,7 +35,7 @@ if ($_POST['reservationID'] && isset($_POST['order'])) {
     //insert the order in the db
     $query = "INSERT INTO RoomServiceOrder(ReservationID,OrderDate,Comment) VALUES(?,NOW(),?)";
     $stmt = $mysqli->prepare($query);
-    $stmt->bind_param('is', $reservationId, $comment);
+    $stmt->bind_param('is', $reservationId, $comments);
     $success = $stmt->execute();
     if ($success) {
 

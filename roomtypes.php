@@ -18,7 +18,7 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-//$_POST['check'] = '[{"id":5,"modified":"2018-01-18 01:00:58"}]';
+//$_POST['check'] = '[{"id":1,"modified":"2018-06-15 01:00:17"},{"id":2,"modified":"2018-06-15 01:00:48"},{"id":3,"modified":"2018-06-15 00:59:34"},{"id":4,"modified":"2018-06-15 00:59:29"}]';
 
 // Select available roomtypes from Database
 $query = "SELECT ID,Name,Capacity,Adults,ChildrenSupported,Image,Description,Modified FROM RoomType";
@@ -86,6 +86,7 @@ while ($stmt->fetch()) {
 foreach ($values as $key => $value) {
     //add it to response array but only set modified date with null value
     //so the client will delete it from his list  $roomType = new stdClass();
+    $roomType = new stdClass();
     $roomType->id = $key;
     $roomType->modified = null;
     $roomTypeArray[]=$roomType;

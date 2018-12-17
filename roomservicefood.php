@@ -73,6 +73,7 @@ if (isset($_POST['menuTime'])) {
     $mysqli->close();
 
     //Build the json response
+    $jObj->success = 1;
     $jObj->categoryArray = $categoryArray;
 }
 //Bad request

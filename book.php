@@ -23,11 +23,11 @@ $jObj = new stdClass();
 /*
 $_POST['customerID']='23';
 $_POST['roomTypeID']='1';
-$_POST['arrival']='2019-11-28';
-$_POST['departure']='2019-11-30';
-$_POST['adults']='1';
-$_POST['children']='0';
-$_POST['freeNights']='2';
+$_POST['arrival']='2018-12-19';
+$_POST['departure']='2018-12-22';
+$_POST['adults']='2';
+$_POST['children']='1';
+$_POST['freeNights']='0';
 $_POST['cashNights']='0';
 $_POST['ccNumber']='0';
 $_POST['ccName']='0';
@@ -130,7 +130,6 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                     //error inserting
                     $error = true;
                     $errormsg[] = array("table"=>"Total cash", "errMsg"=>$stmt->error);
-                    echo $totalPrice;
                 }
 
 
@@ -140,9 +139,8 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                 //if customer selected freeNights
                 if ($freeNights>0) {
                     //Insert points needed for his choice in the spendpointshistory table
-                    $query = "  INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points,DateSpent)
-                                VALUES(?,(SELECT ID FROM LoyaltyPointsSpendingAction WHERE Name='Free Night'),
-                                (SELECT SpendingPoints FROM RoomTypePoints WHERE RoomTypeID=? AND Adults=? AND Children=?)*?,now())";
+                    $query = "  INSERT INTO LoyaltyPointsSpendingHistory(CustomerID,SpendingPointsID,Points)
+                                (SELECT SpendingPoints FROM RoomTypePoints WHERE RoomTypeID=? AND Adults=? AND Children=?)*?)";
                     $stmt = $mysqli->prepare($query);
                     $stmt->bind_param('iiiii', $customerID, $roomTypeID, $adults, $children, $freeNights);
                     $success = $stmt->execute();
@@ -203,8 +201,8 @@ if (isset($_POST['customerID'],$_POST['roomTypeID'],$_POST['arrival'],$_POST['de
                 }
 
                 //insert payment into charge
-                $query = "INSERT INTO Charge (ReservationID,ServiceID,PaymentMethodID,Price,TimePaid)
-                SELECT ?,NULL,pm.ID,?,NOW()
+                $query = "INSERT INTO Charge (ReservationID,PaymentMethodID,Price,TimePaid)
+                SELECT ?,pm.ID,?,NOW()
                 FROM PaymentMethod pm
                 WHERE pm.Method='Card'";
                 $stmt = $mysqli->prepare($query);

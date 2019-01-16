@@ -1,10 +1,27 @@
 <?php
 
-include 'dbConfig.php';
+//DEBUG
+/*
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+*/
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+//Database connection variables
+require 'dbConfig.php';
 
+//Create new database object
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
+
+//Response Object
 $jObj = new stdClass();
+
+//DEBUG
+//$_POST['arrivalDate'] = '2018-06-19';
+//$_POST['departureDate'] = '2018-06-21';
+//$_POST['adults'] = 1;
+//$_POST['children'] = 0;
 
 if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST['children'])) {
     $arrivalDate=$_POST['arrivalDate'];
@@ -12,6 +29,7 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST[
     $adults=$_POST['adults'];
     $children=$_POST['children'];
 
+    //Check if customer wants a room with children support
     if($children>0){
       $childrenSupported=1;
     }
@@ -19,46 +37,56 @@ if (isset($_POST['arrivalDate'],$_POST['departureDate'],$_POST['adults'],$_POST[
       $childrenSupported=0;
     }
 
-    $query = " SELECT ID
-            FROM (
-                SELECT COUNT(RoomTypeID) AS total, RoomTypeID
-                FROM Room
-                GROUP BY RoomTypeID
-                UNION ALL
-                SELECT COUNT(RoomTypeID)*-1 AS total, RoomTypeID
-                FROM Reservation
-                WHERE NOT (StartDate > ? OR EndDate < ?)
-                GROUP BY RoomTypeID
-                ) AvailableRooms, RoomType
-            WHERE RoomTypeID=ID AND Adults>=? AND Capacity>=?+? AND ChildrenSupported IN (?,1)
-            GROUP BY RoomTypeID
-            HAVING sum(total)>0";
+    //get all available rooms based on parameters
+    $query = "SELECT ID
+              FROM   (SELECT COUNT(RoomTypeID) AS total,
+                             RoomTypeID
+                      FROM   Room
+                      GROUP  BY RoomTypeID
+                      UNION ALL
+                      SELECT COUNT(RoomTypeID) *- 1 AS total,
+                             RoomTypeID
+                      FROM   Reservation
+                      WHERE  NOT ( StartDate > ?
+                                    OR EndDate < ? )
+                      GROUP  BY RoomTypeID) AvailableRooms,
+                     RoomType
+              WHERE  RoomTypeID = ID
+                     AND Adults >=?
+                     AND Capacity >=?+?
+                     AND ChildrenSupported IN ( ?, 1 )
+              GROUP  BY RoomTypeID
+              HAVING sum(total) > 0";
 
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('ssiiii', $departureDate, $arrivalDate, $adults, $adults, $children,$childrenSupported);
     $stmt->execute();
-    $stmt->bind_result($rid);
+    $stmt->bind_result($roomTypeID);
     $stmt->store_result();
 
-    $numrows = $stmt->num_rows;
-
-    $typesArray = array();
+    //Build the response
+    $roomTypeArray = array();
     while ($stmt->fetch()) {
-        $type = new stdClass();
-        $type->roomTypeID = $rid;
-        $typesArray[] = $type;
+        $roomTypeArray[] = $roomTypeID;
     }
 
+    //Close Connection to DB
     $stmt->close();
-    $dbCon->close();
+    $mysqli->close();
 
+    //Build the json response
     $jObj->success = 1;
-    $jObj->results = $typesArray;
-} else {
+    $jObj->roomTypeArray = $roomTypeArray;
+}
+//Bad request
+else {
     $jObj->success = 0;
-    $jObj->errorMessage = $dbCon->error;
+    $jObj->errorMessage = "Bad Request";
 }
 
-$JsonResponse = json_encode($jObj);
+//Specify that the response is json in the header
+header('Content-type:application/json;charset=utf-8');
 
+//Encode the JSON Object and print the result
+$JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

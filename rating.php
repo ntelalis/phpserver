@@ -1,39 +1,68 @@
 <?php
 
-include 'dbConfig.php';
+//DEBUG
+/*
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+*/
 
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
-$dbCon->set_charset("utf8");
+//Database connection variables
+require 'dbConfig.php';
 
-if (isset($_POST['rating'],$_POST['comments'],$_POST['reservationID'])) {
+//Create new database object
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
+
+//Response Object
+$jObj = new stdClass();
+
+//DEBUG
+//$_POST['reservationID'] = 1;
+//$_POST['rating'] = "4";
+//$_POST['comments'] = "Very good hotel";
+
+if (isset($_POST['reservationID'],$_POST['rating'],$_POST['comments'])) {
+
+    $reservationID = $_POST['reservationID'];
     $rating = $_POST['rating'];
     $comments = $_POST['comments'];
-    $reservationID = $_POST['reservationID'];
 
-    $jObj = new stdClass();
-
+    // insert rating into db
     $query = "INSERT INTO Rating(ReservationID,Rating,Comments) VALUES (?,?,?)";
-
-    $stmt = $dbCon->prepare($query);
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('ids', $reservationID, $rating, $comments);
     $stmt->execute();
 
-    if ($dbCon->affected_rows>0) {
+    if ($mysqli->affected_rows>0) {
         $jObj->success=1;
     } else {
         $jObj->success=0;
-        $jObj->errorMessage="Sorry something went wrong. Please try again later.";
+        $errorno = $stmt->errno;
+        if($errorno == 1062){
+            $jObj->errorMessage="Reservation rating already left";
+        }
+        else if($errorno == 1452){
+            $jObj->errorMessage="Reservation not found";
+        }
+        else{
+            $jObj->errorMessage="Sorry something went wrong";
+        }
     }
 
+    //Close Connection to DB
     $stmt->close();
-    $dbCon->close();
-} else {
-    $jObj->success=0;
-    $jObj->errorMessage="Wrong given arguments";
+    $mysqli->close();
+}
+//Bad request
+else{
+    $jObj->success = 0;
+    $jObj->errorMessage = "Bad request";
 }
 
-//Encode data in JSON Format
-$JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
+//Specify that the response is json in the header
+header('Content-type:application/json;charset=utf-8');
 
-//Show Data
+//Encode the JSON Object and print the result
+$JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

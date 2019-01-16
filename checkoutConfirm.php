@@ -1,69 +1,107 @@
 <?php
 
+//DEBUG
 /*
-ini_set('display_errors',1);
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
 
+//Database connection variables
 require 'dbConfig.php';
 require 'Functions/addpoints.php';
-//Connection to Database
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+
+//Create new database object
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
 
 //Response Object
 $jObj = new stdClass();
 
-//$_POST['reservationID']='5';
+//DEBUG
+$_POST['reservationID']='39';
 
 //Parse POST Variables
 if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $reservationID = $_POST['reservationID'];
 
-    //Check if email matches a record in database and return customerID
-    $checkoutDate=date("Y-m-d H:i:s");
-    $query = "UPDATE Occupancy
-  SET Occupancy.CheckOut=?
-  WHERE Occupancy.ReservationID=?";
+    //begin transaction
+    $mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 
-    $stmt = $dbCon->prepare($query);
-    $stmt->bind_param('si', $checkoutDate, $reservationID);
+
+    //Check if email matches a record in database and return customerID
+    $checkedOutDate=date("Y-m-d H:i:s");
+    $query = "	UPDATE Occupancy
+				SET Occupancy.CheckOut=?
+				WHERE Occupancy.ReservationID=?";
+
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('si', $checkedOutDate, $reservationID);
     $stmt->execute();
 
-    if ($dbCon->affected_rows==1) {
+    if ($mysqli->affected_rows==1) {
+        //Find how many days customer has stayed in hotel
         $query = "SELECT DATEDIFF(Occupancy.CheckOut,Occupancy.CheckIn) + 1
-    FROM Occupancy
-    WHERE Occupancy.ReservationID = ?";
-        $stmt = $dbCon->prepare($query);
+					FROM Occupancy
+					WHERE Occupancy.ReservationID = ?";
+        $stmt = $mysqli->prepare($query);
         $stmt->bind_param('i', $reservationID);
         $stmt->execute();
         $stmt->bind_result($days);
         $stmt->store_result();
         $stmt->fetch();
+        $numrows = $stmt->num_rows;
 
-        if (addPointsByReservationID($dbCon, $reservationID, "night", $days)) {
-            $jObj->success=1;
-            $jObj->date=$checkoutDate;
-            $jObj->modified=$checkoutDate;
+        if ($numrows==1) {
+            $query = "	UPDATE Charge
+        				SET TimePaid=NOW()
+        				WHERE ReservationID=? AND TimePaid IS NULL";
+            $stmt = $mysqli->prepare($query);
+            $stmt->bind_param('i', $reservationID);
+            $success = $stmt->execute();
+
+            if ($success) {
+                //add points to customer for each day he spent to hotel
+                if (addPointsByReservationID($mysqli, $reservationID, "night", $days)) {
+                    $mysqli->commit();
+                    $jObj->success=1;
+                    $jObj->checkedOutDate=$checkedOutDate;
+                } else {
+                    //Could not set his points
+                    $mysqli->rollback();
+                    $jObj->success=0;
+                    $jObj->errorMessage="Cannot set loyalty points";
+                }
+            } else {
+                $mysqli->rollback();
+                $jObj->success=0;
+                $jObj->errorMessage="Error setting customer payment";
+            }
         } else {
+            //Could not find how many days customer stayed at hotel
+            $mysqli->rollback();
             $jObj->success=0;
-            $jObj->errorMessage="Cannot set loyalty points";
+            $jObj->errorMessage="Error finding customer's occupancy";
         }
     } else {
+        //Error checking out customer
+        $mysqli->rollback();
         $jObj->success=0;
         $jObj->errorMessage="There is some problem with checkout procedure";
     }
+    //Close Connection to DB
     $stmt->close();
+    $mysqli->close();
 }
-//Email variable is not supplied
+//Bad request
 else {
     $jObj->success = 0;
-    $jObj->errorMessage= "reservationID not correctly set";
+    $jObj->errorMessage = "Bad Request";
 }
 
-$dbCon->close();
-//Encode data in JSON Format
-$JsonResponse = json_encode($jObj);
+//Specify that the response is json in the header
+header('Content-type:application/json;charset=utf-8');
 
-//Show Data
+//Encode the JSON Object and print the result
+$JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

@@ -1,79 +1,79 @@
 <?php
 
+//DEBUG
 /*
-ini_set('display_errors',1);
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
 */
 
+//Database connection variables
 require 'dbConfig.php';
 require 'vendor/autoload.php';
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
-//Connection to Database
-$dbCon = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+//Create new database object
+$mysqli = new mysqli($dbip, $dbusername, $dbpass, $dbname);
+$mysqli->set_charset("utf8");
 
 //Response Object
 $jObj = new stdClass();
 
-//$_POST['reservationID']='13';
+//DEBUG
+//$_POST['reservationID']='37';
 
-//Parse POST Variables
 if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $reservationID = $_POST['reservationID'];
 
-    //Check if email matches a record in database and return customerID
-    $query = "SELECT Room.ID, Room.Number, Room.Floor
-              FROM Reservation,Room
-              WHERE Reservation.ID=? AND Room.RoomTypeID=Reservation.RoomTypeID AND Room.ID NOT IN (SELECT Occupancy.RoomID
-                                                                                                    FROM Occupancy
-                                                                                                    WHERE Occupancy.CheckOut IS NULL)
-              /* !!REMOVE THIS COMMENT!!! ORDER by rand()*/
-              LIMIT 1";
-
-    $stmt = $dbCon->prepare($query);
+    //Select a non occupied room based on reservation roomtype choice for check-in
+    $query = "  SELECT Room.ID, Room.Number, Room.Floor
+                FROM   Reservation, Room
+                WHERE  Reservation.ID =?
+                       AND Room.RoomTypeID = Reservation.RoomTypeID
+                       AND Room.ID NOT IN (SELECT Occupancy.RoomID
+                                           FROM   Occupancy
+                                           WHERE  Occupancy.CheckOut IS NULL)
+                /* DEBUG REMOVE THIS COMMENT!!! ORDER by rand()*/
+                LIMIT  1";
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('i', $reservationID);
     $stmt->execute();
     $stmt->bind_result($roomID, $roomNumber, $roomFloor);
     $stmt->store_result();
     $stmt->fetch();
 
+    //Get all beacon regions for this room
     $query = "SELECT v.ID, v.UniqueID,v.UUID,v.Major,v.Minor,v.Exclusive,v.Background,v.Modified
               FROM BeaconRegionView v
-              WHERE v.ID IN(SELECT br.BeaconRegionID
-                            FROM BeaconMonitoredRegionRoom br
-                            WHERE br.RoomID = ?)";
-    $stmt = $dbCon->prepare($query);
+              WHERE v.ID IN(SELECT brm.BeaconRegionID
+                            FROM BeaconRegionRoom brm
+                            WHERE brm.RoomID = ?)";
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('i', $roomID);
     $stmt->execute();
-    $stmt->bind_result($brID, $brUniqueID, $brUUID, $brMajor, $brMinor, $brExclusive, $brBackground, $brModified);
+    $stmt->bind_result($brmID, $brmUniqueID, $brmUUID, $brmMajor, $brmMinor, $brmExclusive, $brmBackground, $brmModified);
     $stmt->store_result();
 
+    //fill the array with the regions
     $roomBeaconRegionArray = array();
-
     while ($stmt->fetch()) {
-      $beaconRegion = new stdClass();
-      $beaconRegion->id = $brID;
-      $beaconRegion->uniqueID = $brUniqueID;
-      $beaconRegion->uuid = $brUUID;
-      $beaconRegion->major = $brMajor;
-      $beaconRegion->minor = $brMinor;
-      $beaconRegion->exclusive= $brExclusive == 1;
-      $beaconRegion->background = $brBackground == 1;
-      $beaconRegion->modified = $brModified;
-      $roomBeaconRegionArray[] = $beaconRegion;
+        $beaconRegion = new stdClass();
+        $beaconRegion->id = $brmID;
+        $beaconRegion->uniqueID = $brmUniqueID;
+        $beaconRegion->uuid = $brmUUID;
+        $beaconRegion->major = $brmMajor;
+        $beaconRegion->minor = $brmMinor;
+        $beaconRegion->background = $brmBackground == 1;
+        $beaconRegion->modified = $brmModified;
+        $roomBeaconRegionArray[] = $beaconRegion;
     }
 
-
-    //Close Connections
-    $stmt->close();
-
+    //check in date is now
     $checkinDate=date("Y-m-d H:i:s");
-    $query = "INSERT INTO Occupancy(RoomID,ReservationID,RoomPasswordHash,CheckIn,Modified) VALUES(?,?,?,?,?)";
-    $stmt = $dbCon->prepare($query);
 
+    //try to generate a UUIDv4 in order to use it for room password
     try {
         // Generate a version 4 (random) UUID object
         $uuid4 = Uuid::uuid4();
@@ -83,35 +83,41 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
         echo 'Caught exception: ' . $e->getMessage() . "\n";
     }
 
+    //insert checkin data into the database
+    $query = "  INSERT INTO Occupancy(RoomID,ReservationID,RoomPasswordHash,CheckIn,Modified)
+                VALUES(?,?,?,?,?)";
+    $stmt = $mysqli->prepare($query);
     $stmt->bind_param('iisss', $roomID, $reservationID, $roomPasswordHash, $checkinDate, $checkinDate);
     $success = $stmt->execute();
 
-    if ($dbCon->affected_rows==1) {
+    //if successful
+    if ($mysqli->affected_rows==1) {
+        //Build the json response
         $jObj->success=1;
-        $jObj->reservationID = $reservationID;
         $jObj->roomNumber=$roomNumber;
-        $jObj->checkInDate=$checkinDate;
         $jObj->roomFloor=$roomFloor;
-        $jObj->roomBeaconRegionArray=$roomBeaconRegionArray;
         $jObj->roomPassword=$roomPassword;
-        $jObj->modified=$checkinDate;
+        $jObj->roomBeaconRegionArray=$roomBeaconRegionArray;
+        $jObj->checkInDate=$checkinDate;
     } else {
+        //could not insert checkin data
         $jObj->success=0;
-        $jObj->errorMessage= $dbCon->error;
+        $jObj->errorMessage= $mysqli->error;
     }
 
+    //Close Connection to DB
     $stmt->close();
-
-    $dbCon->close();
+    $mysqli->close();
 }
-//Email variable is not supplied
+//Bad request
 else {
     $jObj->success = 0;
-    $jObj->errorMessage= "variables not correctly set";
+    $jObj->errorMessage = "Bad Request";
 }
 
-//Encode data in JSON Format
-$JsonResponse = json_encode($jObj);
+//Specify that the response is json in the header
+header('Content-type:application/json;charset=utf-8');
 
-//Show Data
+//Encode the JSON Object and print the result
+$JsonResponse = json_encode($jObj, JSON_UNESCAPED_UNICODE);
 echo $JsonResponse;

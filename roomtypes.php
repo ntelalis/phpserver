@@ -75,7 +75,6 @@ while ($stmt->fetch()) {
     $roomType->adults = $adults;
     $roomType->childrenSupported = $childrenSupported == 1;
     $roomType->image = base64_encode($image);
-    ;
     $roomType->description = $description;
     $roomType->modified = $modified;
     $roomTypeArray[] = $roomType;

@@ -19,7 +19,7 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-$_POST['reservationID']='39';
+//$_POST['reservationID']='67';
 
 //Parse POST Variables
 if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {

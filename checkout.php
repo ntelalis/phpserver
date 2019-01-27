@@ -18,11 +18,11 @@ $mysqli->set_charset("utf8");
 $jObj = new stdClass();
 
 //DEBUG
-//$_POST['reservationID']='5';
+//$_POST['reservationID']='67';
 
 //Parse POST Variables
 if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
-    
+
 	$reservationID = $_POST['reservationID'];
 
     //Detailed Unpaid Charges
@@ -32,24 +32,24 @@ if (isset($_POST['reservationID']) && !empty($_POST['reservationID'])) {
     $success = $stmt->execute();
     $stmt->bind_result($serviceName, $servicePrice);
     $stmt->store_result();
-	
+
 	if($success){
-	
+
 		//Total Unpaid Charges
 		$totalCharge = 0;
-		
+
 		$chargeArray = array();
 		while ($stmt->fetch()) {
 			$serviceModel = new stdClass();
 			$serviceModel->service = $serviceName;
 			$serviceModel->price = $servicePrice;
-			$totalPrice += $servicePrice; 
+			$totalCharge += $servicePrice;
 			$chargeArray[] = $serviceModel;
 		}
 
 		$jObj->success = 1;
-		$jObj->totalPrice=$totalPrice;
-		$jObj->chargeArray = $chargeArray;	
+		$jObj->totalPrice=$totalCharge;
+		$jObj->chargeArray = $chargeArray;
 	}
 	else{
 		//Problem with the query
